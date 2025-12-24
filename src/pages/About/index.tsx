@@ -1,4 +1,5 @@
 import PrivacyPolicy from "../../content/privacy.mdx";
+import Praxis from "../../content/praxis.mdx";
 
 function About() {
   return (
@@ -7,6 +8,7 @@ function About() {
       <div className="p-10 flex justify-center">
         <article className="prose">
           <PrivacyPolicy />
+          <Praxis />
         </article>
       </div>
     </>
