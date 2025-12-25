@@ -1,6 +1,13 @@
 import { useState } from "react";
-import BaseKnowledge from "./BaseKnowledge";
-import Lectures from "./Lectures";
+import BaseKnowledge from "../../components/Demo/BaseKnowledge";
+import Lectures from "../../components/Demo/Lectures";
+
+import summary from "../../content/artemis1/01-summary.mdx";
+import veredelt from "../../content/artemis1/02-veredelt.mdx";
+import tldr from "../../content/artemis1/03-tldr.mdx";
+import konzepte from "../../content/artemis1/04-konzepte.mdx";
+import beispiele from "../../content/artemis1/05-beispiele.mdx";
+import anki from "../../content/artemis1/06-anki.mdx";
 
 const content = [
   {
@@ -9,10 +16,25 @@ const content = [
     body: "Test Nasa",
     knowledge: ["Artemis1ReferenceGuide.pdf", "Artemis2ReferenceGuide.pdf"],
     lectures: [{
+      lid: 0,
       title: "Artemis 1 Briefing",
-      status: "processed",
+      status: "processed" as const,
       mp3: ["Artemis1Briefing.mp3"],
       pdf: ["Artemis1PressKit.pdf"],
+      results: {
+        summary,
+        veredelt,
+        tldr,
+        konzepte,
+        beispiele,
+        anki,
+      },
+    }, {
+      lid: 1,
+      title: "Artemis 2 Briefing",
+      status: "preparing" as const,
+      mp3: [],
+      pdf: [],
     }],
   },
   {
@@ -21,8 +43,9 @@ const content = [
     body: "Test AI Act",
     knowledge: [],
     lectures: [{
+      lid: 0,
       title: "EU AI Act Overview",
-      status: "preparing",
+      status: "preparing" as const,
       mp3: [],
       pdf: [],
     }],
@@ -34,7 +57,7 @@ function Demo() {
 
   return (
     <div className="grid grid-cols-12">
-      <div className="col-span-3">
+      <div className="fixed">
         <h1 className="font-bold border-b border-gray-200">Themen</h1>
         {content.map((item) => (
           <button

@@ -3,7 +3,7 @@ function BaseKnowledge(
 ) {
   return (
     <>
-      <h2 className="font-semibold pt-6">Grundwissen</h2>
+      <h2 className="font-semibold pt-6">I: Grundwissen</h2>
       <p className="text-xs">
         Das Grundwissen, es wird während der Verarbeitung der Vorlesung
         abgefragt, um gezielt relevante Informationen für die Erstellung der
