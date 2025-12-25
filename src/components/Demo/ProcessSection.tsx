@@ -1,3 +1,5 @@
+import Popover from "./Popover";
+
 function ProcessSection(
   { lecture }: {
     lecture: {
@@ -28,21 +30,36 @@ function ProcessSection(
         ? <>Keine Ergebnisse</>
         : (
           <>
-            <button
-              popoverTarget={`popover-summary-${lecture.lid}`}
-              popoverTargetAction="show"
-            >
-              Toggle the popover
-            </button>
-            <div
-              id={`popover-summary-${lecture.lid}`}
-              popover="auto"
-              className="fixed inset-0 mx-auto mt-5 h-full overscroll-contain bg-white p-4 shadow-xl rounded-lg border-none"
-            >
-              <article className="prose pb-10">
-                <lecture.results.summary />
-              </article>
-            </div>
+            <Popover
+              lid={lecture.lid}
+              type="summary"
+              Content={lecture.results.summary}
+            />
+            <Popover
+              lid={lecture.lid}
+              type="veredelt"
+              Content={lecture.results.veredelt}
+            />
+            <Popover
+              lid={lecture.lid}
+              type="tldr"
+              Content={lecture.results.tldr}
+            />
+            <Popover
+              lid={lecture.lid}
+              type="konzepte"
+              Content={lecture.results.konzepte}
+            />
+            <Popover
+              lid={lecture.lid}
+              type="beispiele"
+              Content={lecture.results.beispiele}
+            />
+            <Popover
+              lid={lecture.lid}
+              type="anki"
+              Content={lecture.results.anki}
+            />
           </>
         )}
     </>
