@@ -57,7 +57,7 @@ function Demo() {
 
   return (
     <div className="grid grid-cols-12">
-      <div className="fixed">
+      <aside className="fixed">
         <h1 className="font-bold border-b border-gray-200">Themen</h1>
         {content.map((item) => (
           <button
@@ -71,14 +71,14 @@ function Demo() {
         <button className="border-b border-r border-l border-gray-200 py-6 px-4 w-full cursor-pointer text-left hover:bg-indigo-50">
           + Neues Thema
         </button>
-      </div>
-      <div className="col-span-9 col-start-4">
+      </aside>
+      <article className="col-span-9 col-start-4 ml-5">
         <h1 className="font-bold border-b border-gray-200 pl-6">Content</h1>
         <div className="px-6">
           <BaseKnowledge currentItem={currentItem} />
           <Lectures currentItem={currentItem} />
         </div>
-      </div>
+      </article>
     </div>
   );
 }

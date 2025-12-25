@@ -9,18 +9,18 @@ Im Rahmen dieser Übung, entwickeln Sie einen Webshop für Ihr Start-Up.
 - Definieren Sie das Softwareprodukt (Businessanwendung, Videospiel, …) welches Sie im Internet vertreiben.
   - Welche Funktionen hat Ihre Anwendung?
     - Upload von mp3- und pdf-Dateien
-    - Organisieren der Dateien (z.B. Ordner pro Vorlesungstermin)
     - Zusatzwissen Upload (für große Skripte, für bessere Lernmaterialien, Nutzung von RAG Technologie)
+    - Organisieren der Dateien (z.B. Ordner pro Vorlesungstermin)
     - Verarbeitung der Daten
       - Transkription der mp3-Dateien mit Whisper-1 auf OpenAI Server
-      - Upload des gesamten Kontext (mp3-Transkript, Pdf-Inhalt, Zusatzwissen mit Hilfe von Keyword-Abfrage in der RAG Datenbank)
+      - Upload des gesamten Kontext (mp3-Transkript, Pdf-Inhalt, Zusatzwissen-Chunks durch Keyword-Abfrage in der RAG Datenbank)
       - Generierung von Lernmaterialien
         - Zusammenfassung (Kurzfassung der Vorlesung)
         - Veredeltes Skript (Neuformulierung des Transkripts als Fließtext, Entfernung von Füllwörtern, Rechtschreibkorrektur, Strukturierung)
         - Keywords (wichtigste Begriffe der Vorlesung)
         - TLDR (One Pager, 300-500 Wörter)
+        - Konzepte (neue Begriffe mit Definitionen)
         - Beispiele (behandelte Beispiele aus der Vorlesung)
-        - Begriffe (neue Begriffe mit Definitionen)
         - Anki-Karteikarten (Frage-Antwort Paare für Anki)
     - Lernmaterialien herunterladen (Markdown / PDF, Anki-CSV bereit für Import)
   - Wer ist die Zielgruppe?
@@ -28,7 +28,7 @@ Im Rahmen dieser Übung, entwickeln Sie einen Webshop für Ihr Start-Up.
     - Lebenslange Lernende
 - Definieren Sie Ihr Unternehmen:
   - Unternehmensname
-    - LearnMate
+    - AnkiLM
   - Standort
     - Wien, Österreich
   - Anzahl der Mitarbeiter
@@ -45,6 +45,13 @@ Das Geschäftsmodell ist ein Freemium-Modell mit folgenden Merkmalen:
     - Embedding mit text-embedding-3-large: $0.13 / 1M tokens
     - GPT-5: $1.25 / 1M input tokens, $10.00 / 1M output tokens
     - GPT-5-Mini: $0.25 / 1M input tokens, $2.00 / 1M output tokens
+  - Beispiel Nasa Artemis 1: Gesamtkosten: $0.638
+    - gpt-5 input: $0.063
+    - gpt-5 output: $0.43
+    - gpt-5-mini input: $0.068
+    - gpt-5-mini output: $0.05
+    - text-embedding-3-large: $0.006
+    - whisper-1: $0.408
 
 Entwickeln Sie als nächstes einen Webshop, der die folgende Aspekte berücksichtigt:
 

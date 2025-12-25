@@ -27,7 +27,7 @@ const socialItems = [
 
 function Footer() {
   return (
-    <div className="border-t border-gray-200">
+    <footer className="border-t border-gray-200">
       <div className="grid grid-cols-12 gap-12 p-6">
         <div className="col-span-3 flex-row">
           <Logo />
@@ -47,7 +47,7 @@ function Footer() {
       <div className="m-4 border-t border-gray-200 p-6 text-sm text-gray-500">
         © 2025 AnkiLM. All rights reserved.
       </div>
-    </div>
+    </footer>
   );
 }
 

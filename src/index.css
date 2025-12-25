@@ -1,10 +1,10 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-.noto-serif-font {
-  font-family: "Noto Serif", serif;
+.noto-font {
+  font-family: "Noto Sans", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 300;
+  font-weight: 500;
   font-style: normal;
   font-variation-settings: "wdth" 100;
 }

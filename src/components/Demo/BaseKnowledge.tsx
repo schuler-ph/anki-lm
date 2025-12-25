@@ -26,7 +26,7 @@ function BaseKnowledge(
             >
               <a
                 href={"/dir-praxis/" + file}
-                className="text-indigo-400 underline"
+                className="text-indigo-600 underline"
               >
                 {file}
               </a>

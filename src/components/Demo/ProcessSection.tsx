@@ -1,3 +1,4 @@
+import Button from "../Button";
 import Popover from "./Popover";
 
 function ProcessSection(
@@ -21,11 +22,7 @@ function ProcessSection(
       <h2 className="font-semibold pt-6">II.4: Verarbeitung</h2>
 
       {lecture.status === "preparing"
-        ? (
-          <button className="rounded-sm bg-indigo-200 hover:bg-indigo-400 px-2 py-1 cursor-pointer mt-4">
-            Verarbeitung starten
-          </button>
-        )
+        ? <Button name="Verarbeitung starten..." />
         : lecture.results === undefined
         ? <>Keine Ergebnisse</>
         : (

@@ -28,11 +28,11 @@ function Lectures(
     <>
       <h2 className="font-semibold pt-6">II: Vorlesungen</h2>
       <p className="text-xs">
-        Das Grundwissen, es wird während der Verarbeitung der Vorlesung
-        abgefragt, um gezielt relevante Informationen für die Erstellung der
-        Lernmaterialien zum Kontext hinzuzufügen. Gut geeignet dafür sind große
-        PDFs, die sonst nicht in den Kontext passen würden. Dafür wird die RAG
-        Technologie verwendet.
+        Hier werden die einzelnen Vorlesungen angezeigt, die <br />
+        1. darauf warten, verarbeitet zu werden (Status: preparing). Dabei
+        können noch neue Ressourcen hinzugefügt werden. <br />
+        2. bereits verarbeitet wurden (Status: processed). Die fertigen
+        Lernmaterialien können begutachtet werden. <br />
       </p>
 
       {currentItem.lectures.map((lecture, index) => (
@@ -40,7 +40,7 @@ function Lectures(
           key={index}
           className="border border-gray-200 rounded-sm p-4 my-4"
         >
-          <h3 className="font-semibold">{lecture.title}</h3>
+          <h3 className="font-bold text-center">{lecture.title}</h3>
 
           <Mp3Section lecture={lecture} />
           <PdfSection lecture={lecture} />

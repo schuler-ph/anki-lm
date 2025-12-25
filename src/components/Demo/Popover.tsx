@@ -1,3 +1,5 @@
+import Button from "../Button";
+
 function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -11,13 +13,11 @@ function Popover(
 ) {
   return (
     <>
-      <button
+      <Button
+        name={capitalizeFirstLetter(type)}
         popoverTarget={`popover-${type}-${lid}`}
         popoverTargetAction="show"
-        className="rounded-sm bg-indigo-200 hover:bg-indigo-400 px-2 py-1 cursor-pointer mr-2 mb-2"
-      >
-        {capitalizeFirstLetter(type)}
-      </button>
+      />
       <div
         id={`popover-${type}-${lid}`}
         popover="auto"

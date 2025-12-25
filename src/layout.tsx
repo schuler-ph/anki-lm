@@ -9,13 +9,13 @@ function Layout() {
   return (
     <HashRouter>
       <NavBar />
-      <div className="pt-24 pb-4 px-6">
+      <main className="pt-24 pb-4 px-6">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/demo" element={<Demo />} />
           <Route path="/about" element={<About />} />
         </Routes>
-      </div>
+      </main>
       <Footer />
     </HashRouter>
   );
