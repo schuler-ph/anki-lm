@@ -16,18 +16,15 @@ const companyItems = [
   { title: "AGBs", link: "terms" },
 ];
 
-const socialItems = [
-  { title: "Facebook", link: "https://facebook.com/schuler.ph" },
-  {
-    title: "Twitter",
-    link: "https://twitter.com/schuler_ph",
-  },
-  { title: "Github", link: "https://github.com/schuler-ph" },
+const otherItems = [
+  { title: "Barrierefreiheitserklärung", link: "accessibility" },
+  { title: "Lizenzen", link: "licenses" },
+  { title: "Praxis", link: "practice" },
 ];
 
 function Footer() {
   return (
-    <footer className="border-t border-gray-200">
+    <footer className="border-t border-gray-200 bg-gray-50">
       <div className="grid grid-cols-12 gap-12 p-6">
         <div className="col-span-3 flex-row">
           <Logo />
@@ -40,7 +37,7 @@ function Footer() {
           <div className="grid grid-cols-3 gap-12">
             <FooterColumn title="Produkt" items={productItems} />
             <FooterColumn title="Unternehmen" items={companyItems} />
-            <FooterColumn title="Soziales" items={socialItems} />
+            <FooterColumn title="Sonstiges" items={otherItems} />
           </div>
         </div>
       </div>

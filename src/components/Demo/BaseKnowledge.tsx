@@ -1,3 +1,5 @@
+import bookFile from "../../assets/icons/book.svg";
+
 function BaseKnowledge(
   { currentItem }: { currentItem: { knowledge: string[] } },
 ) {
@@ -24,12 +26,15 @@ function BaseKnowledge(
               key={file}
               className="flex justify-between items-center border border-gray-200 rounded-sm my-2 p-2"
             >
-              <a
-                href={"/dir-praxis/" + file}
-                className="text-indigo-600 underline"
-              >
-                {file}
-              </a>
+              <div className="flex flex-row items-center gap-2">
+                <img src={bookFile} className="h-8" alt="Book file icon" />
+                <a
+                  href={"/dir-praxis/" + file}
+                  className="text-indigo-600 underline"
+                >
+                  {file}
+                </a>
+              </div>
               <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
                 Entfernen
               </button>

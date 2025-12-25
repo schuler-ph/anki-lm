@@ -41,7 +41,7 @@ const content = [
     id: 1,
     title: "EU Recht",
     body: "Test AI Act",
-    knowledge: [],
+    knowledge: ["AiActRaw.pdf"],
     lectures: [{
       lid: 0,
       title: "EU AI Act Overview",
