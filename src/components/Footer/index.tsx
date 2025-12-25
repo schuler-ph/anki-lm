@@ -10,25 +10,25 @@ const productItems = [{
 }];
 
 const companyItems = [
-  { title: "About", link: "about" },
   { title: "Datenschutz", link: "privacy" },
-  { title: "AGBs", link: "terms" },
   { title: "Impressum", link: "imprint" },
+  { title: "About", link: "about" },
+  { title: "AGBs", link: "terms" },
 ];
 
 const socialItems = [
-  { title: "Github", link: "https://github.com/schuler-ph" },
+  { title: "Facebook", link: "https://facebook.com/schuler.ph" },
   {
     title: "Twitter",
     link: "https://twitter.com/schuler_ph",
   },
-  { title: "Facebook", link: "https://facebook.com/schuler.ph" },
+  { title: "Github", link: "https://github.com/schuler-ph" },
 ];
 
 function Footer() {
   return (
     <div className="border-t border-gray-200">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-12 p-6">
+      <div className="grid grid-cols-12 gap-12 p-6">
         <div className="col-span-3 flex-row">
           <Logo />
           <p>
