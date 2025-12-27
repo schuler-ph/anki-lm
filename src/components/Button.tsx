@@ -1,14 +1,16 @@
 function Button(
-  { name, popoverTarget, popoverTargetAction, type, onClick }: {
+  { name, popoverTarget, popoverTargetAction, type, onClick, disabled }: {
     name: string;
     popoverTarget?: string;
     popoverTargetAction?: "toggle" | "show" | "hide" | undefined;
     type?: "button" | "submit" | "reset" | undefined;
     onClick?: () => void;
+    disabled?: boolean;
   },
 ) {
   return (
     <button
+      disabled={disabled}
       type={type}
       onClick={onClick}
       popoverTarget={popoverTarget}
