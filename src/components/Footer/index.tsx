@@ -10,16 +10,15 @@ const productItems = [{
 }];
 
 const companyItems = [
-  { title: "Datenschutz", link: "privacy" },
-  { title: "Impressum", link: "imprint" },
-  { title: "About", link: "about" },
-  { title: "AGBs", link: "terms" },
+  { title: "About us", link: "about" },
+  { title: "Praxis", link: "practice" },
 ];
 
-const otherItems = [
+const legalItems = [
   { title: "Barrierefreiheitserklärung", link: "accessibility" },
-  { title: "Lizenzen", link: "licenses" },
-  { title: "Praxis", link: "practice" },
+  { title: "Kontakt & Impressum", link: "contact" },
+  { title: "AGBs & Lizenz", link: "terms" },
+  { title: "Datenschutz", link: "privacy" },
 ];
 
 function Footer() {
@@ -37,7 +36,7 @@ function Footer() {
           <div className="grid grid-cols-3 gap-12">
             <FooterColumn title="Produkt" items={productItems} />
             <FooterColumn title="Unternehmen" items={companyItems} />
-            <FooterColumn title="Sonstiges" items={otherItems} />
+            <FooterColumn title="Rechtliches" items={legalItems} />
           </div>
         </div>
       </div>

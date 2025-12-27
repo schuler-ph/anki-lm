@@ -57,22 +57,23 @@ function Demo() {
 
   return (
     <div className="grid grid-cols-12">
-      <aside className="fixed">
+      <aside className="flex flex-col col-span-3">
         <h1 className="font-bold border-b border-gray-200">Themen</h1>
         {content.map((item) => (
           <button
             key={item.id}
-            className="border-b border-r border-l border-gray-200 py-6 px-4 w-full cursor-pointer text-left hover:bg-indigo-50"
+            className={"border-b border-r border-l border-gray-200 py-4 px-4 cursor-pointer text-left hover:bg-indigo-50 " +
+              (currentItem.id === item.id ? "bg-indigo-100" : "")}
             onClick={() => setCurrentItem(item)}
           >
             {item.title}
           </button>
         ))}
-        <button className="border-b border-r border-l border-gray-200 py-6 px-4 w-full cursor-pointer text-left hover:bg-indigo-50">
+        <button className="border-b border-r border-l border-gray-200 py-1 px-4 w-full cursor-pointer text-left hover:bg-indigo-50">
           + Neues Thema
         </button>
       </aside>
-      <article className="col-span-9 col-start-4 ml-5">
+      <article className="col-span-9 col-start-4">
         <h1 className="font-bold border-b border-gray-200 pl-6">Content</h1>
         <div className="px-6">
           <BaseKnowledge currentItem={currentItem} />
