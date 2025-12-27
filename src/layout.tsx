@@ -9,6 +9,7 @@ import Demo from "./pages/Demo";
 import Article from "./components/Article";
 import Practice from "./content/praxis.mdx";
 import PrivacyPolicy from "./content/privacy.mdx";
+import Contact from "./pages/Contact";
 
 function Layout() {
   return (
@@ -21,6 +22,7 @@ function Layout() {
 
           <Route path="/practice" element={<Article Content={Practice} />} />
 
+          <Route path="/contact" element={<Contact />} />
           <Route
             path="/privacy"
             element={<Article Content={PrivacyPolicy} />}

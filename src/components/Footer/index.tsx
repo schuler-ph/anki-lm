@@ -15,7 +15,7 @@ const companyItems = [
 ];
 
 const legalItems = [
-  { title: "Barrierefreiheitserklärung", link: "accessibility" },
+  { title: "Erklärung zur Barrierefreiheit", link: "accessibility" },
   { title: "Kontakt & Impressum", link: "contact" },
   { title: "AGBs & Lizenz", link: "terms" },
   { title: "Datenschutz", link: "privacy" },
