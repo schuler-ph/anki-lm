@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import mp3File from "../../assets/icons/file-audio.svg";
 
 function Mp3Section({ lecture }: { lecture: { mp3: string[] } }) {
@@ -34,6 +35,13 @@ function Mp3Section({ lecture }: { lecture: { mp3: string[] } }) {
         <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
           MP3 hinzufügen
         </button>
+        <p className="text-xs">
+          Hinweis zum Datenschutz: Ihre Dateien werden zur Verarbeitung an
+          OpenAI (USA) übertragen. Mehr Infos in der{" "}
+          <Link to="/privacy" className="text-indigo-600 underline">
+            Datenschutzerklärung
+          </Link>.
+        </p>
       </div>
     </>
   );

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import bookFile from "../../assets/icons/book.svg";
 
 function BaseKnowledge(
@@ -45,6 +46,13 @@ function BaseKnowledge(
       <button className="rounded-sm w-full bg-gray-300 px-2 py-1 cursor-pointer">
         Upload
       </button>
+      <p className="text-xs">
+        Hinweis zum Datenschutz: Ihre Dateien werden zur Verarbeitung an OpenAI
+        (USA) übertragen. Mehr Infos in der{" "}
+        <Link to="/privacy" className="text-indigo-600 underline">
+          Datenschutzerklärung
+        </Link>.
+      </p>
     </>
   );
 }
