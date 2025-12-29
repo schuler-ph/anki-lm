@@ -1,7 +1,10 @@
-import { Link } from "react-router-dom";
 import pdfFile from "../../assets/icons/file-pdf.svg";
 
-function PdfSection({ lecture }: { lecture: { pdf: string[] } }) {
+function PdfSection(
+  { lecture }: {
+    lecture: { pdf: string[]; status: "processed" | "preparing" };
+  },
+) {
   return (
     <div className="mt-4">
       <h4 className="font-semibold">II.2: PDF Dateien</h4>
@@ -25,21 +28,18 @@ function PdfSection({ lecture }: { lecture: { pdf: string[] } }) {
                 {file}
               </a>
             </div>
-            <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
-              Entfernen
-            </button>
+            {lecture.status === "preparing" && (
+              <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
+                Entfernen
+              </button>
+            )}
           </div>
         ))}
-      <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
-        PDF hinzufügen
-      </button>
-      <p className="text-xs">
-        Hinweis zum Datenschutz: Ihre Dateien werden zur Verarbeitung an OpenAI
-        (USA) übertragen. Mehr Infos in der{" "}
-        <Link to="/privacy" className="text-indigo-600 underline">
-          Datenschutzerklärung
-        </Link>.
-      </p>
+      {lecture.status === "preparing" && (
+        <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
+          PDF hinzufügen
+        </button>
+      )}
     </div>
   );
 }

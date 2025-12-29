@@ -10,6 +10,7 @@ import Article from "./components/Article";
 import Practice from "./content/praxis.mdx";
 import PrivacyPolicy from "./content/privacy.mdx";
 import Contact from "./pages/Contact";
+import CookieBanner from "./components/CookieBanner";
 
 function Layout() {
   return (
@@ -30,6 +31,7 @@ function Layout() {
         </Routes>
       </main>
       <Footer />
+      <CookieBanner />
     </HashRouter>
   );
 }

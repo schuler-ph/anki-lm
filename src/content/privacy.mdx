@@ -1,22 +1,28 @@
+import { Link } from "react-router-dom";
+
 # Datenschutzerklärung
 
 Stand: 27. Dezember 2025
 
 ## 1. Einleitung und Überblick
-Wir freuen uns über Ihr Interesse an AnkiLM. Der Schutz Ihrer persönlichen Daten ist uns ein wichtiges Anliegen. Im Folgenden informieren wir Sie ausführlich über den Umgang mit Ihren Daten bei Nutzung unserer Webanwendung und Dienstleistungen.
+Im Folgenden informieren wir Sie ausführlich über unseren Umgang mit Ihren Daten bei Nutzung unserer Webanwendung und Dienstleistungen.
 
 Im Hinblick auf die verwendeten Begrifflichkeiten (z. B. „Verarbeitung“ oder „Verantwortlicher“) verweisen wir auf die Definitionen im Art. 4 der Datenschutzgrundverordnung (DSGVO).
 
 ## 2. Verantwortlicher
 Verantwortlicher für die Datenverarbeitung auf dieser Website im Sinne der DSGVO ist:
 
-**AnkiLM GmbH**
+**AnkiLM GmbH**,
 Resselgasse 3
 1040 Wien, Österreich
 
 **E-Mail:** datenschutz@ankilm.at
+
 **Web:** www.ankilm.at
+
 **Geschäftsführer:** Philipp Schuler
+
+Siehe auch unser {<Link to="/contact" className="text-indigo-600 underline">Impressum</Link>}
 
 ## 3. Arten der verarbeiteten Daten und Betroffene
 
@@ -26,7 +32,7 @@ Resselgasse 3
 
 ### Arten der verarbeiteten Daten
 - **Bestandsdaten** (z. B. Namen, E-Mail-Adressen, Account-Status)
-- **Inhaltsdaten** (z. B. hochgeladene PDF-Skripte, MP3-Vorlesungsaufzeichnungen, generierte Lernkarten, Texteingaben in Prompts)
+- **Inhaltsdaten** (z. B. hochgeladene Grundwissen-PDFs oder vorlesungsbezogene PDFs, MP3-Vorlesungsaufzeichnungen, generierte Lernkarten)
 - **Nutzungsdaten** (z. B. Zugriffszeiten, geklickte Buttons, verwendete Features)
 - **Meta-/Kommunikationsdaten** (z. B. IP-Adressen, Geräte-Informationen, Browser-Typ)
 
@@ -50,7 +56,7 @@ Dies ist der Kern unserer Dienstleistung. Um die Transkriptionen und Zusammenfas
 ### OpenAI (GPT & Whisper)
 Wir nutzen Schnittstellen (APIs) von **OpenAI Ireland Ltd.** (bzw. OpenAI, L.L.C., USA) zur Verarbeitung Ihrer Inhalte.
 - **Verarbeitete Daten:** Hochgeladene Audiodateien (zur Transkription via Whisper), Texte aus PDFs (für RAG-Prozesse und Zusammenfassungen via GPT-Modelle).
-- **Zweck:** Generierung der Lernmaterialien (Zusammenfassungen, Karteikarten).
+- **Zweck:** Generierung der Lernmaterialien (Zusammenfassungen, Extraktion von Begriffen und Beispielen, Karteikarten).
 - **Datenschutz:** Wir nutzen die Business-API von OpenAI. Laut Angaben von OpenAI werden Daten, die über die API gesendet werden, **nicht** zum Trainieren der Modelle von OpenAI verwendet.
 - **Drittlandübermittlung:** Daten können auf Servern in den USA verarbeitet werden. OpenAI ist unter dem **EU-US Data Privacy Framework** zertifiziert, wodurch ein angemessenes Datenschutzniveau gemäß Beschluss der EU-Kommission gewährleistet ist. Zusätzlich haben wir Standardvertragsklauseln (SCC) abgeschlossen.
 
@@ -67,7 +73,7 @@ Sofern wir Daten in einem Drittland (d. h. außerhalb der Europäischen Union (E
 
 ## 8. Speicherdauer und Löschung
 Wir löschen Ihre personenbezogenen Daten, sobald sie für den Zweck ihrer Erhebung nicht mehr erforderlich sind:
-- **Inhaltsdaten (Uploads):** Werden nach Abschluss des Generierungsprozesses bzw. nach Löschung durch den Nutzer entfernt. Transkripte bleiben in Ihrem Account gespeichert, bis Sie diese löschen.
+- **Inhaltsdaten (Uploads):** Werden nach Abschluss des Generierungsprozesses bzw. nach Löschung durch den Nutzer entfernt. ZwischenTranskripte bleiben in Ihrem Account gespeichert, bis Sie diese löschen.
 - **Account-Daten:** Werden bei Kündigung des Accounts gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten (z. B. steuerrechtlich für Rechnungen: 7 Jahre in Österreich gemäß § 132 BAO) bestehen.
 - **Server-Logfiles:** Werden in der Regel nach 7 Tagen automatisch gelöscht.
 

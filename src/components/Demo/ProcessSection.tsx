@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Button from "../Button";
 import Popover from "./Popover";
 
@@ -22,11 +23,22 @@ function ProcessSection(
       <h2 className="font-semibold pt-6">II.4: Verarbeitung</h2>
 
       {lecture.status === "preparing"
-        ? <Button name="Verarbeitung starten..." />
+        ? (
+          <>
+            <Button name="Verarbeitung starten..." />
+            <p className="text-xs">
+              Hinweis zum Datenschutz: Ihre Dateien werden zur Verarbeitung an
+              OpenAI (USA) übertragen. Mehr Infos in der{" "}
+              <Link to="/privacy" className="text-indigo-600 underline">
+                Datenschutzerklärung
+              </Link>.
+            </p>
+          </>
+        )
         : lecture.results === undefined
         ? <>Keine Ergebnisse</>
         : (
-          <>
+          <div>
             <Popover
               lid={lecture.lid}
               type="summary"
@@ -57,7 +69,7 @@ function ProcessSection(
               type="anki"
               Content={lecture.results.anki}
             />
-          </>
+          </div>
         )}
     </>
   );

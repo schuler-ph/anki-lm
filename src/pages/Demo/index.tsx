@@ -9,6 +9,8 @@ import konzepte from "../../content/artemis1/04-konzepte.mdx";
 import beispiele from "../../content/artemis1/05-beispiele.mdx";
 import anki from "../../content/artemis1/06-anki.mdx";
 
+import transcription from "../../content/artemis1/Artemis1Briefing_transcription.mdx";
+
 const content = [
   {
     id: 0,
@@ -20,7 +22,16 @@ const content = [
       title: "Artemis 1 Briefing",
       status: "processed" as const,
       mp3: ["Artemis1Briefing.mp3"],
+      transcriptions: [
+        {
+          name: "Artemis 1 Briefing Transcription",
+          content: transcription,
+        },
+      ],
       pdf: ["Artemis1PressKit.pdf"],
+      numbered: [
+        "Artemis1PressKit_numbered.pdf",
+      ],
       results: {
         summary,
         veredelt,
@@ -33,8 +44,8 @@ const content = [
       lid: 1,
       title: "Artemis 2 Briefing",
       status: "preparing" as const,
-      mp3: [],
-      pdf: [],
+      mp3: ["Artemis2.mp3"],
+      pdf: ["Artemis2.pdf"],
     }],
   },
   {

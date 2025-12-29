@@ -110,40 +110,6 @@ function Imprint() {
           Datenschutz-Informationen
         </Link>.
       </p>
-
-      {
-        /*
-
-### Online-Streitbeilegung
-Verbraucher haben die Möglichkeit, Beschwerden an die Online-Streitbeilegungsplattform der EU zu richten: [http://ec.europa.eu/odr](http://ec.europa.eu/odr).
-Sie können allfällige Beschwerde auch an die oben angegebene E-Mail-Adresse richten.
-
----
-
-### Offenlegung gemäß § 25 Mediengesetz
-
-**Blattlinie (Grundlegende Richtung):**
-Die Website und der Webshop dienen der Information über die Produkte und Dienstleistungen der AnkiLM GmbH sowie der Förderung von effizienten Lernmethoden durch künstliche Intelligenz.
-
----
-
-### Haftungsausschluss (Disclaimer)
-
-**Haftung für Inhalte dieser Webseite**
-Wir entwickeln die Inhalte dieser Webseite ständig weiter und bemühen uns, korrekte und aktuelle Informationen bereitzustellen. Leider können wir keine Haftung für die Korrektheit aller Inhalte auf dieser Webseite übernehmen, speziell für jene, die seitens Dritter (z.B. durch KI-Halluzinationen in Demos) bereitgestellt wurden.
-
-**Haftung für Links auf dieser Webseite**
-Unsere Webseite enthält Links zu anderen Webseiten (z.B. NASA, EU-Lex), für deren Inhalt wir nicht verantwortlich sind. Wenn Ihnen rechtswidrige Links auf unserer Webseite auffallen, bitten wir Sie, uns zu kontaktieren.
-
-**Urheberrechtshinweis**
-Alle Inhalte dieser Webseite (Bilder, Fotos, Texte, Videos) unterliegen dem Urheberrecht.
-*   Produktbilder und Screenshots: © 2025 AnkiLM GmbH
-*   Beispielmaterial "Artemis I": NASA (Public Domain)
-*   Beispielmaterial "EU AI Act": Europäische Union (CC BY 4.0 / Public Sector Information)
-
-Sollten Sie auf dieser Webseite Inhalte finden, die das Urheberrecht verletzen, bitten wir Sie, uns zu kontaktieren.
- */
-      }
     </>
   );
 }

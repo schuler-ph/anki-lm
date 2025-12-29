@@ -10,7 +10,12 @@ function Lectures(
         title: string;
         status: "processed" | "preparing";
         mp3: string[];
+        transcriptions?: {
+          name: string;
+          content: React.ComponentType<unknown>;
+        }[];
         pdf: string[];
+        numbered?: string[];
         lid: number;
         results?: {
           summary: React.ComponentType<unknown>;
@@ -44,8 +49,21 @@ function Lectures(
 
           <Mp3Section lecture={lecture} />
           <PdfSection lecture={lecture} />
-          <StatusChip status={lecture.status} />
+
+          {lecture.status === "processed" && (
+            <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
+              Input-Daten löschen
+            </button>
+          )}
+
+          <StatusChip lecture={lecture} />
           <ProcessSection lecture={lecture} />
+
+          {lecture.status === "processed" && lecture.results && (
+            <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
+              Ergebnisse löschen
+            </button>
+          )}
         </div>
       ))}
     </>
