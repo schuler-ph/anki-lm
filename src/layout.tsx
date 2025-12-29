@@ -11,6 +11,7 @@ import Practice from "./content/praxis.mdx";
 import PrivacyPolicy from "./content/privacy.mdx";
 import Contact from "./pages/Contact";
 import CookieBanner from "./components/CookieBanner";
+import Accessibility from "./content/accessibility.mdx";
 
 function Layout() {
   return (
@@ -23,7 +24,11 @@ function Layout() {
 
           <Route path="/practice" element={<Article Content={Practice} />} />
 
+{/* accessibility */}
+
+          <Route path="/accessibility" element={<Article Content={Accessibility} />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/license" element={<Article Content={Practice} />} />
           <Route
             path="/privacy"
             element={<Article Content={PrivacyPolicy} />}

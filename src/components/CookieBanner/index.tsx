@@ -1,29 +1,47 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function CookieBanner() {
-  const [isDone, setIsDone] = useState(false);
+  const [isDone, setIsDone] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("cookie-banner-dismissed") === "true";
+    }
+    return false;
+  });
+
+  function handleDone() {
+    localStorage.setItem("cookie-banner-dismissed", "true");
+    setIsDone(true);
+  }
+
+  if (isDone) return null;
 
   return (
-    <div
-      className="w-full fixed bottom-0 bg-indigo-300 p-4 h-96 flex flex-col items-start"
-      hidden={isDone}
+    <aside
+      className="w-full fixed bottom-0 bg-indigo-300 p-6 flex flex-col items-start z-50"
+      role="region"
+      aria-label="Cookie Banner"
     >
-      Wir nutzen Cookies und AI-Technologien.
-      <div className="flex flex-row gap-4">
-        <button
-          className="underline px-2 py-1 bg-indigo-600 text-white border"
-          onClick={() => setIsDone(true)}
-        >
-          Akzeptieren
-        </button>
-        <button
-          className="underline px-2 py-1 bg-white border"
-          onClick={() => setIsDone(true)}
-        >
-          Ablehnen
-        </button>
+      <div className="max-w-96">
+        Wir verwenden ausschließlich technisch notwendige Cookies, um den
+        Service anzubieten. Wir setzen keine Affiliate- oder Tracking-Cookies
+        ein.
       </div>
-    </div>
+      <div className="flex flex-row gap-4 mt-5">
+        <button
+          className="underline px-2 py-1 bg-indigo-600 text-white border cursor-pointer"
+          onClick={handleDone}
+        >
+          Verstanden
+        </button>
+        <Link
+          to="/privacy"
+          className="underline px-2 py-1 bg-white border"
+        >
+          Mehr erfahren
+        </Link>
+      </div>
+    </aside>
   );
 }
 
