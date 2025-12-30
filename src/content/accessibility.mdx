@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import SimpleLink from "../components/SimpleLink"
 
 # Barrierefreiheitserklärung
 
@@ -7,7 +7,7 @@ Stand: 29. Dezember 2025
 ## Erklärung zur Barrierefreiheit
 Die AnkiLM GmbH ist bemüht, ihre Website und Webanwendung im Einklang mit dem Barrierefreiheitsgesetz (BaFG) sowie den Richtlinien für barrierefreie Webinhalte (WCAG 2.2) barrierefrei zugänglich zu machen.
 
-Diese Erklärung zur Barrierefreiheit gilt für die Website www.ankilm.at.
+Diese Erklärung zur Barrierefreiheit gilt für die Website {<SimpleLink to="/" name="www.ankilm.at" />}.
 
 ## Stand der Vereinbarkeit mit den Anforderungen
 Diese Website ist mit der **Konformitätsstufe AA der „Web Content Accessibility Guidelines – WCAG 2.2“** weitestgehend vereinbar.
@@ -28,10 +28,10 @@ Wir laden Sie ein, uns Barrieren zu melden, damit wir unser Angebot weiter verbe
 
 **Kontakt:** \
 AnkiLM GmbH \
-E-Mail: accessibility@ankilm.at \
+E-Mail: <SimpleLink to="mailto:accessibility@ankilm.at" name="accessibility@ankilm.at" /> \
 Bitte beschreiben Sie in Ihrer E-Mail das Problem und geben Sie die URL der betroffenen Unterseite an.
 
-Siehe {<Link to="/contact" className="text-indigo-600 underline">Kontaktseite</Link>} für weitere Kontaktmöglichkeiten.
+Siehe {<SimpleLink to="/contact" name="Kontaktseite" />} für weitere Kontaktmöglichkeiten.
 
 
 ## Durchsetzungsverfahren
@@ -39,4 +39,4 @@ Bei nicht zufriedenstellenden Antworten aus oben genannter Kontaktmöglichkeit k
 
 **Sozialministeriumservice** \
 Babenbergerstraße 5, 1010 Wien \
-Web: {<Link to="https://www.sozialministeriumservice.at" className="text-indigo-600 underline">www.sozialministeriumservice.at</Link>}
+Web: {<SimpleLink to="https://www.sozialministeriumservice.at" name="www.sozialministeriumservice.at" />}

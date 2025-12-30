@@ -15,6 +15,7 @@ import Accessibility from "./content/accessibility.mdx";
 import About from "./content/about.mdx";
 import NotFound from "./content/notFound.mdx";
 import ScrollToTop from "./components/ScrollToTop";
+import Terms from "./content/terms.mdx";
 
 function Layout() {
   return (
@@ -36,6 +37,7 @@ function Layout() {
           />
           <Route path="/contact" element={<Article Content={Contact} />} />
           <Route path="/license" element={<Article Content={Practice} />} />
+          <Route path="/terms" element={<Article Content={Terms} />} />
           <Route
             path="/privacy"
             element={<Article Content={PrivacyPolicy} />}

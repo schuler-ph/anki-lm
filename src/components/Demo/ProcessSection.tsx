@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
 import Button from "../Button";
 import Popover from "./Popover";
 import type { Lecture } from "./types";
+import SimpleLink from "../SimpleLink";
 
 function ProcessSection({ lecture }: { lecture: Lecture }) {
   return (
@@ -26,10 +26,7 @@ function ProcessSection({ lecture }: { lecture: Lecture }) {
             <Button name="AI-Pipeline starten" variant="primary" />
             <p className="text-xs text-gray-500 mt-3 max-w-xs mx-auto">
               Durch Klick bestätigen Sie die Übermittlung der Daten an OpenAI
-              (USA) gemäß{" "}
-              <Link to="/privacy" className="underline text-indigo-600">
-                Datenschutz
-              </Link>.
+              (USA) gemäß <SimpleLink to="/privacy" name="Datenschutz" />.
             </p>
           </div>
         )

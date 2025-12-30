@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import SimpleLink from "../components/SimpleLink"
 
 # Datenschutzerklärung
 
@@ -16,12 +16,12 @@ Verantwortlicher für die Datenverarbeitung auf dieser Website im Sinne der DSGV
 Resselgasse 3 \
 1040 Wien, Österreich
 
-**E-Mail:** datenschutz@ankilm.at \
-**Web:** www.ankilm.at
+**E-Mail:** {<SimpleLink to="mailto:datenschutz@ankilm.at" name="datenschutz@ankilm.at" />} \
+**Web:** {<SimpleLink to="/" name="www.ankilm.at" />}
 
 **Geschäftsführer:** Philipp Schuler
 
-Siehe auch unser {<Link to="/contact" className="text-indigo-600 underline">Impressum</Link>}
+Siehe auch unser {<SimpleLink to="/contact" name="Impressum" />}
 
 ## 3. Arten der verarbeiteten Daten und Betroffene
 
@@ -86,13 +86,12 @@ Gemäß der DSGVO stehen Ihnen folgende Rechte zu:
 *   **Recht auf Datenübertragbarkeit (Art. 20 DSGVO):** Sie haben das Recht, Ihre Daten in einem gängigen, maschinenlesbaren Format zu erhalten (z. B. Ihre generierten Decks als CSV/JSON).
 *   **Widerspruchsrecht (Art. 21 DSGVO):** Sie können der künftigen Verarbeitung Ihrer Daten jederzeit widersprechen, sofern die Verarbeitung auf berechtigten Interessen beruht.
 
-Allfällige Einräumungen dieser Rechte können unter folgender E-Mail-Adresse beantragt werden: datenschutz@ankilm.at
+Allfällige Einräumungen dieser Rechte können unter folgender E-Mail-Adresse beantragt werden: {<SimpleLink to="mailto:datenschutz@ankilm.at" target="_blank" name="datenschutz@ankilm.at" />}
 
 **Beschwerderecht:** Sie haben zudem das Recht, eine Beschwerde bei der zuständigen Aufsichtsbehörde einzureichen. In Österreich ist dies die:
 **Österreichische Datenschutzbehörde**
 Barichgasse 40-42, 1030 Wien
-
-https://dsb.gv.at/
+{<SimpleLink to="https://dsb.gv.at/" target="_blank" name="https://dsb.gv.at/" />}
 
 ## 10. Cookies und lokale Speicherung
 Unsere Website verwendet ausschließlich technisch notwendige Mechanismen zur Speicherung (z. B. LocalStorage oder Session-Cookies), um Ihren Login-Status und Ihre Einstellungen zu speichern.

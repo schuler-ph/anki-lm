@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import Button from "../Button";
+import SimpleLink from "../SimpleLink";
 
 function ContactForm() {
   return (
@@ -60,11 +60,7 @@ function ContactForm() {
           Ich stimme zu, dass meine Angaben zur Kontaktaufnahme und für
           Rückfragen dauerhaft gespeichert werden. Ich kann diese Einwilligung
           jederzeit widerrufen. (Siehe{" "}
-          {
-            <Link to="/privacy" className="text-indigo-600 underline">
-              Datenschutzerklärung
-            </Link>
-          })
+          {<SimpleLink to="/privacy" name="Datenschutzerklärung" />})
         </label>
 
         <Button

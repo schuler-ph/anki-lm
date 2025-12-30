@@ -1,5 +1,6 @@
 import pdfFile from "../../assets/icons/file-pdf.svg";
 import Button from "../Button";
+import SimpleLink from "../SimpleLink";
 import type { Lecture } from "./types";
 
 function PdfSection({ lecture }: { lecture: Lecture }) {
@@ -19,12 +20,11 @@ function PdfSection({ lecture }: { lecture: Lecture }) {
               >
                 <div className="flex items-center gap-2 overflow-hidden">
                   <img src={pdfFile} className="h-6 w-6" alt="PDF icon" />
-                  <a
-                    href={"/dir-praxis/" + file}
-                    className="text-sm text-gray-700 hover:text-indigo-600 truncate block"
-                  >
-                    {file}
-                  </a>
+                  <SimpleLink
+                    to={"/dir-praxis/" + file}
+                    name={file}
+                    target="_blank"
+                  />
                 </div>
                 {lecture.status === "preparing" && (
                   <button className="text-xs text-red-500 hover:text-red-700 px-2">

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import SimpleLink from "../components/SimpleLink"
 import ContactForm from "../components/Contact/ContactForm";
 
 # Kontakt & Impressum
@@ -19,14 +19,15 @@ Informationspflicht laut § 5 E-Commerce Gesetz, § 14 Unternehmensgesetzbuch, �
 Resselgasse 3 \
 1040 Wien, Österreich \
 Telefon: +43 1 12323823 \
-Web: www.ankilm.at
+Web: {<SimpleLink to="/" name="www.ankilm.at" />}
 
 ### Kontakt
 
-Allgemeine Anfragen: office@ankilm.at \
-Beschwerden: beschwerde@ankilm.at \
-Datenschutz: datenschutz@ankilm.at \
-Barrierefreiheit: accessibility@ankilm.at
+Allgemeine Anfragen: {<SimpleLink to="mailto:office@ankilm.at" name="office@ankilm.at" />} \
+Beschwerden: {<SimpleLink to="mailto:beschwerde@ankilm.at" name="beschwerde@ankilm.at" />} \
+Datenschutz: {<SimpleLink to="mailto:datenschutz@ankilm.at" name="datenschutz@ankilm.at" />} \
+Barrierefreiheit: {<SimpleLink to="mailto:accessibility@ankilm.at" name="accessibility@ankilm.at" />} \
+Rechtliche Angelegenheiten: {<SimpleLink to="mailto:legal@ankilm.at" target="_blank" name="legal@ankilm.at" />}
 
 ### Unternehmensdaten
 
@@ -46,7 +47,7 @@ Mitglied der Wirtschaftskammer Österreich (WKO), Fachgruppe Unternehmensberatun
 
 **Anwendbare Rechtsvorschriften:** \
 Gewerbeordnung (GewO), E-Commerce-Gesetz (ECG), Mediengesetz (MedG).
-Zugänglich unter: {<Link to="https://www.ris.bka.gv.at" className="text-indigo-600 underline">www.ris.bka.gv.at</Link>}
+Zugänglich unter: {<SimpleLink to="https://www.ris.bka.gv.at" name="www.ris.bka.gv.at" />}
 
 **Aufsichtsbehörde / Gewerbebehörde:** \
 Magistrat der Stadt Wien
@@ -60,4 +61,4 @@ Die Website und der Webshop dienen der Information über die Produkte und Dienst
 
 AnkiLM übernimmt keine Haftung für den Inhalt extern verlinkter Webseiten. Alle Inhalte auf dieser Plattform werden mit Sorgfalt gestaltet. Da unsere Dienste jedoch auf generativer Künstlicher Intelligenz basieren, übernimmt AnkiLM keine Gewährleistung für die inhaltliche Richtigkeit (z.B. Halluzinationen) der generierten Lernmaterialien. Jegliche Nutzung der Inhalte erfolgt auf eigene Verantwortung. Prinzipiell sollte jedes erstellte Lernmaterial vor der Verwendung überprüft und eigenständig nachbearbeitet werden.
 
-Bitte beachten Sie auch unsere {<Link to="/terms" className="text-indigo-600 underline">Allgemeinen Geschäftsbedingungen</Link>} und {<Link to="/privacy" className="text-indigo-600 underline">Datenschutz-Informationen</Link>}.
+Bitte beachten Sie auch unsere {<SimpleLink to="/terms" name="Allgemeinen Geschäftsbedingungen" />} und {<SimpleLink to="/privacy" name="Datenschutz-Informationen" />}.
