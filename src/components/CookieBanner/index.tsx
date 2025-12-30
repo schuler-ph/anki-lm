@@ -18,7 +18,7 @@ function CookieBanner() {
 
   return (
     <aside
-      className="w-full fixed bottom-0 bg-indigo-300 p-6 flex flex-col items-start z-50"
+      className="w-full fixed bottom-0 bg-indigo-300 p-6 flex flex-col items-start z-100 border-t border-indigo-400"
       role="region"
       aria-label="Cookie Banner"
     >

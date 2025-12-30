@@ -27,7 +27,7 @@ function Footer() {
       <div className="grid grid-cols-12 gap-12 p-6">
         <div className="col-span-3 flex-row">
           <Logo />
-          <p>
+          <p className="font-light mt-4">
             Wandle komplizierten Stoff in einfach verständliches Lernmaterial
             um.
           </p>

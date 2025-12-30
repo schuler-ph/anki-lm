@@ -10,7 +10,7 @@ function FooterColumn(
         <Link
           to={item.link}
           key={index}
-          className="mb-2 hover:underline transition-all cursor-pointer "
+          className="mb-2 hover:underline transition-all cursor-pointer font-light"
         >
           {item.title}
         </Link>

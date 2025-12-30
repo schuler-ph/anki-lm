@@ -19,7 +19,7 @@ const content: Content[] = [
   {
     id: 0,
     title: "NASA",
-    body: "Test Nasa",
+    body: "Lernmaterialen zu den Artemis Missionen",
     knowledge: ["Artemis1ReferenceGuide.pdf", "Artemis2ReferenceGuide.pdf"],
     lectures: [{
       lid: 0,
@@ -55,7 +55,7 @@ const content: Content[] = [
   {
     id: 1,
     title: "EU Recht",
-    body: "Test AI Act",
+    body: "Lernmaterialen zum AI Act der Europäischen Union",
     knowledge: ["AiActRaw.pdf"],
     lectures: [{
       lid: 0,
@@ -84,28 +84,30 @@ function Demo() {
         }`}
       >
         <aside className="flex flex-col col-span-3 border-r border-gray-200 bg-white">
-          <h2 className="font-bold border-b border-gray-200 text-gray-500 text-xs uppercase tracking-wider p-4 pb-2">
+          <h2 className="font-bold border-b border-gray-200 text-gray-500 text-xs uppercase tracking-wider p-4 pl-10 pb-2">
             Themen
           </h2>
-          {content.map((item) => (
-            <button
-              key={item.id}
-              className={"py-3 px-4 cursor-pointer text-left hover:bg-indigo-50 transition-colors border-l-4 " +
-                (currentItem.id === item.id
-                  ? "bg-indigo-50 border-indigo-600 text-indigo-700 font-medium"
-                  : "border-transparent text-gray-600")}
-              onClick={() => setCurrentItem(item)}
-            >
-              {item.title}
+          <div className="pl-6 flex flex-col">
+            {content.map((item) => (
+              <button
+                key={item.id}
+                className={"py-3 px-4 cursor-pointer text-left hover:bg-indigo-50 transition-colors border-l-4 " +
+                  (currentItem.id === item.id
+                    ? "bg-indigo-50 border-indigo-600 text-indigo-700 font-medium"
+                    : "border-transparent text-gray-600")}
+                onClick={() => setCurrentItem(item)}
+              >
+                {item.title}
+              </button>
+            ))}
+            <button className="mt-2 mx-4 py-2 px-4 border border-dashed border-gray-300 rounded text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-sm">
+              + Neues Thema
             </button>
-          ))}
-          <button className="mt-2 mx-4 py-2 px-4 border border-dashed border-gray-300 rounded text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-sm">
-            + Neues Thema
-          </button>
+          </div>
         </aside>
 
         <article className="col-span-9">
-          <header className="bg-white border-b border-gray-200 px-8 py-6">
+          <header className="bg-white border-b border-gray-200 px-8 py-6 pr-6">
             <h1 className="text-2xl font-bold text-gray-800">
               {currentItem.title}
             </h1>

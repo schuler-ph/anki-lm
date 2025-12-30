@@ -3,10 +3,10 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 
-import Home from "./pages/Home";
 import Demo from "./pages/Demo";
 
 import Article from "./components/Article";
+import Home from "./content/home.mdx";
 import Practice from "./content/praxis.mdx";
 import PrivacyPolicy from "./content/privacy.mdx";
 import Contact from "./content/contact.mdx";
@@ -14,14 +14,16 @@ import CookieBanner from "./components/CookieBanner";
 import Accessibility from "./content/accessibility.mdx";
 import About from "./content/about.mdx";
 import NotFound from "./content/notFound.mdx";
+import ScrollToTop from "./components/ScrollToTop";
 
 function Layout() {
   return (
     <HashRouter>
+      <ScrollToTop />
       <NavBar />
-      <main className="pt-24 pb-4 px-6">
+      <main className="pt-20">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Article Content={Home} />} />
           <Route path="/demo" element={<Demo />} />
 
           <Route path="/practice" element={<Article Content={Practice} />} />
