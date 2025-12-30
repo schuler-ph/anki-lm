@@ -1,49 +1,46 @@
 import mp3File from "../../assets/icons/file-audio.svg";
+import Button from "../Button";
+import type { Lecture } from "./types";
 
-function Mp3Section(
-  { lecture }: {
-    lecture: { mp3: string[]; status: "processed" | "preparing" };
-  },
-) {
+function Mp3Section({ lecture }: { lecture: Lecture }) {
   return (
-    <>
-      <div className="mt-2">
-        <h4 className="font-semibold">II.1: MP3 Dateien</h4>
+    <div>
+      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
+        Audioquellen (MP3)
+      </h4>
+      <div className="space-y-2">
         {lecture.mp3.length === 0
-          ? (
-            <p className="italic text-sm my-2">
-              Keine MP3 Dateien hochgeladen.
-            </p>
-          )
-          : lecture.mp3.map((file) => (
-            <div
-              key={file}
-              className="flex justify-between items-center border border-gray-200 rounded-sm my-2 p-2"
-            >
-              <div className="flex flex-row items-center gap-2">
-                <img src={mp3File} className="h-8" alt="MP3 file icon" />
-
-                <a
-                  href={"/dir-praxis/" + file}
-                  className="text-indigo-600 underline"
-                >
-                  {file}
-                </a>
+          ? <p className="text-sm text-gray-400 italic">Keine Audiodateien.</p>
+          : (
+            lecture.mp3.map((file: string) => (
+              <div
+                key={file}
+                className="flex justify-between items-center p-2 rounded bg-gray-50 border border-gray-100"
+              >
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <img src={mp3File} className="h-6 w-6" alt="MP3 icon" />
+                  <a
+                    href={"/dir-praxis/" + file}
+                    className="text-sm text-gray-700 hover:text-indigo-600 truncate block"
+                  >
+                    {file}
+                  </a>
+                </div>
+                {lecture.status === "preparing" && (
+                  <button className="text-xs text-red-500 hover:text-red-700 px-2">
+                    Löschen
+                  </button>
+                )}
               </div>
-              {lecture.status === "preparing" && (
-                <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
-                  Entfernen
-                </button>
-              )}
-            </div>
-          ))}
+            ))
+          )}
         {lecture.status === "preparing" && (
-          <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
-            MP3 hinzufügen
-          </button>
+          <div className="mt-3">
+            <Button name="+ Audio" variant="secondary" />
+          </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
 

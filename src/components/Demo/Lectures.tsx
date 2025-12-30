@@ -2,71 +2,49 @@ import Mp3Section from "./Mp3Section";
 import PdfSection from "./PdfSection";
 import ProcessSection from "./ProcessSection";
 import StatusChip from "./StatusChip";
+import type { Content, Lecture } from "./types";
 
-function Lectures(
-  { currentItem }: {
-    currentItem: {
-      lectures: {
-        title: string;
-        status: "processed" | "preparing";
-        mp3: string[];
-        transcriptions?: {
-          name: string;
-          content: React.ComponentType<unknown>;
-        }[];
-        pdf: string[];
-        numbered?: string[];
-        lid: number;
-        results?: {
-          summary: React.ComponentType<unknown>;
-          veredelt: React.ComponentType<unknown>;
-          tldr: React.ComponentType<unknown>;
-          konzepte: React.ComponentType<unknown>;
-          beispiele: React.ComponentType<unknown>;
-          anki: React.ComponentType<unknown>;
-        };
-      }[];
-    };
-  },
-) {
+
+function Lectures({ currentItem }: {currentItem: Content}) {
   return (
-    <>
-      <h2 className="font-semibold pt-6">II: Vorlesungen</h2>
-      <p className="text-xs">
-        Hier werden die einzelnen Vorlesungen angezeigt, die <br />
-        1. darauf warten, verarbeitet zu werden (Status: preparing). Dabei
-        können noch neue Ressourcen hinzugefügt werden. <br />
-        2. bereits verarbeitet wurden (Status: processed). Die fertigen
-        Lernmaterialien können begutachtet werden. <br />
-      </p>
+    <section>
+      <div className="mb-6">
+        <h2 className="text-lg font-bold text-gray-900">
+          Vorlesungen & Verarbeitung
+        </h2>
+        <p className="text-sm text-gray-500">
+          Verwalten Sie hier Ihre Aufzeichnungen. Der Status zeigt an, ob
+          Lernmaterialien bereits generiert wurden.
+        </p>
+      </div>
 
-      {currentItem.lectures.map((lecture, index) => (
-        <div
-          key={index}
-          className="border border-gray-200 rounded-sm p-4 my-4"
-        >
-          <h3 className="font-bold text-center">{lecture.title}</h3>
+      <div className="space-y-8">
+        {currentItem.lectures.map((lecture: Lecture, index: number) => (
+          <div
+            key={index}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+          >
+            {/* Header der Card */}
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="font-bold text-gray-800">{lecture.title}</h3>
+              <StatusChip lecture={lecture} />
+            </div>
 
-          <Mp3Section lecture={lecture} />
-          <PdfSection lecture={lecture} />
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Mp3Section lecture={lecture} />
+                <PdfSection lecture={lecture} />
+              </div>
 
-          {lecture.status === "processed" && (
-            <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
-              Input-Daten löschen
-            </button>
-          )}
+              {/* Trennlinie */}
+              <div className="border-t border-gray-100"></div>
 
-          <StatusChip lecture={lecture} />
-          <ProcessSection lecture={lecture} />
-
-          {lecture.status === "processed" && lecture.results && (
-            <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
-              Ergebnisse löschen
-            </button>
-          )}
-        </div>
-      ))}
-    </>
+              <ProcessSection lecture={lecture} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 

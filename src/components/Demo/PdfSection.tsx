@@ -1,45 +1,45 @@
 import pdfFile from "../../assets/icons/file-pdf.svg";
+import Button from "../Button";
+import type { Lecture } from "./types";
 
-function PdfSection(
-  { lecture }: {
-    lecture: { pdf: string[]; status: "processed" | "preparing" };
-  },
-) {
+function PdfSection({ lecture }: { lecture: Lecture }) {
   return (
-    <div className="mt-4">
-      <h4 className="font-semibold">II.2: PDF Dateien</h4>
-      {lecture.pdf.length === 0
-        ? (
-          <p className="italic text-sm my-2">
-            Keine PDF Dateien hochgeladen.
-          </p>
-        )
-        : lecture.pdf.map((file) => (
-          <div
-            key={file}
-            className="flex justify-between items-center border border-gray-200 rounded-sm my-2 p-2"
-          >
-            <div className="flex flex-row items-center gap-2">
-              <img src={pdfFile} className="h-8" alt="PDF file icon" />
-              <a
-                href={"/dir-praxis/" + file}
-                className="text-indigo-600 underline"
+    <div>
+      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
+        Folien & Skripte (PDF)
+      </h4>
+      <div className="space-y-2">
+        {lecture.pdf.length === 0
+          ? <p className="text-sm text-gray-400 italic">Keine PDF Dateien.</p>
+          : (
+            lecture.pdf.map((file: string) => (
+              <div
+                key={file}
+                className="flex justify-between items-center p-2 rounded bg-gray-50 border border-gray-100"
               >
-                {file}
-              </a>
-            </div>
-            {lecture.status === "preparing" && (
-              <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
-                Entfernen
-              </button>
-            )}
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <img src={pdfFile} className="h-6 w-6" alt="PDF icon" />
+                  <a
+                    href={"/dir-praxis/" + file}
+                    className="text-sm text-gray-700 hover:text-indigo-600 truncate block"
+                  >
+                    {file}
+                  </a>
+                </div>
+                {lecture.status === "preparing" && (
+                  <button className="text-xs text-red-500 hover:text-red-700 px-2">
+                    Löschen
+                  </button>
+                )}
+              </div>
+            ))
+          )}
+        {lecture.status === "preparing" && (
+          <div className="mt-3">
+            <Button name="+ PDF" variant="secondary" />
           </div>
-        ))}
-      {lecture.status === "preparing" && (
-        <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
-          PDF hinzufügen
-        </button>
-      )}
+        )}
+      </div>
     </div>
   );
 }

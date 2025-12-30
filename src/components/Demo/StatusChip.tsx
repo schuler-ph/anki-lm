@@ -1,80 +1,37 @@
-import Popover from "./Popover";
+import type { Lecture } from "./types";
 
-const colors = {
-  processed: "bg-green-100 text-green-800 border-green-300",
-  preparing: "bg-yellow-100 text-yellow-800 border-yellow-300",
+const statusStyles = {
+  processed: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  preparing: "bg-amber-100 text-amber-800 border-amber-200",
 };
 
-function StatusChip(
-  { lecture }: {
-    lecture: {
-      lid: number;
-      status: "processed" | "preparing";
-      transcriptions?: {
-        name: string;
-        content: React.ComponentType<unknown>;
-      }[];
-      numbered?: string[];
-    };
-  },
-) {
-  return (
-    <>
-      <div className="mt-4 font-semibold">II.3: Status</div>
+const statusLabels = {
+  processed: "Verarbeitung abgeschlossen",
+  preparing: "Warte auf Input",
+};
 
+function StatusChip({ lecture }: { lecture: Lecture }) {
+  return (
+    <div className="flex items-center gap-2">
       <span
-        className={`rounded-sm px-2 py-1 text-xs font-semibold border ${
-          colors[lecture.status]
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+          statusStyles[lecture.status as keyof typeof statusStyles]
         }`}
       >
-        {lecture.status}
+        <span
+          className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+            lecture.status === "processed" ? "bg-emerald-500" : "bg-amber-500"
+          }`}
+        >
+        </span>
+        {statusLabels[lecture.status as keyof typeof statusLabels]}
       </span>
 
-      <div>
-        {lecture.status === "processed" && lecture.transcriptions && (
-          <div className="mt-2 text-sm">
-            <span className="font-semibold">Transkriptionen:</span>
-            <ul className="list-disc list-inside">
-              {lecture.transcriptions.map((Comp, index) => (
-                <li key={index}>
-                  <Popover
-                    lid={lecture.lid}
-                    type={Comp.name}
-                    Content={Comp.content}
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-      <div>
-        {lecture.status === "processed" && lecture.numbered && (
-          <div className="mt-2 text-sm">
-            <span className="font-semibold">Transkriptionen:</span>
-            <ul className="list-disc list-inside">
-              {lecture.numbered.map((file, index) => (
-                <li key={index}>
-                  <a
-                    href={"/dir-praxis/" + file}
-                    className="text-indigo-600 underline"
-                  >
-                    {file}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      {lecture.status === "processed" &&
-        (lecture.transcriptions || lecture.numbered) && (
-        <button className="mt-4 rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
-          Zwischenspeicher löschen
-        </button>
-      )}
-    </>
+      {
+        /* Transkripte sind hier optional als kleines Icon oder Dropdown denkbar,
+          aber der Einfachheit halber lassen wir die Details im Popover oder hier drunter */
+      }
+    </div>
   );
 }
 

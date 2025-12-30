@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+
 import BaseKnowledge from "../../components/Demo/BaseKnowledge";
 import Lectures from "../../components/Demo/Lectures";
 
@@ -8,10 +10,12 @@ import tldr from "../../content/artemis1/03-tldr.mdx";
 import konzepte from "../../content/artemis1/04-konzepte.mdx";
 import beispiele from "../../content/artemis1/05-beispiele.mdx";
 import anki from "../../content/artemis1/06-anki.mdx";
-
 import transcription from "../../content/artemis1/Artemis1Briefing_transcription.mdx";
 
-const content = [
+import type { Content } from "../../components/Demo/types";
+import { BrandingIntro } from "../../components/Demo/BrandingIntro";
+
+const content: Content[] = [
   {
     id: 0,
     title: "NASA",
@@ -20,7 +24,7 @@ const content = [
     lectures: [{
       lid: 0,
       title: "Artemis 1 Briefing",
-      status: "processed" as const,
+      status: "processed",
       mp3: ["Artemis1Briefing.mp3"],
       transcriptions: [
         {
@@ -43,7 +47,7 @@ const content = [
     }, {
       lid: 1,
       title: "Artemis 2 Briefing",
-      status: "preparing" as const,
+      status: "preparing",
       mp3: ["Artemis2.mp3"],
       pdf: ["Artemis2.pdf"],
     }],
@@ -56,7 +60,7 @@ const content = [
     lectures: [{
       lid: 0,
       title: "EU AI Act Overview",
-      status: "preparing" as const,
+      status: "preparing",
       mp3: [],
       pdf: [],
     }],
@@ -66,32 +70,55 @@ const content = [
 function Demo() {
   const [currentItem, setCurrentItem] = useState(content[0]);
 
+  const [showIntro, setShowIntro] = useState(true);
+
   return (
-    <div className="grid grid-cols-12">
-      <aside className="flex flex-col col-span-3">
-        <h1 className="font-bold border-b border-gray-200">Themen</h1>
-        {content.map((item) => (
-          <button
-            key={item.id}
-            className={"border-b border-r border-l border-gray-200 py-4 px-4 cursor-pointer text-left hover:bg-indigo-50 " +
-              (currentItem.id === item.id ? "bg-indigo-100" : "")}
-            onClick={() => setCurrentItem(item)}
-          >
-            {item.title}
+    <>
+      <AnimatePresence>
+        {showIntro && <BrandingIntro onComplete={() => setShowIntro(false)} />}
+      </AnimatePresence>
+
+      <div
+        className={`grid grid-cols-12 min-h-screen ${
+          showIntro ? "overflow-hidden h-screen" : ""
+        }`}
+      >
+        <aside className="flex flex-col col-span-3 border-r border-gray-200 bg-white">
+          <h2 className="font-bold border-b border-gray-200 text-gray-500 text-xs uppercase tracking-wider p-4 pb-2">
+            Themen
+          </h2>
+          {content.map((item) => (
+            <button
+              key={item.id}
+              className={"py-3 px-4 cursor-pointer text-left hover:bg-indigo-50 transition-colors border-l-4 " +
+                (currentItem.id === item.id
+                  ? "bg-indigo-50 border-indigo-600 text-indigo-700 font-medium"
+                  : "border-transparent text-gray-600")}
+              onClick={() => setCurrentItem(item)}
+            >
+              {item.title}
+            </button>
+          ))}
+          <button className="mt-2 mx-4 py-2 px-4 border border-dashed border-gray-300 rounded text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-sm">
+            + Neues Thema
           </button>
-        ))}
-        <button className="border-b border-r border-l border-gray-200 py-1 px-4 w-full cursor-pointer text-left hover:bg-indigo-50">
-          + Neues Thema
-        </button>
-      </aside>
-      <article className="col-span-9 col-start-4">
-        <h1 className="font-bold border-b border-gray-200 pl-6">Content</h1>
-        <div className="px-6">
-          <BaseKnowledge currentItem={currentItem} />
-          <Lectures currentItem={currentItem} />
-        </div>
-      </article>
-    </div>
+        </aside>
+
+        <article className="col-span-9">
+          <header className="bg-white border-b border-gray-200 px-8 py-6">
+            <h1 className="text-2xl font-bold text-gray-800">
+              {currentItem.title}
+            </h1>
+            <p className="text-gray-500 text-sm mt-1">{currentItem.body}</p>
+          </header>
+
+          <div className="px-8 py-8 space-y-8">
+            <BaseKnowledge currentItem={currentItem} />
+            <Lectures currentItem={currentItem} />
+          </div>
+        </article>
+      </div>
+    </>
   );
 }
 

@@ -1,59 +1,55 @@
 import { Link } from "react-router-dom";
 import bookFile from "../../assets/icons/book.svg";
+import Button from "../Button"; // Nutzen wir unseren neuen Button
 
-function BaseKnowledge(
-  { currentItem }: { currentItem: { knowledge: string[] } },
-) {
+function BaseKnowledge({ currentItem }: { currentItem: { knowledge: string[] } }) {
   return (
-    <>
-      <h2 className="font-semibold pt-6">I: Grundwissen</h2>
-      <p className="text-xs">
-        Das Grundwissen, es wird während der Verarbeitung der Vorlesung
-        abgefragt, um gezielt relevante Informationen für die Erstellung der
-        Lernmaterialien zum Kontext hinzuzufügen. Gut geeignet dafür sind große
-        PDFs, die sonst nicht in den Kontext passen würden. Dafür wird die RAG
-        Technologie verwendet.
-      </p>
+    <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+      <div className="mb-4">
+        <h2 className="text-lg font-bold text-gray-900">Grundwissen & RAG-Kontext</h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Laden Sie hier große Skripte (PDFs) hoch. Diese dienen als Wissensbasis für die KI, 
+          um Fragen präzise zu beantworten (Retrieval Augmented Generation).
+        </p>
+      </div>
 
-      <div>
-        {currentItem.knowledge.length === 0
-          ? (
-            <p className="italic text-sm my-2">
-              Kein Grundwissen hochgeladen.
-            </p>
-          )
-          : currentItem.knowledge.map((file) => (
+      <div className="space-y-3 mb-6">
+        {currentItem.knowledge.length === 0 ? (
+          <div className="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+            <p className="text-sm text-gray-500">Keine Wissensbasis vorhanden.</p>
+          </div>
+        ) : (
+          currentItem.knowledge.map((file) => (
             <div
               key={file}
-              className="flex justify-between items-center border border-gray-200 rounded-sm my-2 p-2"
+              className="flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors rounded-lg p-3 border border-gray-100"
             >
-              <div className="flex flex-row items-center gap-2">
-                <img src={bookFile} className="h-8" alt="Book file icon" />
+              <div className="flex items-center gap-3">
+                <img src={bookFile} className="h-8 w-8 opacity-80" alt="Book icon" />
                 <a
                   href={"/dir-praxis/" + file}
-                  className="text-indigo-600 underline"
+                  className="text-sm font-medium text-gray-700 hover:text-indigo-600 truncate"
                 >
                   {file}
                 </a>
               </div>
-              <button className="rounded-sm bg-gray-300 px-2 py-1 cursor-pointer">
-                Entfernen
-              </button>
+              <Button name="Entfernen" variant="danger" />
             </div>
-          ))}
+          ))
+        )}
       </div>
 
-      <button className="rounded-sm w-full bg-gray-300 px-2 py-1 cursor-pointer">
-        Upload
-      </button>
-      <p className="text-xs">
-        Hinweis zum Datenschutz: Ihre Dateien werden zur Verarbeitung an OpenAI
-        (USA) übertragen. Mehr Infos in der{" "}
-        <Link to="/privacy" className="text-indigo-600 underline">
-          Datenschutzerklärung
-        </Link>.
-      </p>
-    </>
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between border-t border-gray-100 pt-4">
+        <Button name="PDF Wissen hochladen" variant="primary" />
+        
+        {/* Datenschutzhinweis optisch abgesetzt */}
+        <div className="text-xs text-gray-500 bg-blue-50 px-3 py-2 rounded border border-blue-100 max-w-md">
+          <span className="font-semibold text-blue-700">Datenschutzhinweis:</span> 
+          {' '}Dateien werden zur Vektorisierung an OpenAI (USA) übertragen. 
+          Details siehe <Link to="/privacy" className="text-indigo-600 hover:underline">Datenschutzerklärung</Link>.
+        </div>
+      </div>
+    </section>
   );
 }
 

@@ -1,31 +1,43 @@
-import Button from "../Button";
+function Popover({
+  lid,
+  type,
+  label, // Neues Label Prop für schöneren Text
+  Content,
+}: {
+  lid: number;
+  type: string;
+  label?: string;
+  Content: React.ComponentType<unknown>;
+}) {
+  const displayLabel = label || type.charAt(0).toUpperCase() + type.slice(1);
 
-function capitalizeFirstLetter(string: string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function Popover(
-  { lid, type, Content }: {
-    lid: number;
-    type: string;
-    Content: React.ComponentType<unknown>;
-  },
-) {
   return (
     <>
-      <Button
-        name={capitalizeFirstLetter(type)}
+      {/* Wir nutzen hier einen 100% breiten Button für das Grid */}
+      <button
         popoverTarget={`popover-${type}-${lid}`}
         popoverTargetAction="show"
-      />
+        className="flex flex-col items-center justify-center p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-indigo-300 transition-all text-center h-full group"
+      >
+        <span className="text-sm font-semibold text-gray-700 group-hover:text-indigo-600">
+          {displayLabel}
+        </span>
+        <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-wide">
+          Anzeigen
+        </span>
+      </button>
+
       <div
         id={`popover-${type}-${lid}`}
         popover="auto"
-        className="fixed inset-0 mx-auto mt-5 h-full overscroll-contain bg-white p-4 shadow-xl rounded-lg border-none"
+        className="fixed inset-0 m-auto w-full max-w-3xl h-[80vh] bg-white rounded-xl shadow-2xl p-0 overflow-hidden backdrop:bg-gray-900/50"
       >
-        <article className="prose pb-10">
+        <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+          <h3 className="font-bold text-lg">{displayLabel}</h3>
+        </div>
+        <div className="p-8 overflow-y-auto h-full pb-20 prose max-w-none">
           <Content />
-        </article>
+        </div>
       </div>
     </>
   );
