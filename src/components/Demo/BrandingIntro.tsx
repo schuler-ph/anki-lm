@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import useSound from "use-sound";
-import jingleSound from "../../assets/jingle.mp3";
+import jingleSound from "../../assets/jingle2.wav";
 import logoImg from "/ankilm-new.svg";
 
 export function BrandingIntro({ onComplete }: { onComplete: () => void }) {

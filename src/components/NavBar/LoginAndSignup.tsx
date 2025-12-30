@@ -1,17 +1,10 @@
-import { Link } from "react-router-dom";
+import Button from "../Button";
 
 function LoginAndSignup() {
   return (
     <div className="flex gap-2 items-center">
-      <Link to="/demo" className="rounded-sm px-2 py-1 font-bold">
-        Login
-      </Link>
-      <Link
-        to="/demo"
-        className="rounded-sm px-2 py-1 text-white bg-indigo-600 font-bold"
-      >
-        Free Demo
-      </Link>
+      <Button to="/demo" name="Login" variant="secondary" />
+      <Button to="/demo" name="Free Demo" />
     </div>
   );
 }

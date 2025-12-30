@@ -12,6 +12,8 @@ import PrivacyPolicy from "./content/privacy.mdx";
 import Contact from "./content/contact.mdx";
 import CookieBanner from "./components/CookieBanner";
 import Accessibility from "./content/accessibility.mdx";
+import About from "./content/about.mdx";
+import NotFound from "./content/notFound.mdx";
 
 function Layout() {
   return (
@@ -36,6 +38,8 @@ function Layout() {
             path="/privacy"
             element={<Article Content={PrivacyPolicy} />}
           />
+          <Route path="/about" element={<Article Content={About} />} />
+          <Route path="*" element={<Article Content={NotFound} />} />
         </Routes>
       </main>
       <Footer />

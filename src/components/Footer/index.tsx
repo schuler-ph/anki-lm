@@ -40,7 +40,7 @@ function Footer() {
           </div>
         </div>
       </div>
-      <div className="m-4 border-t border-gray-200 p-6 text-sm text-gray-500">
+      <div className="mx-4 mt-4 border-t border-gray-200 p-6 text-sm text-gray-500">
         © 2025 AnkiLM. All rights reserved.
       </div>
     </footer>
