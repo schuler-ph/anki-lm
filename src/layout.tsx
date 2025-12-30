@@ -9,7 +9,7 @@ import Demo from "./pages/Demo";
 import Article from "./components/Article";
 import Practice from "./content/praxis.mdx";
 import PrivacyPolicy from "./content/privacy.mdx";
-import Contact from "./pages/Contact";
+import Contact from "./content/contact.mdx";
 import CookieBanner from "./components/CookieBanner";
 import Accessibility from "./content/accessibility.mdx";
 
@@ -24,10 +24,13 @@ function Layout() {
 
           <Route path="/practice" element={<Article Content={Practice} />} />
 
-{/* accessibility */}
+          {/* accessibility */}
 
-          <Route path="/accessibility" element={<Article Content={Accessibility} />} />
-          <Route path="/contact" element={<Contact />} />
+          <Route
+            path="/accessibility"
+            element={<Article Content={Accessibility} />}
+          />
+          <Route path="/contact" element={<Article Content={Contact} />} />
           <Route path="/license" element={<Article Content={Practice} />} />
           <Route
             path="/privacy"

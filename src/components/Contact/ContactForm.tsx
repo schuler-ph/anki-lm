@@ -4,10 +4,6 @@ import Button from "../Button";
 function ContactForm() {
   return (
     <>
-      <p className="text-xs">
-        Haben Sie Fragen zu AnkiLM oder benötigen Sie Support bei der Erstellung
-        Ihrer Lernmaterialien? Schreiben Sie uns!
-      </p>
       <form className="flex flex-col gap-4" id="contactForm">
         <div className="flex flex-col">
           <label htmlFor="contactName">Name</label>
@@ -64,16 +60,17 @@ function ContactForm() {
           Ich stimme zu, dass meine Angaben zur Kontaktaufnahme und für
           Rückfragen dauerhaft gespeichert werden. Ich kann diese Einwilligung
           jederzeit widerrufen. (Siehe{" "}
-          <Link to="/privacy" className="text-indigo-600 underline">
-            Datenschutzerklärung
-          </Link>)
+          {
+            <Link to="/privacy" className="text-indigo-600 underline">
+              Datenschutzerklärung
+            </Link>
+          })
         </label>
 
         <Button
           name="Absenden"
           type="submit"
           onClick={() => {
-            // check if contactForm is valid
             const form = document.getElementById(
               "contactForm",
             ) as HTMLFormElement;
