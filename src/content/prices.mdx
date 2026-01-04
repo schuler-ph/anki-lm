@@ -1,0 +1,82 @@
+import Button from "../components/Button";
+import SimpleLink from "../components/SimpleLink";
+import plusIcon from "../assets/icons/plus.svg";
+import checkIcon from "../assets/icons/check.svg";
+import circleIcon from "../assets/icons/circle.svg";
+
+# Preise & Modelle
+
+Wählen Sie das Modell, das zu Ihrem Lernstil passt. Alle Preise verstehen sich als Endverbraucherpreise inkl. 20% österreichischer Umsatzsteuer.
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+
+  {/* FREE TIER */}
+  <div className="border border-gray-200 rounded-2xl p-6 flex flex-col bg-white hover:shadow-lg transition-shadow">
+    <h2 className="text-xl font-bold text-gray-900 !mt-0">Free Trial</h2>
+    <div className="text-3xl font-extrabold text-gray-900 my-4">0 €</div>
+    <p className="text-sm text-gray-500 mb-6">Perfekt zum Ausprobieren der Technologie.</p>
+    
+    <ul className="space-y-3 mb-8 flex-1 text-sm not-prose">
+      <li className="flex gap-2"><img src={circleIcon} alt="Circle Icon" className="w-5 h-5" /> 100 Tokens Startguthaben</li>
+      <li className="flex gap-2"><img src={circleIcon} alt="Circle Icon" className="w-5 h-5" /> Ca. 15 Min. Audio-Verarbeitung</li>
+      <li className="flex gap-2"><img src={circleIcon} alt="Circle Icon" className="w-5 h-5" /> Alle Export-Formate</li>
+      <li className="flex gap-2"><img src={circleIcon} alt="Circle Icon" className="w-5 h-5" /> Zugriff auf Demo-Inhalte</li>
+    </ul>
+    
+
+    <div className="not-prose flex justify-center">
+    <Button to="/demo" name="Jetzt testen" variant="secondary" />
+    </div>
+  </div>
+
+  {/* PRO ABO - HIGHLIGHT */}
+  <div className="border-2 border-indigo-600 rounded-2xl p-6 flex flex-col bg-indigo-50/30 relative shadow-xl">
+    <div className="absolute top-0 right-0 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">BESTSELLER</div>
+    <h2 className="text-xl font-bold text-indigo-700 !mt-0">Semester Abo</h2>
+    <div className="text-3xl font-extrabold text-gray-900 my-4">10 € <span className="text-base font-normal text-gray-500">/ Monat</span></div>
+    <p className="text-sm text-gray-500 mb-6">Für ambitionierte Studierende in der Prüfungsphase.</p>
+    
+    <ul className="space-y-3 mb-8 flex-1 text-sm font-medium not-prose">
+      <li className="flex gap-2"><img src={checkIcon} alt="Check Icon" className="w-5 h-5" /> <strong>5.000 Tokens</strong> monatlich</li>
+      <li className="flex gap-2"><img src={checkIcon} alt="Check Icon" className="w-5 h-5" /> ~8 Stunden Audio-Verarbeitung</li>
+      <li className="flex gap-2"><img src={checkIcon} alt="Check Icon" className="w-5 h-5" /> Priorisierter Server-Zugang</li>
+      <li className="flex gap-2"><img src={checkIcon} alt="Check Icon" className="w-5 h-5" /> Upload von Skripten bis 500 Seiten</li>
+    </ul>
+    
+
+    <div className="not-prose flex justify-center">
+    <Button to="/register" name="Abo abschließen" variant="primary" />
+    </div>
+    <p className="text-xs text-center text-gray-500 mt-2">Monatlich kündbar.</p>
+  </div>
+
+  {/* TOKEN PACK */}
+  <div className="border border-gray-200 rounded-2xl p-6 flex flex-col bg-white hover:shadow-lg transition-shadow">
+    <h2 className="text-xl font-bold text-gray-900 !mt-0">Token Refill</h2>
+    <div className="text-3xl font-extrabold text-gray-900 my-4">5 € <span className="text-base font-normal text-gray-500">/ Einmalig</span></div>
+    <p className="text-sm text-gray-500 mb-6">Wenn es mal wieder länger dauert.</p>
+    
+    <ul className="space-y-3 mb-8 flex-1 text-sm not-prose">
+      <li className="flex gap-2"><img src={plusIcon} alt="Plus Icon" className="w-5 h-5" /> 2.000 Tokens extra</li>
+      <li className="flex gap-2"><img src={plusIcon} alt="Plus Icon" className="w-5 h-5" /> Kein Verfallsdatum</li>
+      <li className="flex gap-2"><img src={plusIcon} alt="Plus Icon" className="w-5 h-5" /> Kombinierbar mit Free & Abo</li>
+    </ul>
+    
+    <div className="not-prose flex justify-center">
+    <Button to="/buy-tokens" name="Tokens kaufen" variant="secondary" /></div>
+  </div>
+
+</div>
+
+## Token-Kalkulator
+
+Wir rechnen fair nach Verbrauch ab. Die Kosten basieren auf der Komplexität der KI-Modelle (Stand Dezember 2025).
+
+*   **Transkription (Whisper-1):** 6 Tokens pro angefangene Audiominute
+*   **Vektorisierung (Text-Embedding-3):** ca. 2 Tokens pro 100 Wörter
+*   **Analyse & Generierung (GPT-5 / GPT-5-Mini):** Eine volle PDF-Seite Skript entspricht ca. 10 Tokens
+*   *Beispiel:* Eine 90-minütige Vorlesung mit 50 Seiten Skript kostet ca. **400-600 Tokens**.
+
+<div className="bg-gray-100 px-4 py-1 rounded text-xs text-gray-600 mt-8">
+  <strong>Rechtlicher Hinweis:</strong> Der Vertragsschluss erfolgt auf unbestimmte Zeit beim Abo-Modell. Sie können das Abonnement jederzeit zum Ende des laufenden Abrechnungsmonats kündigen. Zahlungsabwicklung erfolgt über unseren Partner Stripe.
+</div>

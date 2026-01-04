@@ -1,0 +1,62 @@
+import SimpleLink from "../components/SimpleLink";
+
+# Häufig gestellte Fragen (FAQ)
+
+Hier finden Sie Antworten auf technische und rechtliche Fragen zur Nutzung von AnkiLM.
+
+## Rechtliches & Urheberrecht
+
+<details className="bg-white border border-gray-200 rounded-lg p-4 mb-4 open:bg-indigo-50 open:border-indigo-200 cursor-pointer">
+  <summary className="font-bold text-gray-800">Darf ich Vorlesungen aufnehmen und hochladen?</summary>
+  <div className="mt-2 text-gray-600 text-sm">
+    Grundsätzlich gilt: <strong>Keine Aufnahme ohne Einwilligung!</strong> Das Wort des Vortragenden ist urheberrechtlich geschützt (§ 66 UrhG) und fällt unter das Persönlichkeitsrecht. 
+    <br/><br/>
+    Sie dürfen AnkiLM nur nutzen für:
+    <ul className="list-disc pl-5 mt-1">
+      <li>Aufnahmen, für die Sie eine explizite Erlaubnis des Dozenten haben.</li>
+      <li>Offizielle Aufzeichnungen, die die Universität zur Verfügung stellt (z.B. LectureTube), sofern die Nutzungsbedingungen dies für den <strong>privaten Gebrauch</strong> (§ 42 UrhG) erlauben.</li>
+      <li>Diktate oder eigene Zusammenfassungen.</li>
+    </ul>
+  </div>
+</details>
+
+<details className="bg-white border border-gray-200 rounded-lg p-4 mb-4 open:bg-indigo-50 open:border-indigo-200 cursor-pointer">
+  <summary className="font-bold text-gray-800">Wem gehören die generierten Lernmaterialien?</summary>
+  <div className="mt-2 text-gray-600 text-sm">
+    Die durch die KI erzeugten Zusammenfassungen und Karteikarten gehören <strong>Ihnen</strong>. AnkiLM überträgt Ihnen das volle Nutzungsrecht an den Ergebnissen. Sie dürfen diese zum Lernen verwenden und mit Ihrer Lerngruppe teilen, solange Sie dabei keine Rechte Dritter (z.B. durch 1:1 Kopien aus geschützten Skripten im Output) verletzen.
+  </div>
+</details>
+
+<details className="bg-white border border-gray-200 rounded-lg p-4 mb-4 open:bg-indigo-50 open:border-indigo-200 cursor-pointer">
+  <summary className="font-bold text-gray-800">Was passiert mit meinen hochgeladenen Daten?</summary>
+  <div className="mt-2 text-gray-600 text-sm">
+    Ihre Daten werden ausschließlich zur Erstellung der Lernmaterialien verarbeitet. Wir nutzen Schnittstellen von OpenAI (USA). Wir haben vertraglich sichergestellt (durch AVV und Standardvertragsklauseln), dass Ihre Daten <strong>nicht</strong> zum Trainieren der KI-Modelle von OpenAI verwendet werden. Nach der Generierung können Sie die Daten jederzeit löschen. Mehr dazu in unserer {<SimpleLink to="/privacy" name="Datenschutzerklärung" />}.
+  </div>
+</details>
+
+## Technische Fragen
+
+<details className="bg-white border border-gray-200 rounded-lg p-4 mb-4 open:bg-indigo-50 open:border-indigo-200 cursor-pointer">
+  <summary className="font-bold text-gray-800">Was ist RAG (Retrieval Augmented Generation)?</summary>
+  <div className="mt-2 text-gray-600 text-sm">
+    KI-Modelle können manchmal Fakten erfinden ("halluzinieren"). RAG verhindert das weitgehend. Wir speichern Ihr hochgeladenes Skript temporär in einer Vektordatenbank. Wenn die KI die Vorlesung zusammenfasst, "sucht" sie im Skript nach den passenden Fakten, um Aussagen zu verifizieren. Das Ergebnis ist deutlich präziser als reines GPT-4.
+  </div>
+</details>
+
+<details className="bg-white border border-gray-200 rounded-lg p-4 mb-4 open:bg-indigo-50 open:border-indigo-200 cursor-pointer">
+  <summary className="font-bold text-gray-800">Welche Dateiformate werden unterstützt?</summary>
+  <div className="mt-2 text-gray-600 text-sm">
+    Aktuell unterstützen wir:
+    <ul className="list-disc pl-5 mt-1">
+      <li><strong>Audio:</strong> MP3, M4A, WAV (bis 100 MB)</li>
+      <li><strong>Dokumente:</strong> PDF (mit Textschicht, keine reinen Bild-Scans)</li>
+    </ul>
+  </div>
+</details>
+
+<details className="bg-white border border-gray-200 rounded-lg p-4 mb-4 open:bg-indigo-50 open:border-indigo-200 cursor-pointer">
+  <summary className="font-bold text-gray-800">Wie importiere ich die Karten in Anki?</summary>
+  <div className="mt-2 text-gray-600 text-sm">
+    Laden Sie die `.apkg` Datei herunter. Öffnen Sie die Anki Desktop-App oder AnkiDroid/AnkiMobile. Klicken Sie auf "Datei" -> "Importieren" und wählen Sie die Datei aus. Ein neues Deck wird automatisch erstellt.
+  </div>
+</details>

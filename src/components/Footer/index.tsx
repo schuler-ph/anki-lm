@@ -1,22 +1,19 @@
 import Logo from "../NavBar/Logo";
 import FooterColumn from "./FooterColumn";
 
-const productItems = [{
-  title: "Preise",
-  link: "pricing",
-}, {
-  title: "FAQ",
-  link: "faq",
-}];
+const productItems = [
+  { title: "Preise", link: "prices" },
+  { title: "Demo", link: "demo" },
+  { title: "FAQ", link: "faq" },
+];
 
 const companyItems = [
+  { title: "Kontakt & Impressum", link: "contact" },
   { title: "About us", link: "about" },
-  { title: "Praxis", link: "practice" },
 ];
 
 const legalItems = [
   { title: "Erklärung zur Barrierefreiheit", link: "accessibility" },
-  { title: "Kontakt & Impressum", link: "contact" },
   { title: "AGBs & Lizenz", link: "terms" },
   { title: "Datenschutz", link: "privacy" },
 ];

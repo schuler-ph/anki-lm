@@ -1,13 +1,92 @@
-# AnkiLM
+import Button from "../components/Button";
+import SimpleLink from "../components/SimpleLink";
+import checkIcon from "../assets/icons/check.svg";
+import filesIcon from "../assets/icons/files.svg";
+import brainIcon from "../assets/icons/brain.svg";
+import schoolIcon from "../assets/icons/school.svg";
 
-Todo Home Page
+# AnkiLM: Dein AI-Lernassistent
 
-Demo Button
+{/* Äußerer Container mit dem Gradient-Background und 5px Padding für die Border-Dicke */}
+<div className="rounded-2xl p-[10px] bg-linear-to-r from-indigo-600 to-purple-600 mb-12 shadow-xl">
+  
+  {/* Innerer Container mit dem eigentlichen Hintergrund (z.B. dunkles Blau oder Schwarz) */}
+  <div className="bg-white rounded-[calc(1rem-1px)] p-8 md:p-12 text-black h-full w-full">
+    <div className="max-w-3xl">
+      <h1 className="text-3xl md:text-5xl font-extrabold mb-6 text-black! mt-0!">
+        Verwandle Vorlesungen in aktives Wissen.
+      </h1>
+      <p className="text-lg md:text-xl text-indigo-900 mb-8 leading-relaxed">
+        Schluss mit stundenlangem Aufnahmen-Hören. AnkiLM nutzt modernste KI, um Audio-Aufzeichnungen und PDFs in prägnante Zusammenfassungen und fertige Anki-Karteikarten zu verwandeln.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4 not-prose">
+         <Button to="/demo" name="Kostenlos Testen (Demo)" variant="secondary" />
+         <Button to="/prices" name="Preise ansehen" variant="primary" />
+      </div>
+    </div>
+  </div>
+</div>
 
-Features
+## Wie es funktioniert
 
-Reviews
+<div className="grid grid-cols-1 md:grid-cols-3 gap-8 my-12">
+  <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+    <div className="mb-4 flex items-center justify-center"><img src={filesIcon} alt="Files Icon" className="w-24 h-24" /></div>
+    <h3 className="text-xl font-bold mb-2 mt-0!">1. Upload</h3>
+    <p className="text-gray-600">
+      Lade deine Vorlesungs-aufzeichnungen (MP3) und Skripte (PDF) hoch. Wir unterstützen auch große Dateimengen.
+    </p>
+  </div>
+  <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+    <div className="mb-4 flex items-center justify-center"><img src={brainIcon} alt="Brain Icon" className="w-24 h-24" /></div>
+    <h3 className="text-xl font-bold mb-2 mt-0!">2. AI-Analyse</h3>
+    <p className="text-gray-600">
+      Unsere Pipeline transkribiert Audio (Whisper) und verknüpft es via RAG mit deinem Skript für maximale Genauigkeit.
+    </p>
+  </div>
+  <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+    <div className="mb-4 flex items-center justify-center"><img src={schoolIcon} alt="School Icon" className="w-24 h-24" /></div>
+    <h3 className="text-xl font-bold mb-2 mt-0!">3. Lernen</h3>
+    <p className="text-gray-600">
+      Erhalte Zusammenfassungen, Begriffsdefinitionen und fertige Decks für den direkten Import in Anki.
+    </p>
+  </div>
+</div>
 
-FAQ
+## Features im Überblick
 
-Preise
+<div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 mb-12">
+  <div className="flex items-start gap-3">
+    <img src={checkIcon} alt="Check" className="w-5 h-5 mt-1" />
+    <span>**Audio-Transkription** mit höchster Genauigkeit (Whisper-1)</span>
+  </div>
+  <div className="flex items-start gap-3">
+    <img src={checkIcon} alt="Check" className="w-5 h-5 mt-1" />
+    <span>**Retrieval Augmented Generation (RAG)** für Kontextverständnis</span>
+  </div>
+  <div className="flex items-start gap-3">
+    <img src={checkIcon} alt="Check" className="w-5 h-5 mt-1" />
+    <span>**Automatischer Anki-Export** (.apkg / .csv)</span>
+  </div>
+  <div className="flex items-start gap-3">
+    <img src={checkIcon} alt="Check" className="w-5 h-5 mt-1" />
+    <span>**Halluzinations-Reduktion** durch Quellenabgleich</span>
+  </div>
+  <div className="flex items-start gap-3">
+    <img src={checkIcon} alt="Check" className="w-5 h-5 mt-1" />
+    <span>**Zusammenfassungen & TL;DR** für schnelles Wiederholen</span>
+  </div>
+  <div className="flex items-start gap-3">
+    <img src={checkIcon} alt="Check" className="w-5 h-5 mt-1" />
+    <span>**Rechtssicherer Serverstandort** & Datenschutz</span>
+  </div>
+</div>
+
+<div className="text-center mt-12 bg-gray-50 p-8 rounded-xl">
+  <h2 className="mt-0!">Bereit für bessere Noten?</h2>
+  <p className="mb-6">Starte jetzt mit der kostenlosen Demo-Version.</p>
+  <div className="not-prose"> 
+<Button to="/faq" name="Zu den FAQs" variant="secondary" />
+  <Button to="/demo" name="Zur Demo" />
+  </div>
+</div>
