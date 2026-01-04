@@ -55,7 +55,7 @@ function BaseKnowledge(
         <Button name="PDF Wissen hochladen" variant="primary" />
 
         {/* Datenschutzhinweis optisch abgesetzt */}
-        <div className="text-xs text-gray-500 bg-blue-50 px-3 py-2 rounded border border-blue-100 max-w-md">
+        <div className="text-xs text-gray-600 bg-blue-50 px-3 py-2 rounded border border-blue-100 max-w-md">
           <span className="font-semibold text-blue-700">
             Datenschutzhinweis:
           </span>{" "}

@@ -4,13 +4,13 @@ import { AnimatePresence } from "framer-motion";
 import BaseKnowledge from "../../components/Demo/BaseKnowledge";
 import Lectures from "../../components/Demo/Lectures";
 
-import summary from "../../content/artemis1/01-summary.mdx";
-import veredelt from "../../content/artemis1/02-veredelt.mdx";
-import tldr from "../../content/artemis1/03-tldr.mdx";
-import konzepte from "../../content/artemis1/04-konzepte.mdx";
-import beispiele from "../../content/artemis1/05-beispiele.mdx";
-import anki from "../../content/artemis1/06-anki.mdx";
-import transcription from "../../content/artemis1/Artemis1Briefing_transcription.mdx";
+import summary from "../../components/Demo/artemis1/01-summary.mdx";
+import veredelt from "../../components/Demo/artemis1/02-veredelt.mdx";
+import tldr from "../../components/Demo/artemis1/03-tldr.mdx";
+import konzepte from "../../components/Demo/artemis1/04-konzepte.mdx";
+import beispiele from "../../components/Demo/artemis1/05-beispiele.mdx";
+import anki from "../../components/Demo/artemis1/06-anki.mdx";
+import transcription from "../../components/Demo/artemis1/Artemis1Briefing_transcription.mdx";
 
 import type { Content } from "../../components/Demo/types";
 import { BrandingIntro } from "../../components/Demo/BrandingIntro";

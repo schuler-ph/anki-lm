@@ -11,7 +11,7 @@ function PdfSection({ lecture }: { lecture: Lecture }) {
       </h4>
       <div className="space-y-2">
         {lecture.pdf.length === 0
-          ? <p className="text-sm text-gray-400 italic">Keine PDF Dateien.</p>
+          ? <p className="text-sm text-gray-500 italic">Keine PDF Dateien.</p>
           : (
             lecture.pdf.map((file: string) => (
               <div
@@ -27,7 +27,7 @@ function PdfSection({ lecture }: { lecture: Lecture }) {
                   />
                 </div>
                 {lecture.status === "preparing" && (
-                  <button className="text-xs text-red-500 hover:text-red-700 px-2">
+                  <button className="text-xs text-red-600 hover:text-red-700 px-2">
                     Löschen
                   </button>
                 )}

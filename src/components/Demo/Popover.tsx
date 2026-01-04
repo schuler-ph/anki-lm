@@ -22,7 +22,7 @@ function Popover({
         <span className="text-sm font-semibold text-gray-700 group-hover:text-indigo-600">
           {displayLabel}
         </span>
-        <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-wide">
+        <span className="text-[10px] text-gray-600 mt-1 uppercase tracking-wide">
           Anzeigen
         </span>
       </button>

@@ -11,7 +11,7 @@ function Mp3Section({ lecture }: { lecture: Lecture }) {
       </h4>
       <div className="space-y-2">
         {lecture.mp3.length === 0
-          ? <p className="text-sm text-gray-400 italic">Keine Audiodateien.</p>
+          ? <p className="text-sm text-gray-500 italic">Keine Audiodateien.</p>
           : (
             lecture.mp3.map((file: string) => (
               <div
@@ -23,7 +23,7 @@ function Mp3Section({ lecture }: { lecture: Lecture }) {
                   <SimpleLink to={"/dir-praxis/" + file} name={file} target="_blank" />
                 </div>
                 {lecture.status === "preparing" && (
-                  <button className="text-xs text-red-500 hover:text-red-700 px-2">
+                  <button className="text-xs text-red-600 hover:text-red-700 px-2">
                     Löschen
                   </button>
                 )}

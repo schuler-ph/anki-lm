@@ -24,4 +24,4 @@ dist-ssr
 *.sln
 *.sw?
 
-src/content/prompt.mdx
+src/init/ignore
