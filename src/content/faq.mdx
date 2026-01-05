@@ -9,13 +9,21 @@ Hier finden Sie Antworten auf technische und rechtliche Fragen zur Nutzung von A
 <details className="bg-white border border-gray-200 rounded-lg p-4 mb-4 open:bg-indigo-50 open:border-indigo-200 cursor-pointer">
   <summary className="font-bold text-gray-800">Darf ich Vorlesungen aufnehmen und hochladen?</summary>
   <div className="mt-2 text-gray-600 text-sm">
-    Grundsätzlich gilt: <strong>Keine Aufnahme ohne Einwilligung!</strong> Das Wort des Vortragenden ist urheberrechtlich geschützt (§ 66 UrhG) und fällt unter das Persönlichkeitsrecht. 
-    <br/><br/>
+    Grundsätzlich gilt: <strong>Keine Aufnahme ohne Einwilligung!</strong> Das Wort des Vortragenden ist urheberrechtlich geschützt (Ausübender Künstler laut § 66 UrhG) und fällt unter das Persönlichkeitsrecht. 
+    
     Sie dürfen AnkiLM nur nutzen für:
     <ul className="list-disc pl-5 mt-1">
       <li>Aufnahmen, für die Sie eine explizite Erlaubnis des Dozenten haben.</li>
-      <li>Offizielle Aufzeichnungen, die die Universität zur Verfügung stellt (z.B. LectureTube), sofern die Nutzungsbedingungen dies für den <strong>privaten Gebrauch</strong> (§ 42 UrhG) erlauben.</li>
+      <li>Offizielle Aufzeichnungen, die die Universität zur Verfügung stellt (z.B. LectureTube), sofern die Nutzungsbedingungen dies für den <strong>privaten Gebrauch</strong> (Vervielfältigung zum eigenen und zum privaten Gebrauch laut § 42 UrhG) erlauben.</li>
       <li>Diktate oder eigene Zusammenfassungen.</li>
+      <li>Öffentlich zugängliche Vorlesungen, bei denen der Dozent auf sein Urheberrecht verzichtet hat (z.B. Public Domain Lizenz).</li>
+    </ul>
+
+    Die Verwendung von AnkiLM für folgende Inhalte ist <strong>nicht erlaubt</strong>:
+    <ul className="list-disc pl-5 mt-1">
+      <li>Aufnahmen ohne Einwilligung des Dozenten.</li>
+      <li>Hochladen und Verarbeiten von urheberrechtlich geschützten Skripten ohne Erlaubnis des Rechteinhabers.</li>
+      <li>Offensichtlich rechtswidrig erstellte Aufnahmen (z.B. Mitschnitte von Vorlesungen, die nicht für die Aufnahme freigegeben wurden).</li>
     </ul>
   </div>
 </details>
@@ -23,7 +31,7 @@ Hier finden Sie Antworten auf technische und rechtliche Fragen zur Nutzung von A
 <details className="bg-white border border-gray-200 rounded-lg p-4 mb-4 open:bg-indigo-50 open:border-indigo-200 cursor-pointer">
   <summary className="font-bold text-gray-800">Wem gehören die generierten Lernmaterialien?</summary>
   <div className="mt-2 text-gray-600 text-sm">
-    Die durch die KI erzeugten Zusammenfassungen und Karteikarten gehören <strong>Ihnen</strong>. AnkiLM überträgt Ihnen das volle Nutzungsrecht an den Ergebnissen. Sie dürfen diese zum Lernen verwenden und mit Ihrer Lerngruppe teilen, solange Sie dabei keine Rechte Dritter (z.B. durch 1:1 Kopien aus geschützten Skripten im Output) verletzen.
+    Die durch die KI erzeugten Zusammenfassungen und Karteikarten gehören <strong>Ihnen</strong>. AnkiLM überträgt Ihnen das volle Nutzungsrecht an den Ergebnissen. Sie dürfen diese zum Lernen verwenden und mit Ihrer Lerngruppe teilen, solange Sie dabei keine Rechte Dritter (z.B. durch 1:1 Kopien aus geschützten Skripten im Output) verletzen. <SimpleLink to="/terms" name="Mehr dazu in unseren AGB." />
   </div>
 </details>
 
@@ -39,7 +47,7 @@ Hier finden Sie Antworten auf technische und rechtliche Fragen zur Nutzung von A
 <details className="bg-white border border-gray-200 rounded-lg p-4 mb-4 open:bg-indigo-50 open:border-indigo-200 cursor-pointer">
   <summary className="font-bold text-gray-800">Was ist RAG (Retrieval Augmented Generation)?</summary>
   <div className="mt-2 text-gray-600 text-sm">
-    KI-Modelle können manchmal Fakten erfinden ("halluzinieren"). RAG verhindert das weitgehend. Wir speichern Ihr hochgeladenes Skript temporär in einer Vektordatenbank. Wenn die KI die Vorlesung zusammenfasst, "sucht" sie im Skript nach den passenden Fakten, um Aussagen zu verifizieren. Das Ergebnis ist deutlich präziser als reines GPT-4.
+    KI-Modelle können manchmal Fakten erfinden ("halluzinieren"). RAG verhindert das weitgehend. Wir speichern Ihr hochgeladenes Skript temporär in einer Vektordatenbank. Wenn die KI die Vorlesung zusammenfasst, "sucht" sie im Skript nach den passenden Fakten, um Aussagen zu verifizieren. Das Ergebnis ist deutlich präziser als reines GPT-5.
   </div>
 </details>
 
@@ -48,8 +56,8 @@ Hier finden Sie Antworten auf technische und rechtliche Fragen zur Nutzung von A
   <div className="mt-2 text-gray-600 text-sm">
     Aktuell unterstützen wir:
     <ul className="list-disc pl-5 mt-1">
-      <li><strong>Audio:</strong> MP3, M4A, WAV (bis 100 MB)</li>
-      <li><strong>Dokumente:</strong> PDF (mit Textschicht, keine reinen Bild-Scans)</li>
+      <li><strong>Audio:</strong> MP3</li>
+      <li><strong>Dokumente:</strong> PDF</li>
     </ul>
   </div>
 </details>
@@ -57,6 +65,11 @@ Hier finden Sie Antworten auf technische und rechtliche Fragen zur Nutzung von A
 <details className="bg-white border border-gray-200 rounded-lg p-4 mb-4 open:bg-indigo-50 open:border-indigo-200 cursor-pointer">
   <summary className="font-bold text-gray-800">Wie importiere ich die Karten in Anki?</summary>
   <div className="mt-2 text-gray-600 text-sm">
-    Laden Sie die `.apkg` Datei herunter. Öffnen Sie die Anki Desktop-App oder AnkiDroid/AnkiMobile. Klicken Sie auf "Datei" -> "Importieren" und wählen Sie die Datei aus. Ein neues Deck wird automatisch erstellt.
+    Die generierten Karteikarten werden als CSV-Datei erstellt. Sie können anschließend diese Datei in Anki importieren. Anleitung für MacOS:
+    - Öffnen Sie Anki
+    - Klicken Sie unten auf "Datei importieren"
+    - Wählen Sie die CSV-Datei aus, die Sie von AnkiLM heruntergeladen haben
+    - Passen Sie die Import-Einstellungen an (Trennzeichen, Felder zuordnen)
+    - Wählen Sie ihr Karten-Deck aus und klicken Sie auf "Importieren"
   </div>
 </details>

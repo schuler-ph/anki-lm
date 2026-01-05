@@ -39,11 +39,14 @@ function BaseKnowledge(
                     className="h-8 w-8 opacity-80"
                     alt="Book icon"
                   />
-                  <SimpleLink
-                    to={"/dir-praxis/" + file}
-                    name={file}
+                  <a
+                    href={"/dir-praxis/" + file}
                     target="_blank"
-                  />
+                    rel="noopener noreferrer"
+                    className="text-indigo-600 underline"
+                  >
+                    {file}
+                  </a>
                 </div>
                 <Button name="Entfernen" variant="danger" />
               </div>

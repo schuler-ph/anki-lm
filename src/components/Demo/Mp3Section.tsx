@@ -1,6 +1,5 @@
 import mp3File from "../../assets/icons/file-audio.svg";
 import Button from "../Button";
-import SimpleLink from "../SimpleLink";
 import type { Lecture } from "./types";
 
 function Mp3Section({ lecture }: { lecture: Lecture }) {
@@ -20,7 +19,14 @@ function Mp3Section({ lecture }: { lecture: Lecture }) {
               >
                 <div className="flex items-center gap-2 overflow-hidden">
                   <img src={mp3File} className="h-6 w-6" alt="MP3 icon" />
-                  <SimpleLink to={"/dir-praxis/" + file} name={file} target="_blank" />
+                  <a
+                    href={"/dir-praxis/" + file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-600 underline"
+                  >
+                    {file}
+                  </a>
                 </div>
                 {lecture.status === "preparing" && (
                   <button className="text-xs text-red-600 hover:text-red-700 px-2">
