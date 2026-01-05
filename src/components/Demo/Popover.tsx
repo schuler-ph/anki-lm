@@ -33,9 +33,16 @@ function Popover({
         className="fixed inset-0 m-auto w-full max-w-3xl h-[80vh] bg-white rounded-xl shadow-2xl p-0 overflow-hidden backdrop:bg-gray-900/50"
       >
         <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-          <h3 className="font-bold text-lg">{displayLabel}</h3>
+          <h3 id={`popover-title-${type}-${lid}`} className="font-bold text-lg">
+            {displayLabel}
+          </h3>
         </div>
-        <div className="p-8 overflow-y-auto h-full pb-20 prose max-w-none">
+        <div
+          className="p-8 pt-20 overflow-auto h-full pb-20 prose max-w-none"
+          tabIndex={0}
+          role="region"
+          aria-labelledby={`popover-title-${type}-${lid}`}
+        >
           <Content />
         </div>
       </div>
