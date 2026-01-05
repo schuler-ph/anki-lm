@@ -44,7 +44,7 @@ function ProcessSection({ lecture }: { lecture: Lecture }) {
             <Popover
               lid={lecture.lid}
               type="veredelt"
-              label="Skript (Lektorat)"
+              label="Veredeltes Skript"
               Content={lecture.results.veredelt}
             />
             <Popover

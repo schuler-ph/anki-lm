@@ -38,7 +38,7 @@ function Footer() {
         </div>
       </div>
       <div className="mx-4 mt-4 border-t border-gray-200 p-6 text-sm text-gray-500">
-        © 2025 AnkiLM. All rights reserved.
+        © 2026 AnkiLM. Alle Rechte vorbehalten.
       </div>
     </footer>
   );

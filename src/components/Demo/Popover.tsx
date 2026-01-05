@@ -38,7 +38,7 @@ function Popover({
           </h3>
         </div>
         <div
-          className="p-8 pt-20 overflow-auto h-full pb-20 prose max-w-none"
+          className="p-8 overscroll-contain overflow-auto h-full pb-20 prose max-w-none"
           tabIndex={0}
           role="region"
           aria-labelledby={`popover-title-${type}-${lid}`}
