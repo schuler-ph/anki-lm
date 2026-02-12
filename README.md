@@ -1,14 +1,10 @@
-# 🎓 Lecture Summarization & Study Helper
+<div align="center">
+  <img src="public/ankilm-new.svg" height="120" alt="AnkiLM logo" />
+  <h1 style="margin-top: 0;">AnkiLM</h1>
+</div>
 
-> **An automated "Import-to-Learn" pipeline that transforms raw lecture
-> materials into structured, exam-ready study artifacts.**
-
-![Project Banner](<!-- TODO: Add a banner image or logo here -->)
-
-<div className="flex gap-2 items-center">
-    <img src={ankiLmLogo} className="h-32" alt="AnkiLM logo" />
-    <span className="text-8xl font-bold">AnkiLM</span>
-  </div>
+> An automated "Import-to-Learn" pipeline that transforms raw lecture materials
+> into structured, exam-ready study artifacts.
 
 ## 🚀 Overview
 
@@ -90,11 +86,8 @@ graph TD
 **Frontend:**
 
 - ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
-  **React 19**
 - ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)
-  **Vite**
 - ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)
-  **Tailwind CSS v4**
 - **Framer Motion** (for smooth transitions)
 - **MDX** (for content rendering)
 
