@@ -77,8 +77,13 @@ graph TD
 <!-- TODO: Add screenshots of the dashboard, the summary view, and the flashcard tools below -->
 
 <div style="display: flex; gap: 10px;">
-  <img src="<!-- TODO: Add image url -->" alt="Dashboard View" width="45%" />
-  <img src="<!-- TODO: Add image url -->" alt="Study Mode" width="45%" />
+  <img width="45%" alt="Dify Pipeline" src="https://github.com/user-attachments/assets/de00563e-add6-4f3a-ad16-b435c034583c" />
+  <img width="45%" alt="Landig Page" src="https://github.com/user-attachments/assets/e72d0256-a156-41e2-bb20-35be8e2b3e00" />
+</div>
+
+<div style="display: flex; gap: 10px;">
+  <img width="45%" alt="grafik" src="https://github.com/user-attachments/assets/0cb5e27c-97d6-4d3f-9cba-6a1681de0235" />
+  <img width="45%" alt="grafik" src="https://github.com/user-attachments/assets/6b3bc1d9-0da6-4806-a3e1-ec10f6231dc3" />
 </div>
 
 ## 💻 Tech Stack
