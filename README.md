@@ -1,6 +1,9 @@
 <div align="center">
   <img src="public/ankilm-new.svg" height="120" alt="AnkiLM logo" />
   <h1 style="margin-top: 0;">AnkiLM</h1>
+  <a href="https://schuler-ph.github.io/dir-praxis/#/">
+    <img src="https://img.shields.io/badge/View_Live_Demo-3B82F6?style=for-the-badge&logo=github&logoColor=white" alt="View Live Demo" />
+  </a>
 </div>
 
 > An automated "Import-to-Learn" pipeline that transforms raw lecture materials
@@ -73,8 +76,6 @@ graph TD
    `06-anki.mdx`, etc.
 
 ## 📸 Screenshots
-
-<!-- TODO: Add screenshots of the dashboard, the summary view, and the flashcard tools below -->
 
 <div style="display: flex; gap: 10px;">
   <img width="45%" alt="Dify Pipeline" src="https://github.com/user-attachments/assets/de00563e-add6-4f3a-ad16-b435c034583c" />
