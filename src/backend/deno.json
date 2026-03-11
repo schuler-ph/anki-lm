@@ -1,0 +1,14 @@
+{
+  "tasks": {
+    "dev": "deno run --allow-run --env-file --allow-env --allow-net --allow-read --allow-write src/orchestrator.ts",
+    "n8n": "sh ./n8n/start.sh",
+    "file": "deno run --allow-net --allow-write src/fileAcceptor.ts"
+  },
+  "imports": {
+    "@openai/openai": "jsr:@openai/openai@^6.2.0",
+    "@std/assert": "jsr:@std/assert@1",
+    "@std/fs": "jsr:@std/fs@^1.0.19",
+    "@std/http": "jsr:@std/http@^1.0.21",
+    "openaiAudio": "https://jsr.io/@openai/openai/6.2.0/resources/audio/transcriptions.ts"
+  }
+}

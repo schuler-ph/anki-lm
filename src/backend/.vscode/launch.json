@@ -1,0 +1,44 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "request": "launch",
+      "name": "File Acceptor",
+      "type": "node",
+      "program": "${workspaceFolder}/summarize/src/fileAcceptor.ts",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/p.schuler/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "--inspect-wait=127.0.0.1:9230",
+        "--allow-all",
+        "--env-file"
+      ],
+      "attachSimplePort": 9230
+    },
+    {
+      "request": "launch",
+      "name": "Orchestrator",
+      "type": "node",
+      "program": "${workspaceFolder}/summarize/src/orchestrator.ts",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/p.schuler/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "--allow-run",
+        "--env-file=summarize/.env",
+        "--allow-env",
+        "--allow-net",
+        "--allow-read",
+        "--allow-write",
+        "--inspect-wait=127.0.0.1:9231"
+      ],
+      "attachSimplePort": 9231
+    }
+  ]
+}

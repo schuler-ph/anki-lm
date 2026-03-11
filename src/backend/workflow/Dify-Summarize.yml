@@ -1,0 +1,2034 @@
+app:
+  description: ''
+  icon: 🌊
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: Summarize
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai:0.2.6@e2665624a156f52160927bceac9e169bd7e5ae6b936ae82575e14c90af390e6e
+    version: null
+kind: app
+version: 0.4.0
+workflow:
+  conversation_variables: []
+  environment_variables:
+  - description: ''
+    id: e34f29b5-44fe-4b20-a089-4254eca41443
+    name: prompt_02_00_rag
+    selector:
+    - env
+    - prompt_02_00_rag
+    value: Analysiere den folgenden Vorlesungskontext. Extrahiere eine Liste der 10-15
+      wichtigsten und spezifischsten Fachbegriffe. Gib NUR eine durch Kommas getrennte
+      Liste dieser Begriffe aus.
+    value_type: string
+  - description: ''
+    id: 0e63100b-6d31-4c3c-9c69-9e905863a136
+    name: prompt_02_04_anki
+    selector:
+    - env
+    - prompt_02_04_anki
+    value: "Eingabe:\n- Folien mit Seitenzahl (Seite x von X)\n- Original Transkript\
+      \ mit Zeitstempel\n- Zusammenfassung\n- Transkript Veredelt\n- TLDR\n- Anki\
+      \ Documentation\n\nErzeuge 8–12 hochwertige Anki-Karten aus dem Kontext (nur\
+      \ aus meinen Dokumenten;\nsonst „Nicht im Kontext“). Regeln:\n\nLaTeX und CSV‑Robustheit:\
+      \ In Anki‑CSV keine Semikolons in Feldern verwenden\n(sonst escapen); LaTeX\
+      \ nur für Formeln (und dann in [$]...[/$] umschließen),\nsonst knapp halten.\n\
+      \n- Mix aus Basic & Cloze; pro Cloze-Karte 1–2 Lücken {{c1::…}}.\n- Back enthält\
+      \ ausführliche Erklärung + ggf. Bedingung/Einheit + Quelle (Datei,\n  Seite|Timecode).\n\
+      - Ausgabe als CSV-Zeilen: Front;Back (mit Quelle);Tags\n- Tags: {{fach_kapitel}},\
+      \ schwierigkeitsgrad_L/M/S,\n  typ_{{def|formel|anwendung}}.\n\nSchreibe aber\
+      \ separat die verschiedenen Typen in separate CSV Blöcke. Bei Anki\nMacOS gibt\
+      \ es \"Bildverdeckung\", \"Einfach\", \"Einfach (Antwort eintippen)\",\n\"Einfach\
+      \ (und die umgekehrte Richtung)\", \"Einfach (und wahlweise die umgekehrte\n\
+      Richtung)\", \"Lückentext\".\n"
+    value_type: string
+  - description: ''
+    id: 52ad9c91-245d-4017-b459-483f040a8db0
+    name: prompt_02_04_anki_manual
+    selector:
+    - env
+    - prompt_02_04_anki_manual
+    value: "Text Files\nSpreadsheets and UTF-8\nHTML\nImporting Media\nBulk Media\n\
+      Duplicates and Updating\nFile Headers\nNotetype Column\nDeck Column\nGUID Column\n\
+      Any plain text file that contains fields separated by commas, semicolons or\
+      \ tabs can be imported into Anki, provided some conditions are met.\n\nThe files\
+      \ must be plain text (myfile.txt). Other formats like myfile.xls, myfile.rtf,\
+      \ myfile.doc must be saved as a plain text file first.\n\nThe files must be\
+      \ in UTF-8 format (see below).\n\nAnki determines the number of fields in the\
+      \ file by looking at the first (non-commented) line. If some of the later records\
+      \ in the file contain fewer fields, Anki will treat the missing fields as if\
+      \ they were blank. If some of your records contain extra fields, the extra content\
+      \ will not be imported.\n\nAnki tries to guess which field separator (commas,\
+      \ tabs, etc.) your file uses. If it guesses wrongly, you can change it in the\
+      \ import options window and preview the results. Or you can add file headers\
+      \ to force a specific field separator.\n\nFields in your text file can be mapped\
+      \ to any field in your notes, including the tags field. You can choose which\
+      \ field in the text file corresponds to which field in the note when you import.\n\
+      \nWhen you import a text file, you can choose what deck to put the cards in.\
+      \ Keep in mind that if you have the deck override option set for one or more\
+      \ of your templates, the cards will go to that deck rather than the one you’ve\
+      \ selected.\n\nThis is an example of a valid file with three fields:\n\napple;banana;grape\n\
+      first field;second field;third field\nThere are two ways to include newlines\
+      \ or the field separator in fields.\n\nEscape the characters by placing the\
+      \ contents of the field in quotation marks:\n\nhello;\"this is\na two line answer\"\
+      \ntwo;this is a one line field\n\"this includes a ; (semicolon)\";another field\n\
+      Because quotes are used to mark where a field begins and ends, if you wish to\
+      \ include them inside your field, you need to replace a single doublequote with\
+      \ two doublequotes to “escape” them from the regular handling, like so:\n\n\
+      field one;\"field two with \"\"escaped quotes\"\" inside it\"\nWhen you use\
+      \ a spreadsheet program like Libreoffice to create the CSV file for you, it\
+      \ will automatically take care of escaping double quotes.\n\nUse HTML new lines:\n\
+      \nhello; this is<br>a two line answer\ntwo; this is a one line one\nYou need\
+      \ to turn on the Allow HTML in fields in the import dialog for HTML newlines\
+      \ to work.\n\nEscaped multi-lines will not work correctly if you are using cloze\
+      \ deletions that span multiple lines. In this case, please use HTML newlines\
+      \ instead.\n\nYou can also include tags in another field and select it as a\
+      \ tags field in the import dialog:\n\nfirst field;second field;tags\nThis is\
+      \ an example of a valid file where the first line is ignored (#):\n\n# this\
+      \ is a comment and is ignored\nfoo bar;bar baz;baz quux\nfield1;field2;field3\n\
+      Spreadsheets and UTF-8\nIf you have non-Latin characters in your file (such\
+      \ as accents, Japanese and so on), Anki expects files to be saved in a “UTF-8\
+      \ encoding”. The easiest way to do this is to use the free LibreOffice spreadsheet\
+      \ program instead of Excel to edit your file, as it supports UTF-8 easily, and\
+      \ also exports multi-line content properly, unlike Excel. If you wish to keep\
+      \ using Excel, please see this doc for more information.\n\nTo save your spreadsheet\
+      \ to a file Anki can read with LibreOffice, go to File > Save As, and then select\
+      \ CSV for the type of file. After accepting the default options, LibreOffice\
+      \ will save the file and you can then import the saved file into Anki.\n\nHTML\n\
+      Anki can treat text imported from text files as HTML (the language used for\
+      \ web pages). This means that text with bold, italics and other formatting can\
+      \ be exported to a text file and imported again. If you want to include HTML\
+      \ formatting, you can check the “allow HTML in fields” checkbox when importing.\
+      \ You may wish to turn this off if you’re trying to import cards whose content\
+      \ contains angle brackets or other HTML syntax.\n\nIf you wish to use HTML for\
+      \ formatting your file but also wish to include angle brackets or ampersands,\
+      \ you may use the following replacements:\n\nCharacter\tReplacement\n<\t&lt;\n\
+      >\t&gt;\n&\t&amp;\nImporting Media\nIf you want to include audio and pictures\
+      \ from a text file import, copy the files into the collection.media folder.\
+      \ Do not put subdirectories in the media folder, or some features will not work.\n\
+      \nAfter you’ve copied the files, change one of the fields in your text file\
+      \ as follows.\n\n<img src=\"myimage.jpg\">\nor\n\n[sound:myaudio.mp3]\nAlternatively,\
+      \ you can use the find and replace feature in the browse screen to update all\
+      \ the fields at once. If each field contains text like “myaudio”, and you wish\
+      \ to make it play a sound, you’d search for (.*) and replace it with “[sound:\\\
+      1.mp3]”, with the regular expressions option enabled.\n\nWhen importing a text\
+      \ file with these references, you must make sure to enable the “Allow HTML”\
+      \ option.\n\nYou might be tempted to do this in a template, like:\n\n<img src=\"\
+      {{field name}}\">\nAnki doesn’t support this for two reasons: searching for\
+      \ used media is expensive, as each card has to be rendered, and such functionality\
+      \ isn’t obvious to shared deck users. Please use the find & replace technique\
+      \ instead.\n\nBulk Media\nAnother option for importing large amounts of media\
+      \ at once is to use the media import add-on. This add-on will automatically\
+      \ create notes for all files in a folder you select, with the filenames on the\
+      \ front (minus the file extension, so if you have a file named apple.jpg, the\
+      \ front would say “apple”) and the images or audio on the back. If you would\
+      \ like a different arrangement of media and filenames, you can change the note\
+      \ type of the created cards afterwards.\n\nDuplicates and Updating\nWhen importing\
+      \ text files, Anki uses the first field to determine if a note is unique. By\
+      \ default, if the file you are importing has a first field that matches one\
+      \ of the existing notes in your collection and that existing note is the same\
+      \ type as the type you’re importing, the existing note’s other fields will be\
+      \ updated based on content of the imported file. A drop-down box in the import\
+      \ screen allows you to change this behaviour, to either ignore duplicates completely,\
+      \ or import them as new notes instead of updating existing ones.\n\nThe match\
+      \ scope setting controls how duplicates are identified. When note type is selected,\
+      \ Anki will identify a duplicate if another note with the same note type has\
+      \ the same first field. When set to note type and deck, a duplicate will only\
+      \ be flagged if the existing note also happens to be in the deck you are importing\
+      \ into.\n\nIf you have updating turned on and older versions of the notes you’re\
+      \ importing are already in your collection, they will be updated in place (in\
+      \ their current decks) rather than being moved to the deck you have set in the\
+      \ import dialog. If notes are updated in place, the existing scheduling information\
+      \ on all their cards will be preserved.\n\nFor info on how duplicates are handled\
+      \ in .apkg files, please see the Deck Packages section.\n\nFile Headers\nAnki\
+      \ 2.1.54+ supports certain headers that can be included in the text file to\
+      \ make importing more powerful or convenient. They consist of #key:value pairs\
+      \ and must be listed in separate lines at the top of the file.\n\nKey\tAllowed\
+      \ Values\tBehaviour\nseparator\tComma, Semicolon, Tab, Space, Pipe, Colon, or\
+      \ the according literal characters\tDetermines the field separator.\nhtml\t\
+      true, false\tDetermines whether the file is treated as HTML.\ntags\tList of\
+      \ tags, separated by spaces\tAdds the listed tags to every imported note.\n\
+      columns\tList of names, separated by the previously set separator\tDetermines\
+      \ the number of columns and shows their given names when importing.\nnotetype\t\
+      Note type name or id\tPresets the note type, if it exists.\ndeck\tDeck name\
+      \ or id\tPresets the deck, if it exists.\nnotetype column\t1, 2, 3, …\tDetermines\
+      \ which column contains the note type name or id of each note, see Notetype\
+      \ Column.\ndeck column\t1, 2, 3, …\tDetermines which column contains the deck\
+      \ name or id of each note, see Deck Column.\ntags column\t1, 2, 3, …\tDetermines\
+      \ which column contains the tags of each note.\nguid column\t1, 2, 3, …\tDetermines\
+      \ which column contains the GUID of each note, see GUID Column.\nSome headers\
+      \ have further implications.\n\nNotetype Column\nUsually, all notes from a file\
+      \ will be mapped to a single note type. That changes, if there is a column with\
+      \ note type names or ids.\n\nThis allows you to import notes with different\
+      \ note types, and their fields will be mapped implicitly: The first regular\
+      \ column is used for the first field of any note regardless of its note type,\
+      \ the second regular column for the second field, and so on. A regular column\
+      \ here being a column that does not contain special information like decks,\
+      \ tags, note types or GUIDs.\n\nDeck Column\nUsually, any new cards created\
+      \ as a result of importing a text file will be placed in a single deck of your\
+      \ choice. If the file contains a deck column, however, new cards of a note will\
+      \ be placed in its specified deck instead. If the deck does not exist, a deck\
+      \ with the given name will be created.\n\nGUID Column\nGUID stands for Globally\
+      \ Unique Identifier. When you create notes in Anki, Anki assigns each note a\
+      \ unique ID, which can be used for duplicate checking. If you export your notes\
+      \ with the GUID included, you can make changes to the notes, and as long as\
+      \ you do not modify the GUID field, you’ll be able to import the notes back\
+      \ in to update the existing notes.\n\nPlease note that the GUID is intended\
+      \ to be created by Anki. If you are creating your own IDs, such as MYNOTE0001,\
+      \ then it’s recommended that you place the IDs in the first field, instead of\
+      \ assigning them to Anki’s internal GUID. When importing, Anki is able to use\
+      \ either the first field or the GUID for duplicate checking, so you do not need\
+      \ to make IDs a GUID in order to be able to update your notes.\n\nOne other\
+      \ thing to note is that the duplicate option will not work for rows that have\
+      \ a non-empty GUID. If a GUID is provided, and already exists in the collection,\
+      \ a duplicate will not be created."
+    value_type: string
+  - description: ''
+    id: dcc7597d-520e-4090-9ee5-068c0051a093
+    name: prompt_02_03_beispiele
+    selector:
+    - env
+    - prompt_02_03_beispiele
+    value: 'Eingabe:
+
+      - Folien mit Seitenzahl (Seite x von X)
+
+      - Original Transkript mit Zeitstempel
+
+      - Zusammenfassung
+
+      - Transkript Veredelt
+
+      - TLDR
+
+
+      Liste die in der Vorlesung behandelten Aufgabentypen.
+
+      Für jeden Typ: Typname | Schema (Schritte) | Mini-Beispiel (mit Zahlen/Variablen
+      aus Kontext) | typische Fehler | Quelle.
+
+      Nur erzeugen, wenn Beispiele im Kontext vorhanden sind.
+
+      '
+    value_type: string
+  - description: ''
+    id: fb9e547f-d220-48d5-86a6-f5e73b6c50c1
+    name: prompt_02_02_konzepte
+    selector:
+    - env
+    - prompt_02_02_konzepte
+    value: 'Eingabe:
+
+      - Folien mit Seitenzahl (Seite x von X)
+
+      - Original Transkript mit Zeitstempel
+
+      - Zusammenfassung
+
+      - Transkript Veredelt
+
+      - TLDR
+
+
+      Extrahiere Kernthemen der Vorlesung. Tabelle: Begriff | präzise Definition |
+
+      Intuition (1 Satz) | Mini-Beispiel | Quelle | setzt voraus → / wird benutzt
+      in →
+
+      Nur aus Kontext; fehlendes: „Nicht im Kontext“.
+
+      '
+    value_type: string
+  - description: ''
+    id: b9988d67-263a-4c1b-827c-7e6af89dd806
+    name: prompt_02_01_tldr
+    selector:
+    - env
+    - prompt_02_01_tldr
+    value: 'Eingabe:
+
+      - Folien mit Seitenzahl (Seite x von X)
+
+      - Original Transkript mit Zeitstempel
+
+      - Zusammenfassung
+
+      - Transkript Veredelt
+
+
+      Erstelle einen One-Pager (so lange er sein muss, aber optimal wäre unter 300-500
+
+      Wörter) nur aus dem Kontext: Lernziele • Kernideen • Schlüssel-Formeln (mit
+
+      Bedingungen) • Fehlerquellen • 3 Übungsfragen (ohne Lösung) • Wichtige ToDos
+      und
+
+      Termine • Quellenliste.
+
+
+      Quellen‑Priorität und Konflikte: Primär: Original Transkript mit Zeitstempel
+
+      (stamped) & Folien (pdf) > Sekundär: Summary.md & Transrkipt Veredelt. Bei
+
+      Widerspruch strikt der Priorität folgen UND Widerspruch aufzeigen.
+
+
+      Transkript filtern: Aus Transkript nur fachliche Passagen nutzen;
+
+      Orga/Smalltalk, Gruppen/Termine, Meta‑Hinweise ignorieren.
+
+
+      Nur Zeitbereiche verwenden, die thematisch zu „Fach/Kapitel“ passen.
+
+
+      Harte Belegpflicht: Jeder Bullet-/Tabellenpunkt MUSS genau eine Quelle tragen
+
+      (Datei + Seite|Timecode).
+
+
+      Terminologie‑Treue: Bezeichnungen genau wie in den Quellen verwenden.
+
+      '
+    value_type: string
+  - description: ''
+    id: 2cdc886a-48d5-4bee-a926-8fb091325098
+    name: prompt_01_02_veredeln
+    selector:
+    - env
+    - prompt_01_02_veredeln
+    value: 'Eingabe:
+
+      - Folien mit Seitenzahl (Seite x von X)
+
+      - Original Transkript mit Zeitstempel
+
+      - Zusammenfassung
+
+
+      Aufgabe: Fasse diesmal nicht so allgemein zusammen, sondern erzeuge aus dem
+      transkript
+
+      einen neuen fließtext, der das transkript ersetzen kann. dh. jede aussage aus
+
+      dem transkript muss in der veredelung vorkommen. füge auch noch trennende
+
+      überschriften ein
+
+      '
+    value_type: string
+  - description: ''
+    id: 0c0812c3-897c-407b-a6ec-931bcbbf0ebc
+    name: prompt_01_01_summarize
+    selector:
+    - env
+    - prompt_01_01_summarize
+    value: "Eingabe:\n- Folien mit Seitenzahl (Seite x von X)\n- Original Transkript\
+      \ mit Zeitstempel\n\nAUFGABE: Wandle das folgende rohe Vorlesungstranskript\
+      \ in ein sauberes, gut\nlesbares und strukturiertes Dokument im Markdown-Format\
+      \ um. Verwende die\nbereitgestellten Folien auch als Hilfe, aber das Ergebnis\
+      \ soll ein\nStrukturiertes Dokument sein, das das Transkript verbessern und\
+      \ bereinigen soll.\nErkläre in dieser Reihenfolge, was besprochen wurde.\n\n\
+      REGELN:\n\n1. Entferne konversationelle Füllphrasen, Füllwörter und offensichtliche\n\
+      \   Wiederholungen.\n\n2. Korrigiere die Grammatik und formuliere unvollständige\
+      \ Sätze in präzise,\n   vollständige Sätze um.\n\n3. Behalte alle Fachbegriffe\
+      \ und Kernaussagen exakt bei. Der Kerninhalt darf\n   nicht verändert werden.\n\
+      \n4. Strukturiere den gesamten Text logisch. Füge thematische\n   Zwischenüberschriften\
+      \ im Markdown-Format hinzu.\n\n5. Fasse zusammenhängende Sätze zu sinnvollen\
+      \ Absätzen zusammen.\n"
+    value_type: string
+  - description: System Prompt
+    id: 5a986cac-ab68-4c55-ad76-1bff0483bb1c
+    name: prompt_00_system
+    selector:
+    - env
+    - prompt_00_system
+    value: "# GRUNDLAGEN\n\nDu bist ein spezialisierter Studienassistent für die TU\
+      \ Wien. Dein Ziel ist es,\nStudierende bestmöglich bei der Prüfungsvorbereitung\
+      \ zu unterstützen. Deine\nAntworten sollen klar, verlässlich und direkt auf\
+      \ die bereitgestellten\nLernunterlagen bezogen sein.\n\n# LEITPRINZIPIEN\n\n\
+      1. **Fokus auf den Kontext:** Deine Hauptaufgabe ist es, die bereitgestellten\n\
+      \   Dokumente (Skripte, Folien, Übungen etc.) zu analysieren und aufzubereiten.\n\
+      \   Versuche immer, deine Antworten direkt auf diese Unterlagen zu stützen.\n\
+      2. **Transparenz bei Wissenslücken:** Wenn eine Frage nicht oder nur teilweise\n\
+      \   mit dem Kontext beantwortet werden kann, erkläre das klar und freundlich.\n\
+      \   Anstatt nur \"Nicht im Kontext\" zu sagen, formuliere es hilfreicher, z.B.:\n\
+      \   \"Diese Information konnte ich in den vorliegenden Unterlagen nicht finden.\
+      \ Es\n   wäre möglich, dass dies in [Vorlesung X] behandelt wurde oder in den\n\
+      \   Unterlagen zu [Thema Y] zu finden ist.\" Gib, wenn möglich, Hinweise, wo\
+      \ die\n   Information stattdessen stehen könnte.\n3. **Sinnvolle Quellenangaben:**\
+      \ Um die Nachvollziehbarkeit zu gewährleisten,\n   füge Quellenangaben wie `[Datei,\
+      \ Seite]` oder `[Datei, Zeitstempel]` hinzu,\n   wo es zum Verständnis beiträgt,\
+      \ besonders bei direkten Zitaten, Definitionen\n   oder Formeln.\n\n# AUFBEREITUNG\
+      \ DER ANTWORTEN\n\n- **Struktur:** Nutze zur besseren Übersicht Listen, Tabellen\
+      \ und andere\n  Markdown-Formatierungen. Gliedere komplexe Themen in logische\
+      \ Abschnitte.\n- **Fachsprache:** Halte dich an die Terminologie und Notation\
+      \ aus den\n  Unterlagen. Formeln sollten in LaTeX dargestellt werden.\n- **Präzision:**\
+      \ Sei präzise, aber erkläre Zusammenhänge so, dass sie gut\n  verständlich sind.\
+      \ Passe die Ausführlichkeit deiner Antwort der Frage an – mal\n  ist eine kurze\
+      \ Definition gefragt, mal eine detaillierte Erklärung.\n\n# UMGANG MIT SPEZIALFÄLLEN\n\
+      \n- **Widersprüchliche Informationen:** Sollten sich Angaben aus verschiedenen\n\
+      \  Quellen (z.B. TISS und TUWEL) widersprechen, weise darauf hin. Gib beide\n\
+      \  Informationen an und nenne die jeweiligen Quellen, damit der Nutzer die\n\
+      \  Diskrepanz selbst prüfen kann.\n  - _Empfehlung:_ TISS hat bei Terminen und\
+      \ Anmeldungen meist Vorrang, TUWEL bei\n    Lehrmaterialien.\n- **Hilfestellung\
+      \ bei Übungen:** Gib bei Übungsaufgaben standardmäßig\n  Lösungsstrategien,\
+      \ Hinweise auf relevante Theoriekapitel oder Denkanstöße.\n  Eine vollständige\
+      \ Musterlösung solltest du nur dann liefern, wenn sie explizit\n  in den Unterlagen\
+      \ vorhanden ist oder direkt danach gefragt wird.\n- **Fehlende Details:** Wenn\
+      \ wichtige Informationen für eine vollständige\n  Antwort fehlen (z.B. ein genauer\
+      \ Abgabetermin), gib die vorhandenen Fakten\n  wieder und mache auf die Lücke\
+      \ aufmerksam. Zum Beispiel: \"Das Datum ist\n  der 15. Jänner, eine genaue Uhrzeit\
+      \ wird in den Unterlagen jedoch nicht\n  genannt.\"\n\n# ALLGEMEINER TON\n\n\
+      Dein Ton ist unterstützend, geduldig und auf Augenhöhe. Du bist ein Lernpartner,\n\
+      kein reines Abfragewerkzeug.\n"
+    value_type: string
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: llm
+      id: 1762447378185-source-17625136452110-target
+      source: '1762447378185'
+      sourceHandle: source
+      target: '17625136452110'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: llm
+      id: 17625136452110-source-17625137306400-target
+      source: '17625136452110'
+      sourceHandle: source
+      target: '17625137306400'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: llm
+      id: 17625137306400-source-17625172016110-target
+      source: '17625137306400'
+      sourceHandle: source
+      target: '17625172016110'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: iteration
+      id: 1762517434250-source-1762517469728-target
+      source: '1762517434250'
+      sourceHandle: source
+      target: '1762517469728'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        sourceType: knowledge-retrieval
+        targetType: code
+      id: 1762517567247-source-1762519667669-target
+      source: '1762517567247'
+      sourceHandle: source
+      target: '1762519667669'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: iteration
+        targetType: code
+      id: 1762517469728-source-1762519986978-target
+      source: '1762517469728'
+      sourceHandle: source
+      target: '1762519986978'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: 17625172016110-source-1762517434250-target
+      source: '17625172016110'
+      sourceHandle: source
+      target: '1762517434250'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1762519986978-source-17625139628550-target
+      source: '1762519986978'
+      sourceHandle: source
+      target: '17625139628550'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1762519986978-source-17625140889850-target
+      source: '1762519986978'
+      sourceHandle: source
+      target: '17625140889850'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1762519986978-source-17625141139440-target
+      source: '1762519986978'
+      sourceHandle: source
+      target: '17625141139440'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: http-request
+      id: 1762447378185-source-1762593529707-target
+      source: '1762447378185'
+      sourceHandle: source
+      target: '1762593529707'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: http-request
+      id: 17625136452110-source-17625936193150-target
+      source: '17625136452110'
+      sourceHandle: source
+      target: '17625936193150'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: http-request
+      id: 17625137306400-source-17625937012150-target
+      source: '17625137306400'
+      sourceHandle: source
+      target: '17625937012150'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: http-request
+      id: 17625139628550-source-17625938088930-target
+      source: '17625139628550'
+      sourceHandle: source
+      target: '17625938088930'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: http-request
+      id: 17625140889850-source-17625938553500-target
+      source: '17625140889850'
+      sourceHandle: source
+      target: '17625938553500'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: http-request
+      id: 17625141139440-source-17625938756350-target
+      source: '17625141139440'
+      sourceHandle: source
+      target: '17625938756350'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: end
+      id: 17625938088930-source-1762593903745-target
+      source: '17625938088930'
+      sourceHandle: source
+      target: '1762593903745'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: end
+      id: 17625938553500-source-1762593903745-target
+      source: '17625938553500'
+      sourceHandle: source
+      target: '1762593903745'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: end
+      id: 17625938756350-source-1762593903745-target
+      source: '17625938756350'
+      sourceHandle: source
+      target: '1762593903745'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        sourceType: iteration-start
+        targetType: if-else
+      id: 1762517469728start-source-1762686753644-target
+      source: 1762517469728start
+      sourceHandle: source
+      target: '1762686753644'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        sourceType: if-else
+        targetType: code
+      id: 1762686753644-false-1762686852316-target
+      source: '1762686753644'
+      sourceHandle: 'false'
+      target: '1762686852316'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: 1762686753644-9b4a4f01-7950-40aa-a6d0-03caa4915c4d-17626868919000-target
+      source: '1762686753644'
+      sourceHandle: 9b4a4f01-7950-40aa-a6d0-03caa4915c4d
+      target: '17626868919000'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: 1762686753644-true-1762517567247-target
+      source: '1762686753644'
+      sourceHandle: 'true'
+      target: '1762517567247'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        sourceType: knowledge-retrieval
+        targetType: code
+      id: 17626868919000-source-1762519667669-target
+      source: '17626868919000'
+      sourceHandle: source
+      target: '1762519667669'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        sourceType: code
+        targetType: code
+      id: 1762686852316-source-1762519667669-target
+      source: '1762686852316'
+      sourceHandle: source
+      target: '1762519667669'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: iteration
+      id: 1762443028718-source-1762698491479-target
+      source: '1762443028718'
+      sourceHandle: source
+      target: '1762698491479'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762698491479'
+        sourceType: iteration-start
+        targetType: document-extractor
+      id: 1762698491479start-source-1762698563377-target
+      source: 1762698491479start
+      sourceHandle: source
+      target: '1762698563377'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762698491479'
+        sourceType: document-extractor
+        targetType: template-transform
+      id: 1762698563377-source-1762698587873-target
+      source: '1762698563377'
+      sourceHandle: source
+      target: '1762698587873'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: iteration
+        targetType: template-transform
+      id: 1762698491479-source-1762698657016-target
+      source: '1762698491479'
+      sourceHandle: source
+      target: '1762698657016'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: template-transform
+        targetType: llm
+      id: 1762698657016-source-1762447378185-target
+      source: '1762698657016'
+      sourceHandle: source
+      target: '1762447378185'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: 1762686753644-16b4f48e-f1c8-4555-8872-fa310f5544aa-17665943563470-target
+      source: '1762686753644'
+      sourceHandle: 16b4f48e-f1c8-4555-8872-fa310f5544aa
+      target: '17665943563470'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        sourceType: knowledge-retrieval
+        targetType: code
+      id: 17665943563470-source-1762519667669-target
+      source: '17665943563470'
+      sourceHandle: source
+      target: '1762519667669'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    nodes:
+    - data:
+        selected: false
+        title: Start
+        type: start
+        variables:
+        - default: prpd
+          hint: ''
+          label: fach
+          max_length: 48
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: fach
+        - allowed_file_extensions: []
+          allowed_file_types:
+          - document
+          allowed_file_upload_methods:
+          - local_file
+          - remote_url
+          default: ''
+          hint: ''
+          label: input_files
+          max_length: 10
+          options: []
+          placeholder: ''
+          required: true
+          type: file-list
+          variable: input_files
+        - default: ''
+          hint: ''
+          label: output_path
+          max_length: 48
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: output_path
+      height: 140
+      id: '1762443028718'
+      position:
+        x: 0
+        y: 286
+      positionAbsolute:
+        x: 0
+        y: 286
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-5-mini
+          provider: langgenius/openai/openai
+        prompt_template:
+        - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
+          role: system
+          text: '{{#env.prompt_00_system#}}'
+        - id: 115ff84a-1c71-4099-96a9-21aedbff029c
+          role: user
+          text: '{{#env.prompt_01_01_summarize#}}
+
+            '
+        - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
+          role: user
+          text: '{{#1762698657016.output#}}'
+        selected: false
+        title: LM Summarize
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1762447378185'
+      position:
+        x: 1592
+        y: 312
+      positionAbsolute:
+        x: 1592
+        y: 312
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-5-mini
+          provider: langgenius/openai/openai
+        prompt_template:
+        - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
+          role: system
+          text: '{{#env.prompt_00_system#}}'
+        - id: 115ff84a-1c71-4099-96a9-21aedbff029c
+          role: user
+          text: 'Aufgabe:
+
+            {{#env.prompt_01_02_veredeln#}}
+
+
+            Zusammenfassung:
+
+            {{#1762447378185.text#}}'
+        - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
+          role: user
+          text: '{{#1762698657016.output#}}'
+        selected: false
+        title: LM Veredeln
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '17625136452110'
+      position:
+        x: 1954
+        y: 297
+      positionAbsolute:
+        x: 1954
+        y: 297
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-5-mini
+          provider: langgenius/openai/openai
+        prompt_template:
+        - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
+          role: system
+          text: '{{#env.prompt_00_system#}}'
+        - id: 115ff84a-1c71-4099-96a9-21aedbff029c
+          role: user
+          text: 'Aufgabe:
+
+            {{#env.prompt_02_01_tldr#}}
+
+
+            Zusammenfassung:
+
+            {{#1762447378185.text#}}
+
+
+            Veredeltes Skriptum:
+
+            {{#17625136452110.text#}}'
+        - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
+          role: user
+          text: '{{#1762698657016.output#}}'
+        selected: false
+        title: LM TLDR
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '17625137306400'
+      position:
+        x: 2316
+        y: 282
+      positionAbsolute:
+        x: 2316
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-5-mini
+          provider: langgenius/openai/openai
+        prompt_config:
+          jinja2_variables: []
+        prompt_template:
+        - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
+          role: system
+          text: '{{#env.prompt_00_system#}}'
+        - id: 115ff84a-1c71-4099-96a9-21aedbff029c
+          role: user
+          text: 'Aufgabe:
+
+            {{#env.prompt_02_02_konzepte#}}
+
+
+            Zusammenfassung:
+
+            {{#1762447378185.text#}}
+
+
+            Veredeltes Skriptum:
+
+            {{#17625136452110.text#}}
+
+
+            TLDR:
+
+            {{#17625137306400.text#}}'
+        - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
+          role: user
+          text: '{{#1762698657016.output#}}'
+        - edition_type: basic
+          id: e9686d66-cdf1-4f0b-8296-60f5276a844c
+          jinja2_text: /
+          role: user
+          text: 'Zusätzlicher Kontext aus der Wissensbank:
+
+            {{#1762519986978.result#}}'
+        selected: false
+        title: LM Konzepte
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '17625139628550'
+      position:
+        x: 4994
+        y: 50
+      positionAbsolute:
+        x: 4994
+        y: 50
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-5-mini
+          provider: langgenius/openai/openai
+        prompt_config:
+          jinja2_variables: []
+        prompt_template:
+        - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
+          role: system
+          text: '{{#env.prompt_00_system#}}'
+        - id: 115ff84a-1c71-4099-96a9-21aedbff029c
+          role: user
+          text: 'Aufgabe:
+
+            {{#env.prompt_02_03_beispiele#}}
+
+
+            Zusammenfassung:
+
+            {{#1762447378185.text#}}
+
+
+            Veredeltes Skriptum:
+
+            {{#17625136452110.text#}}
+
+
+            TLDR:
+
+            {{#17625137306400.text#}}'
+        - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
+          role: user
+          text: '{{#1762698657016.output#}}'
+        - id: 6189e9b0-ef5d-426e-8753-33bb3f732099
+          role: user
+          text: 'Zusätzlicher Kontext aus der Wissensbank:
+
+            {{#1762519986978.result#}}'
+        selected: false
+        title: LM Beispiele
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '17625140889850'
+      position:
+        x: 4994
+        y: 267
+      positionAbsolute:
+        x: 4994
+        y: 267
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-5
+          provider: langgenius/openai/openai
+        prompt_config:
+          jinja2_variables: []
+        prompt_template:
+        - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
+          role: system
+          text: '{{#env.prompt_00_system#}}'
+        - id: 115ff84a-1c71-4099-96a9-21aedbff029c
+          role: user
+          text: 'Aufgabe:
+
+            {{#env.prompt_02_04_anki#}}
+
+
+            Zusammenfassung:
+
+            {{#1762447378185.text#}}
+
+
+            Veredeltes Skriptum:
+
+            {{#17625136452110.text#}}
+
+
+            TLDR:
+
+            {{#17625137306400.text#}}
+
+
+            Anki Manual:
+
+            {{#env.prompt_02_04_anki_manual#}}'
+        - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
+          role: user
+          text: '{{#1762698657016.output#}}'
+        - id: e596a835-36de-4d73-b777-f74e6e68adce
+          role: user
+          text: 'Zusätzlicher Kontext aus der Wissensbank:
+
+            {{#1762519986978.result#}}'
+        selected: false
+        title: LM ANKI
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '17625141139440'
+      position:
+        x: 4994
+        y: 484
+      positionAbsolute:
+        x: 4994
+        y: 484
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-5-mini
+          provider: langgenius/openai/openai
+        prompt_template:
+        - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
+          role: system
+          text: '{{#env.prompt_00_system#}}'
+        - id: 115ff84a-1c71-4099-96a9-21aedbff029c
+          role: user
+          text: 'Aufgabe:
+
+            {{#env.prompt_02_00_rag#}}
+
+
+            Zusammenfassung:
+
+            {{#1762447378185.text#}}
+
+
+            Veredeltes Skriptum:
+
+            {{#17625136452110.text#}}
+
+
+            TLDR:
+
+            {{#17625137306400.text#}}'
+        - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
+          role: user
+          text: '{{#1762698657016.output#}}'
+        selected: false
+        title: LM RAG Keywords
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '17625172016110'
+      position:
+        x: 2678
+        y: 267
+      positionAbsolute:
+        x: 2678
+        y: 267
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "def main(keywords_string: str):\n    # Split the string by comma and\
+          \ remove any whitespace\n    keywords_list = [keyword.strip() for keyword\
+          \ in keywords_string.split(',')]\n    return {\n        \"result\": keywords_list\n\
+          \    }"
+        code_language: python3
+        outputs:
+          result:
+            children: null
+            type: array[string]
+        selected: false
+        title: Keyword Array
+        type: code
+        variables:
+        - value_selector:
+          - '17625172016110'
+          - text
+          value_type: string
+          variable: keywords_string
+      height: 52
+      id: '1762517434250'
+      position:
+        x: 3020
+        y: 285
+      positionAbsolute:
+        x: 3020
+        y: 285
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        error_handle_mode: terminated
+        height: 622
+        is_parallel: true
+        iterator_input_type: array[string]
+        iterator_selector:
+        - '1762517434250'
+        - result
+        output_selector:
+        - '1762519667669'
+        - result
+        output_type: array[string]
+        parallel_nums: 5
+        selected: false
+        start_node_id: 1762517469728start
+        title: Iterate Rag Keywords
+        type: iteration
+        width: 1170
+      height: 622
+      id: '1762517469728'
+      position:
+        x: 3362
+        y: 0
+      positionAbsolute:
+        x: 3362
+        y: 0
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 1170
+      zIndex: 1
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1762517469728start
+      parentId: '1762517469728'
+      position:
+        x: 60
+        y: 253
+      positionAbsolute:
+        x: 3422
+        y: 253
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        dataset_ids:
+        - DfHClPXl6VPX6t02jdkBFKPMfRy70qygKp1iarcrTmclFJljcYncPLm/KI7iaqwh
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          top_k: 4
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: text-embedding-3-large
+              embedding_provider_name: langgenius/openai/openai
+              vector_weight: 0.7
+            weight_type: customized
+        query_variable_selector:
+        - '1762517469728'
+        - item
+        retrieval_mode: multiple
+        selected: false
+        title: RAG By Keyword PRPD
+        type: knowledge-retrieval
+      height: 90
+      id: '1762517567247'
+      parentId: '1762517469728'
+      position:
+        x: 526
+        y: 210
+      positionAbsolute:
+        x: 3888
+        y: 210
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        code: "# Dify will import the 'List' type hint for you\nfrom typing import\
+          \ List, Dict\n\ndef main(keyword: str, rag_results: List[Dict]) -> Dict:\n\
+          \    \"\"\"\n    Formats the keyword and its corresponding RAG results into\
+          \ a single string.\n\n    Args:\n        keyword (str): The search term\
+          \ for the current iteration.\n        rag_results (List[Dict]): The list\
+          \ of result objects from the Knowledge Retrieval node.\n               \
+          \                   Each object is a dictionary expected to have a 'content'\
+          \ key.\n\n    Returns:\n        Dict: A dictionary with a single key \"\
+          result\" containing the formatted string.\n    \"\"\"\n    # Start building\
+          \ a list of strings. This is more efficient than concatenating.\n    output_parts\
+          \ = []\n    \n    # Add the keyword as the title, followed by two newlines\
+          \ for spacing.\n    output_parts.append(f\"Keyword: {keyword}\")\n    \n\
+          \    # Check if there are any RAG results to process\n    if not rag_results:\n\
+          \        output_parts.append(\"No context found.\")\n    else:\n       \
+          \ # Loop through each result object using enumerate to get an index (starting\
+          \ from 1)\n        for i, result_obj in enumerate(rag_results, start=1):\n\
+          \            # Safely get the content, provide a default text if 'content'\
+          \ key is missing\n            content = result_obj.get('content', 'Content\
+          \ not available.')\n            \n            # Format each context block\
+          \ and add it to our list\n            # \\n adds a newline before each new\
+          \ context for better readability\n            formatted_context = f\"\\\
+          nContext {i}:\\n{content}\"\n            output_parts.append(formatted_context)\n\
+          \            \n    # Join all the individual string parts into one final\
+          \ string\n    final_string = \"\".join(output_parts)\n    \n    return {\n\
+          \        \"result\": final_string\n    }"
+        code_language: python3
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: Format Individual Rag
+        type: code
+        variables:
+        - value_selector:
+          - '1762517469728'
+          - item
+          value_type: string
+          variable: keyword
+        - value_selector:
+          - '1762517567247'
+          - result
+          value_type: array[object]
+          variable: rag_results
+      height: 52
+      id: '1762519667669'
+      parentId: '1762517469728'
+      position:
+        x: 868
+        y: 234
+      positionAbsolute:
+        x: 4230
+        y: 234
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        code: "\nfunction main({arg1}) {\n    return {\n        result: arg1.join(\"\
+          \\n\\n\")\n    }\n}\n"
+        code_language: javascript
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: Format Total Rag
+        type: code
+        variables:
+        - value_selector:
+          - '1762517469728'
+          - output
+          value_type: array[string]
+          variable: arg1
+      height: 52
+      id: '1762519986978'
+      position:
+        x: 4632
+        y: 285
+      positionAbsolute:
+        x: 4632
+        y: 285
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-28
+            key: ''
+            type: text
+            value: '{{#1762447378185.text#}}'
+          type: raw-text
+        headers: ''
+        method: post
+        params: fileName:{{#1762443028718.output_path#}}/01-summary.md
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: Save Summary
+        type: http-request
+        url: http://host.docker.internal:8019
+        variables: []
+      height: 153
+      id: '1762593529707'
+      position:
+        x: 1954
+        y: 465
+      positionAbsolute:
+        x: 1954
+        y: 465
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-28
+            key: ''
+            type: text
+            value: '{{#17625136452110.text#}}'
+          type: raw-text
+        headers: ''
+        method: post
+        params: fileName:{{#1762443028718.output_path#}}/02-veredelt.md
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: Save Veredelung
+        type: http-request
+        url: http://host.docker.internal:8019
+        variables: []
+      height: 153
+      id: '17625936193150'
+      position:
+        x: 2316
+        y: 450
+      positionAbsolute:
+        x: 2316
+        y: 450
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-28
+            key: ''
+            type: text
+            value: '{{#17625137306400.text#}}'
+          type: raw-text
+        headers: ''
+        method: post
+        params: fileName:{{#1762443028718.output_path#}}/03-tldr.md
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: Save TLDR
+        type: http-request
+        url: http://host.docker.internal:8019
+        variables: []
+      height: 153
+      id: '17625937012150'
+      position:
+        x: 2678
+        y: 435
+      positionAbsolute:
+        x: 2678
+        y: 435
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-28
+            key: ''
+            type: text
+            value: '{{#17625139628550.text#}}'
+          type: raw-text
+        headers: ''
+        method: post
+        params: fileName:{{#1762443028718.output_path#}}/04-konzepte.md
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: Save Konzepte
+        type: http-request
+        url: http://host.docker.internal:8019
+        variables: []
+      height: 153
+      id: '17625938088930'
+      position:
+        x: 5336
+        y: 25
+      positionAbsolute:
+        x: 5336
+        y: 25
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-28
+            key: ''
+            type: text
+            value: '{{#17625140889850.text#}}'
+          type: raw-text
+        headers: ''
+        method: post
+        params: fileName:{{#1762443028718.output_path#}}/05-beispiele.md
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: Save Beispiele
+        type: http-request
+        url: http://host.docker.internal:8019
+        variables: []
+      height: 153
+      id: '17625938553500'
+      position:
+        x: 5336
+        y: 242
+      positionAbsolute:
+        x: 5336
+        y: 242
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-28
+            key: ''
+            type: text
+            value: '{{#17625141139440.text#}}'
+          type: raw-text
+        headers: ''
+        method: post
+        params: fileName:{{#1762443028718.output_path#}}/06-anki.md
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: Save Anki
+        type: http-request
+        url: http://host.docker.internal:8019
+        variables: []
+      height: 153
+      id: '17625938756350'
+      position:
+        x: 5336
+        y: 459
+      positionAbsolute:
+        x: 5336
+        y: 459
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        outputs: []
+        selected: false
+        title: End
+        type: end
+      height: 52
+      id: '1762593903745'
+      position:
+        x: 5698
+        y: 285
+      positionAbsolute:
+        x: 5698
+        y: 285
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: 7148baa4-d4de-4d2e-81ce-0b032419b70f
+            value: prpd
+            varType: string
+            variable_selector:
+            - '1762443028718'
+            - fach
+          id: 'true'
+          logical_operator: and
+        - case_id: 9b4a4f01-7950-40aa-a6d0-03caa4915c4d
+          conditions:
+          - comparison_operator: contains
+            id: 4cbd6e9a-ea8f-4e0e-8dd6-438f47bb98a0
+            value: vsys
+            varType: string
+            variable_selector:
+            - '1762443028718'
+            - fach
+          id: 9b4a4f01-7950-40aa-a6d0-03caa4915c4d
+          logical_operator: and
+        - case_id: 16b4f48e-f1c8-4555-8872-fa310f5544aa
+          conditions:
+          - comparison_operator: contains
+            id: e5e78ca5-cfbb-478f-a6c0-0227e4c9a106
+            value: arte
+            varType: string
+            variable_selector:
+            - '1762443028718'
+            - fach
+          id: 16b4f48e-f1c8-4555-8872-fa310f5544aa
+          logical_operator: and
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        selected: false
+        title: IF/ELSE
+        type: if-else
+      height: 220
+      id: '1762686753644'
+      parentId: '1762517469728'
+      position:
+        x: 184
+        y: 167
+      positionAbsolute:
+        x: 3546
+        y: 167
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        code: "\ndef main():\n    return {\n        \"result\": 1 / 0,\n    }\n"
+        code_language: python3
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: Code 4
+        type: code
+        variables: []
+      height: 52
+      id: '1762686852316'
+      parentId: '1762517469728'
+      position:
+        x: 523.5586040140797
+        y: 510
+      positionAbsolute:
+        x: 3885.5586040140797
+        y: 510
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        dataset_ids:
+        - 4hSxhf+7/2OleCjXDeNCCw4TYgnyyRwyB/x938WA6y2hhwxDkZAeBiTAT7nKufsc
+        isInIteration: true
+        isInLoop: false
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          top_k: 4
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: text-embedding-3-large
+              embedding_provider_name: langgenius/openai/openai
+              vector_weight: 0.7
+            weight_type: customized
+        query_variable_selector:
+        - '1762517469728'
+        - item
+        retrieval_mode: multiple
+        selected: false
+        title: RAG By Keyword VSYS
+        type: knowledge-retrieval
+      height: 90
+      id: '17626868919000'
+      parentId: '1762517469728'
+      position:
+        x: 526
+        y: 360
+      positionAbsolute:
+        x: 3888
+        y: 360
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        error_handle_mode: terminated
+        height: 212
+        is_parallel: true
+        iterator_input_type: array[file]
+        iterator_selector:
+        - '1762443028718'
+        - input_files
+        output_selector:
+        - '1762698587873'
+        - output
+        output_type: array[string]
+        parallel_nums: 5
+        selected: false
+        start_node_id: 1762698491479start
+        title: Iterate Input Files
+        type: iteration
+        width: 808
+      height: 212
+      id: '1762698491479'
+      position:
+        x: 342
+        y: 250
+      positionAbsolute:
+        x: 342
+        y: 250
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 808
+      zIndex: 1
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1762698491479start
+      parentId: '1762698491479'
+      position:
+        x: 60
+        y: 82
+      positionAbsolute:
+        x: 402
+        y: 332
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        is_array_file: false
+        iteration_id: '1762698491479'
+        selected: false
+        title: Ext String from File
+        type: document-extractor
+        variable_selector:
+        - '1762698491479'
+        - item
+      height: 92
+      id: '1762698563377'
+      parentId: '1762698491479'
+      position:
+        x: 184
+        y: 60
+      positionAbsolute:
+        x: 526
+        y: 310
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762698491479'
+        selected: false
+        template: '{{ name }}
+
+
+          {{ arg1 }}'
+        title: Temp File Content
+        type: template-transform
+        variables:
+        - value_selector:
+          - '1762698563377'
+          - text
+          value_type: string
+          variable: arg1
+        - value_selector:
+          - '1762698491479'
+          - item
+          - name
+          variable: name
+      height: 52
+      id: '1762698587873'
+      parentId: '1762698491479'
+      position:
+        x: 506
+        y: 80
+      positionAbsolute:
+        x: 848
+        y: 330
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        selected: false
+        template: "{% for item in arg1 %}\n\n\n    {{ item }}\n\n{% endfor %}"
+        title: Temp Total Strings
+        type: template-transform
+        variables:
+        - value_selector:
+          - '1762698491479'
+          - output
+          value_type: array[string]
+          variable: arg1
+      height: 52
+      id: '1762698657016'
+      position:
+        x: 1250
+        y: 330
+      positionAbsolute:
+        x: 1250
+        y: 330
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        dataset_ids:
+        - CBSKaUAzt0IsNwzMdVV0k7ke4OambhEU7yfxnmX5l9rdQn197k0RLAmzM6ZnO0q5
+        isInIteration: true
+        isInLoop: false
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          top_k: 4
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: text-embedding-3-large
+              embedding_provider_name: langgenius/openai/openai
+              vector_weight: 0.7
+            weight_type: customized
+        query_variable_selector:
+        - '1762517469728'
+        - item
+        retrieval_mode: multiple
+        selected: false
+        title: RAG By Keyword Artemis
+        type: knowledge-retrieval
+      height: 90
+      id: '17665943563470'
+      parentId: '1762517469728'
+      position:
+        x: 526
+        y: 60
+      positionAbsolute:
+        x: 3888
+        y: 60
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    viewport:
+      x: -701.3978330190521
+      y: 163.8774521134082
+      zoom: 0.31716764257501046
+  rag_pipeline_variables: []
