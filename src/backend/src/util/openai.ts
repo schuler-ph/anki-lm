@@ -2,7 +2,7 @@ import OpenAI from "@openai/openai";
 // import { pLimit } from "https://deno.land/x/p_limit@v1.0.0/mod.ts";
 import { basename } from "node:path";
 
-const lang = "de"; // "de" or undefined for auto-detect
+const lang = "en"; // "de" or undefined for auto-detect "en" https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
 // const limit = pLimit(Infinity);
 const MAX_RETRIES = 3;
 const RETRY_BASE_MS = 500;
@@ -43,7 +43,7 @@ async function transcribePartWithRetry(
       response_format: "verbose_json",
       timestamp_granularities: ["segment"],
       prompt:
-        "TU Wien Begriffe: TISS (TU Wien Informations-Systeme & Services), TUWEL (TU Wien E-Learning)",
+        "You will transcribe a lecture recording from the Technical University of Vienna. TU Wien Begriffe: TISS (TU Wien Informations-Systeme & Services), TUWEL (TU Wien E-Learning)",
       ...(lang ? { language: lang } : {}),
     });
   } catch (e: unknown) {

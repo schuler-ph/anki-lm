@@ -9,7 +9,7 @@ import { resolveLecturePath } from "./util/storageRoot.ts";
 
 await checkHealth();
 
-const faecher = ["vsys", "prpd"];
+const faecher = ["eai", "lar"];
 
 const skippedPrep = [];
 const skippedProcess = [];
