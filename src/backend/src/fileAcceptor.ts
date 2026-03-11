@@ -1,7 +1,11 @@
 // server.ts
+import { ensureDir } from "@std/fs";
 import { serveDir } from "@std/http/file-server";
+import { dirname } from "@std/path";
+import { getLectureRoot, resolveLecturePath } from "./util/storageRoot.ts";
 
 const headers = { "Content-Type": "text/plain" };
+const lectureRoot = getLectureRoot();
 
 /**
  * Handles incoming HTTP requests.
@@ -27,8 +31,7 @@ async function handler(req: Request): Promise<Response> {
       );
     }
 
-    // Otherwise, serve files from the 'data/03-out' directory.
-    return serveDir(req);
+    return serveDir(req, { fsRoot: lectureRoot });
   }
 
   // Handle POST requests to write files.
@@ -47,14 +50,18 @@ async function handler(req: Request): Promise<Response> {
       // Read the entire body of the request as text.
       const fileContent = await req.text();
 
-      // Write the content to the specified file.
-      await Deno.writeTextFile(fileName, fileContent);
+      const outputFilePath = resolveLecturePath(fileName);
+      await ensureDir(dirname(outputFilePath));
+      await Deno.writeTextFile(outputFilePath, fileContent);
 
       // Return a success response.
-      return new Response(`File "${fileName}" was written successfully.`, {
-        status: 200,
-        headers,
-      });
+      return new Response(
+        `File "${outputFilePath}" was written successfully.`,
+        {
+          status: 200,
+          headers,
+        },
+      );
     } catch (error: unknown) {
       // Handle potential errors, such as file system issues.
       console.error(error);
@@ -77,4 +84,4 @@ async function handler(req: Request): Promise<Response> {
 // Start the Deno HTTP server on port 8019.
 Deno.serve({ port: 8019 }, handler);
 
-console.log("Server running on http://localhost:8019/");
+console.log(`Server running on http://localhost:8019/ for ${lectureRoot}`);

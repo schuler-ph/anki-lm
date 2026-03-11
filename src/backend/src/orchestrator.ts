@@ -5,6 +5,7 @@ import {
   prepareDifyFolder,
   sendDifyRequest,
 } from "./util/orchestrationHelper.ts";
+import { resolveLecturePath } from "./util/storageRoot.ts";
 
 await checkHealth();
 
@@ -15,9 +16,7 @@ const skippedProcess = [];
 
 for (const fach of faecher) {
   console.log("Starting orchestration for fach: " + fach);
-  // const folder = `lva/${fach}/data`;
-  const folder =
-    `/Users/p.schuler/Library/CloudStorage/GoogleDrive-schulerp03@gmail.com/Meine Ablage/Uni/Sem 6/${fach}/lec`;
+  const folder = resolveLecturePath(`${fach}/lec`);
 
   const folders = await getFolders(folder);
 

@@ -1,6 +1,7 @@
 import { ensureDir, walk } from "@std/fs";
 import { transcribe } from "../transcribe.ts";
 import { stampPdfWithSlideNumber } from "./pdf.ts";
+import { toFileServerPath, toRelativeLecturePath } from "./storageRoot.ts";
 
 export async function checkHealth(): Promise<boolean> {
   try {
@@ -101,10 +102,10 @@ export async function sendDifyRequest(folder: string, fach: string) {
         fach,
         input_files: files.map((filePath) => ({
           transfer_method: "remote_url",
-          url: `http://host.docker.internal:8019/${filePath}`,
+          url: `http://host.docker.internal:8019/${toFileServerPath(filePath)}`,
           type: "document",
         })),
-        output_path: outputFolder,
+        output_path: toRelativeLecturePath(outputFolder),
       },
       response_mode: "streaming",
       user: "schuler-ph",
