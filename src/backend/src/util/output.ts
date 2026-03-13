@@ -90,7 +90,7 @@ export async function clearTempFolder(outputFiles: string[]) {
 }
 
 export async function resetTempFolder() {
-  const files = await getFilesInFolder("summarize/src/temp");
+  const files = await getFilesInFolder("src/temp");
   await clearTempFolder(files);
 }
 

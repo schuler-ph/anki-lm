@@ -27,7 +27,7 @@ export async function getAudioDuration(inputFile: string): Promise<number> {
 export async function splitAudioWithOverlap(
   inputFile: string,
 ): Promise<string[]> {
-  const outputPrefix = Path.join("summarize", "src", "temp", "chunk");
+  const outputPrefix = Path.join("src", "temp", "chunk");
   const totalDuration = await getAudioDuration(inputFile);
   if (isNaN(totalDuration)) {
     throw new Error("Konnte die Gesamtdauer der Audiodatei nicht ermitteln.");
