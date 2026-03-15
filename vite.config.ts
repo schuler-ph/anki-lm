@@ -16,5 +16,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: "/dir-praxis/",
+  base: "/anki-lm/",
 });

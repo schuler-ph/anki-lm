@@ -20,7 +20,7 @@ function PdfSection({ lecture }: { lecture: Lecture }) {
                 <div className="flex items-center gap-2 overflow-hidden">
                   <img src={pdfFile} className="h-6 w-6" alt="PDF icon" />
                   <a
-                    href={"/dir-praxis/" + file}
+                    href={"/anki-lm/" + file}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-indigo-600 underline"

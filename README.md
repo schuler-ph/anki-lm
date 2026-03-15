@@ -1,7 +1,7 @@
 <div align="center">
   <img src="public/ankilm-new.svg" height="120" alt="AnkiLM logo" />
   <h1 style="margin-top: 0;">AnkiLM</h1>
-  <a href="https://schuler-ph.github.io/dir-praxis/#/">
+  <a href="https://schuler-ph.github.io/anki-lm/#/">
     <img src="https://img.shields.io/badge/View_Live_Demo-3B82F6?style=for-the-badge&logo=github&logoColor=white" alt="View Live Demo" />
   </a>
 </div>
@@ -87,8 +87,8 @@ graph TD
   <img width="45%" alt="grafik" src="https://github.com/user-attachments/assets/6b3bc1d9-0da6-4806-a3e1-ec10f6231dc3" />
 </div>
 
-<div align=center"
-  <a href="https://schuler-ph.github.io/dir-praxis/#/">
+<div align="center">
+  <a href="https://schuler-ph.github.io/anki-lm/#/">
     <img src="https://img.shields.io/badge/View_Live_Demo-3B82F6?style=for-the-badge&logo=github&logoColor=white" alt="View Live Demo" />
   </a>
 </div>
