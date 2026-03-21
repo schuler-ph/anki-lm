@@ -9,7 +9,7 @@ import { resolveLecturePath } from "./util/storageRoot.ts";
 
 await checkHealth();
 
-const faecher = ["eai", "lar"];
+const faecher = ["eai", "lar", "iid"];
 
 const skippedPrep = [];
 const skippedProcess = [];
