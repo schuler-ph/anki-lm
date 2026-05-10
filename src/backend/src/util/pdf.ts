@@ -1,6 +1,9 @@
 import Path from "node:path";
 
-export async function stampPdfWithSlideNumber(path: string, outputFolder: string) {
+export async function stampPdfWithSlideNumber(
+  path: string,
+  outputFolder: string,
+): Promise<boolean> {
   const outputPdfPath = Path.join(
     outputFolder,
     `${Path.basename(path, ".pdf")}_numbered.pdf`,
@@ -28,7 +31,9 @@ export async function stampPdfWithSlideNumber(path: string, outputFolder: string
     console.error(
       `Error processing ${path}: ${new TextDecoder().decode(stderr)}`,
     );
-  } else {
-    console.log(`Successfully created ${outputPdfPath}`);
+    return false;
   }
+
+  console.log(`Successfully created ${outputPdfPath}`);
+  return true;
 }

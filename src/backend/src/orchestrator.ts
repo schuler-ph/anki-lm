@@ -6,40 +6,52 @@ import {
   sendDifyRequest,
 } from "./util/orchestrationHelper.ts";
 import { resolveLecturePath } from "./util/storageRoot.ts";
+import Path from "node:path";
 
 await checkHealth();
 
 const faecher = ["eai", "lar", "iid"];
 
-const skippedPrep = [];
-const skippedProcess = [];
+type FolderTask = { folder: string; fach: string; needsPrep: boolean };
+
+const tasks: FolderTask[] = [];
 
 for (const fach of faecher) {
-  console.log("Starting orchestration for fach: " + fach);
-  const folder = resolveLecturePath(`${fach}/lec`);
-
-  const folders = await getFolders(folder);
+  const lecPath = resolveLecturePath(`${fach}/lec`);
+  const folders = await getFolders(lecPath);
 
   for (const folder of folders) {
-    if (await filesInFolderExist(folder + "/for_dify")) {
-      console.log(folder + " already prepared");
-      skippedPrep.push(folder);
-    } else {
-      console.log("Preparing folder: " + folder);
-      await prepareDifyFolder(folder);
-    }
+    const isPrepared = await filesInFolderExist(`${folder}/for_dify`);
+    const isProcessed = await filesInFolderExist(`${folder}/from_dify`);
 
-    if (await filesInFolderExist(folder + "/from_dify")) {
-      skippedProcess.push(folder);
-      console.log(folder + " already processed");
-      continue;
-    }
-
-    console.log("Sending Dify request for folder: " + folder);
-    await sendDifyRequest(folder, fach);
+    if (isProcessed) continue;
+    tasks.push({ folder, fach, needsPrep: !isPrepared });
   }
 }
 
-console.log("Skipped preparation for folders: ", skippedPrep);
-console.log("Skipped processing folders: ", skippedProcess);
+if (tasks.length === 0) {
+  console.log("All folders already processed.");
+} else {
+  const toPrep = tasks.filter((t) => t.needsPrep).map((t) =>
+    Path.basename(t.folder)
+  );
+  const toProcess = tasks.map((t) => Path.basename(t.folder));
+
+  if (toPrep.length > 0) {
+    console.log(
+      `Preparing folders (${toPrep.join(", ")}) and processing (${toProcess.join(", ")})`,
+    );
+  } else {
+    console.log(`Processing folders (${toProcess.join(", ")})`);
+  }
+}
+
+for (const { folder, fach, needsPrep } of tasks) {
+  console.log(`Starting with folder ${Path.basename(folder)}`);
+  if (needsPrep) {
+    await prepareDifyFolder(folder);
+  }
+  await sendDifyRequest(folder, fach);
+}
+
 console.log("Done.");

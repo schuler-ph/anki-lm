@@ -1,4 +1,5 @@
 import { ensureDir, walk } from "@std/fs";
+import Path from "node:path";
 import { transcribe } from "../transcribe.ts";
 import { stampPdfWithSlideNumber } from "./pdf.ts";
 import { toFileServerPath, toRelativeLecturePath } from "./storageRoot.ts";
@@ -78,7 +79,11 @@ export async function prepareDifyFolder(folder: string) {
 
   const pdfFiles = await getFilesInFolder(folder, "pdf");
   for (const pdfFile of pdfFiles) {
-    await stampPdfWithSlideNumber(pdfFile, inputFolder);
+    const success = await stampPdfWithSlideNumber(pdfFile, inputFolder);
+    if (!success) {
+      console.warn(`PDF stamping failed for ${Path.basename(pdfFile)}, using original as fallback`);
+      await Deno.copyFile(pdfFile, Path.join(inputFolder, Path.basename(pdfFile)));
+    }
   }
 }
 
