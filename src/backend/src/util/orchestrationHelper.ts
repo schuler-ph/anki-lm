@@ -17,13 +17,11 @@ export async function checkHealth(): Promise<boolean> {
 
 export async function getFolders(folder: string): Promise<string[]> {
   const subfolders = [];
-  for await (
-    const entry of walk(folder, {
-      includeDirs: true,
-      includeFiles: false,
-      maxDepth: 1,
-    })
-  ) {
+  for await (const entry of walk(folder, {
+    includeDirs: true,
+    includeFiles: false,
+    maxDepth: 1,
+  })) {
     if (entry.isDirectory && entry.path !== folder) {
       subfolders.push(entry.path);
     }
@@ -36,13 +34,11 @@ export async function getFilesInFolder(
   extension?: string,
 ): Promise<string[]> {
   let files = [];
-  for await (
-    const entry of walk(folder, {
-      includeDirs: false,
-      includeFiles: true,
-      maxDepth: 1,
-    })
-  ) {
+  for await (const entry of walk(folder, {
+    includeDirs: false,
+    includeFiles: true,
+    maxDepth: 1,
+  })) {
     if (entry.isFile) {
       files.push(entry.path);
     }
@@ -55,13 +51,11 @@ export async function getFilesInFolder(
 
 export async function filesInFolderExist(folder: string) {
   await ensureDir(folder);
-  for await (
-    const entry of walk(folder, {
-      includeDirs: false,
-      includeFiles: true,
-      maxDepth: 1,
-    })
-  ) {
+  for await (const entry of walk(folder, {
+    includeDirs: false,
+    includeFiles: true,
+    maxDepth: 1,
+  })) {
     if (entry.isFile) {
       return true;
     }
@@ -81,8 +75,18 @@ export async function prepareDifyFolder(folder: string) {
   for (const pdfFile of pdfFiles) {
     const success = await stampPdfWithSlideNumber(pdfFile, inputFolder);
     if (!success) {
-      console.warn(`PDF stamping failed for ${Path.basename(pdfFile)}, using original as fallback`);
-      await Deno.copyFile(pdfFile, Path.join(inputFolder, Path.basename(pdfFile)));
+      console.warn(
+        `PDF stamping failed for ${Path.basename(pdfFile)}, using original as fallback`,
+      );
+      const corruptedPath = Path.join(
+        inputFolder,
+        `${Path.basename(pdfFile, ".pdf")}_numbered.pdf`,
+      );
+      await Deno.remove(corruptedPath).catch(() => {});
+      await Deno.copyFile(
+        pdfFile,
+        Path.join(inputFolder, Path.basename(pdfFile)),
+      );
     }
   }
 }
@@ -99,7 +103,7 @@ export async function sendDifyRequest(folder: string, fach: string) {
   const response = await fetch(`http://localhost:8099/v1/workflows/run`, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${Deno.env.get("DIFY_API_KEY")}`,
+      Authorization: `Bearer ${Deno.env.get("DIFY_API_KEY")}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
