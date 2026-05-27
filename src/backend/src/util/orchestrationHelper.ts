@@ -97,7 +97,7 @@ export async function prepareDifyFolder(folder: string) {
   }
 }
 
-export async function sendDifyRequest(folder: string, fach: string) {
+export async function sendDifyRequest(folder: string, fach: string, lectureName: string) {
   const inputFolder = `${folder}/for_dify`;
   const outputFolder = `${folder}/from_dify`;
 
@@ -117,6 +117,7 @@ export async function sendDifyRequest(folder: string, fach: string) {
       body: JSON.stringify({
         inputs: {
           fach,
+          lectureName,
           input_files: files.map((filePath) => ({
             transfer_method: "remote_url",
             url: `${requireEnv("DIFY_FILE_SERVER_URL")}/${toFileServerPath(filePath)}`,

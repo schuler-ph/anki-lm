@@ -16,6 +16,22 @@ version: 0.4.0
 workflow:
   conversation_variables: []
   environment_variables:
+  - description: 'URL of the file-acceptor service (Cloud Run or local). Set this after deploying.'
+    id: a1b2c3d4-0001-0001-0001-000000000001
+    name: FILE_ACCEPTOR_URL
+    selector:
+    - env
+    - FILE_ACCEPTOR_URL
+    value: 'http://host.docker.internal:8019'
+    value_type: string
+  - description: 'Shared secret for file-acceptor auth. Must match FILE_ACCEPTOR_SECRET in the service.'
+    id: a1b2c3d4-0002-0002-0002-000000000002
+    name: FILE_ACCEPTOR_SECRET
+    selector:
+    - env
+    - FILE_ACCEPTOR_SECRET
+    value: 'change-me'
+    value_type: string
   - description: ''
     id: 0487765c-e7d3-43af-bc63-bdc4376e21a2
     name: lang
@@ -1410,7 +1426,16 @@ workflow:
           required: true
           type: text-input
           variable: output_path
-      height: 140
+        - default: ''
+          hint: 'Lecture name without date prefix, e.g. ArchitekturMuster'
+          label: lectureName
+          max_length: 128
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: lectureName
+      height: 168
       id: '1762443028718'
       position:
         x: 0
@@ -1982,9 +2007,9 @@ workflow:
             type: text
             value: '{{#1762447378185.text#}}'
           type: raw-text
-        headers: ''
+        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/01-summary.md
+        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_01-summary.md
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -1997,7 +2022,7 @@ workflow:
           max_write_timeout: 0
         title: Save Summary
         type: http-request
-        url: http://host.docker.internal:8019
+        url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
       height: 137
       id: '1762593529707'
@@ -2023,9 +2048,9 @@ workflow:
             type: text
             value: '{{#17625136452110.text#}}'
           type: raw-text
-        headers: ''
+        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/02-veredelt.md
+        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_02-veredelt.md
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -2038,7 +2063,7 @@ workflow:
           max_write_timeout: 0
         title: Save Veredelung
         type: http-request
-        url: http://host.docker.internal:8019
+        url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
       height: 137
       id: '17625936193150'
@@ -2064,9 +2089,9 @@ workflow:
             type: text
             value: '{{#17625137306400.text#}}'
           type: raw-text
-        headers: ''
+        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/03-tldr.md
+        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_03-tldr.md
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -2079,7 +2104,7 @@ workflow:
           max_write_timeout: 0
         title: Save TLDR
         type: http-request
-        url: http://host.docker.internal:8019
+        url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
       height: 137
       id: '17625937012150'
@@ -2105,9 +2130,9 @@ workflow:
             type: text
             value: '{{#17625139628550.text#}}'
           type: raw-text
-        headers: ''
+        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/04-konzepte.md
+        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_04-konzepte.md
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -2120,7 +2145,7 @@ workflow:
           max_write_timeout: 0
         title: Save Konzepte
         type: http-request
-        url: http://host.docker.internal:8019
+        url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
       height: 137
       id: '17625938088930'
@@ -2146,9 +2171,9 @@ workflow:
             type: text
             value: '{{#17625140889850.text#}}'
           type: raw-text
-        headers: ''
+        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/05-beispiele.md
+        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_05-beispiele.md
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -2161,7 +2186,7 @@ workflow:
           max_write_timeout: 0
         title: Save Beispiele
         type: http-request
-        url: http://host.docker.internal:8019
+        url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
       height: 137
       id: '17625938553500'
@@ -2187,9 +2212,9 @@ workflow:
             type: text
             value: '{{#17625141139440.text#}}'
           type: raw-text
-        headers: ''
+        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/06-anki.md
+        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_06-anki.md
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -2202,7 +2227,7 @@ workflow:
           max_write_timeout: 0
         title: Save Anki
         type: http-request
-        url: http://host.docker.internal:8019
+        url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
       height: 137
       id: '17625938756350'

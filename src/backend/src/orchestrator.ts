@@ -12,7 +12,13 @@ await checkHealth();
 
 const faecher = ["eai", "lar", "iid"];
 
-type FolderTask = { folder: string; fach: string; needsPrep: boolean };
+// Strips leading YYYY-MM-DD_ date prefix from lecture folder names.
+// e.g. "2025-05-20_ArchitekturMuster" → "ArchitekturMuster"
+function extractLectureName(folderBasename: string): string {
+  return folderBasename.replace(/^\d{4}-\d{2}-\d{2}_?/, "") || folderBasename;
+}
+
+type FolderTask = { folder: string; fach: string; lectureName: string; needsPrep: boolean };
 
 const tasks: FolderTask[] = [];
 
@@ -25,7 +31,8 @@ for (const fach of faecher) {
     const isProcessed = await filesInFolderExist(`${folder}/from_dify`);
 
     if (isProcessed) continue;
-    tasks.push({ folder, fach, needsPrep: !isPrepared });
+    const lectureName = extractLectureName(Path.basename(folder));
+    tasks.push({ folder, fach, lectureName, needsPrep: !isPrepared });
   }
 }
 
@@ -46,12 +53,12 @@ if (tasks.length === 0) {
   }
 }
 
-for (const { folder, fach, needsPrep } of tasks) {
-  console.log(`Starting with folder ${Path.basename(folder)}`);
+for (const { folder, fach, lectureName, needsPrep } of tasks) {
+  console.log(`Starting with folder ${Path.basename(folder)} (${fach} / ${lectureName})`);
   if (needsPrep) {
     await prepareDifyFolder(folder);
   }
-  await sendDifyRequest(folder, fach);
+  await sendDifyRequest(folder, fach, lectureName);
 }
 
 console.log("Done.");
