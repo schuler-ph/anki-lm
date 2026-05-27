@@ -18,20 +18,10 @@ Everything else — all code changes, Dockerfiles, CI/CD, Terraform configs, Dif
 
 ---
 
-## Phase 1 — Security & Git Hygiene (~1h)
+## Phase 1 — Security & Git Hygiene ✅
 
-> **Critical**: Real API keys are committed to git history in `src/backend/.env`.
-
-- [x] 🤖 Add `src/backend/.env` to `.gitignore`
-- [x] 🤖 Create `src/backend/.env.example` with placeholder values
-- [ ] 👤 Rotate **OpenAI API key** at platform.openai.com → Settings → API Keys
-- [ ] 👤 Rotate **Notion API key** at notion.so → Settings → My Connections
-- [ ] 👤 Purge `.env` from git history:
-  ```bash
-  # Install: brew install git-filter-repo
-  git filter-repo --path src/backend/.env --invert-paths --force
-  git push --force
-  ```
+- [x] 🤖 `src/backend/.env` is in `.gitignore` and was never committed — no key rotation needed
+- [x] 🤖 `src/backend/.env.example` updated with all current + upcoming variables
 
 ---
 

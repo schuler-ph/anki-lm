@@ -2,7 +2,6 @@
 *.tfstate
 *.tfstate.backup
 .terraform/
-.terraform.lock.hcl
 
 # Real tfvars (keep only .example versions)
 terraform.tfvars

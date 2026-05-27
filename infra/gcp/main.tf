@@ -13,6 +13,20 @@ provider "google" {
   region  = var.region
 }
 
+# ── Enable required APIs ───────────────────────────────────────────────────────
+
+resource "google_project_service" "apis" {
+  for_each = toset([
+    "storage.googleapis.com",
+    "iam.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "run.googleapis.com",
+    "iamcredentials.googleapis.com",
+  ])
+  service            = each.key
+  disable_on_destroy = false
+}
+
 # ── GCS bucket for lecture files ──────────────────────────────────────────────
 
 resource "google_storage_bucket" "ankilm_files" {
@@ -20,6 +34,7 @@ resource "google_storage_bucket" "ankilm_files" {
   location                    = var.region
   uniform_bucket_level_access = true
   force_destroy               = false
+  depends_on                  = [google_project_service.apis]
 
   lifecycle_rule {
     condition { age = 365 }
@@ -32,6 +47,7 @@ resource "google_storage_bucket" "ankilm_files" {
 resource "google_service_account" "ankilm_backend" {
   account_id   = "ankilm-backend"
   display_name = "AnkiLM backend orchestrator"
+  depends_on   = [google_project_service.apis]
 }
 
 resource "google_storage_bucket_iam_member" "backend_object_admin" {
@@ -50,6 +66,7 @@ resource "google_artifact_registry_repository" "ankilm" {
   repository_id = "ankilm"
   format        = "DOCKER"
   location      = var.region
+  depends_on    = [google_project_service.apis]
 }
 
 # ── Cloud Run: file-acceptor service ──────────────────────────────────────────
@@ -64,7 +81,8 @@ resource "google_cloud_run_v2_service" "file_acceptor" {
     service_account = google_service_account.ankilm_backend.email
 
     containers {
-      image = "${var.region}-docker.pkg.dev/${var.project_id}/ankilm/file-acceptor:latest"
+      # Placeholder image for initial deploy — replaced by CI on first push to master
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
 
       env {
         name  = "GCS_BUCKET"
@@ -74,15 +92,10 @@ resource "google_cloud_run_v2_service" "file_acceptor" {
         name  = "FILE_ACCEPTOR_SECRET"
         value = var.file_acceptor_secret
       }
-      env {
-        name  = "PORT"
-        value = "8080"
-      }
-
       resources {
         limits = {
           cpu    = "1"
-          memory = "256Mi"
+          memory = "512Mi"
         }
       }
     }
@@ -91,6 +104,12 @@ resource "google_cloud_run_v2_service" "file_acceptor" {
       min_instance_count = 0
       max_instance_count = 3
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      template[0].containers[0].image,
+    ]
   }
 }
 
