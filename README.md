@@ -124,3 +124,43 @@ graph TD
 - Real-time processing status updates in the dashboard.
 - Direct PDF viewer integration alongside the transcript.
 - Export to Notion integration.
+
+## ⚙️ Setup
+
+### Backend (Deno Orchestrator)
+
+**Voraussetzungen:** [Deno](https://deno.land/), `ffmpeg`, `pdfcpu` installiert.
+
+```bash
+cd src/backend
+cp .env.example .env
+# .env öffnen und alle Werte eintragen (OpenAI Key, Dify Key, LECTURE_ROOT, ...)
+```
+
+Starten:
+
+```bash
+deno task dev      # Orchestrator (überwacht Lecture-Ordner)
+deno task file     # File-Server auf Port 8019 (für Dify-Workflow)
+```
+
+### Frontend
+
+```bash
+cp .env.example .env
+# VITE_BACKEND_URL setzen (lokal: http://localhost:3000)
+npm install
+npm run dev
+```
+
+### Benötigte Umgebungsvariablen
+
+| Variable               | Wo                 | Beschreibung                             |
+| ---------------------- | ------------------ | ---------------------------------------- |
+| `OPENAI_API_KEY`       | `src/backend/.env` | Whisper-Transkription                    |
+| `DIFY_API_KEY`         | `src/backend/.env` | Dify Workflow API                        |
+| `DIFY_API_URL`         | `src/backend/.env` | Dify-Instanz URL                         |
+| `LECTURE_ROOT`         | `src/backend/.env` | Pfad zum Vorlesungsordner                |
+| `FILE_SERVER_URL`      | `src/backend/.env` | Lokale fileAcceptor-URL                  |
+| `DIFY_FILE_SERVER_URL` | `src/backend/.env` | fileAcceptor-URL aus Dify-Sicht (Docker) |
+| `VITE_BACKEND_URL`     | `.env`             | Backend-URL für das Frontend             |

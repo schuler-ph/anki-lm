@@ -4,9 +4,15 @@ import { transcribe } from "../transcribe.ts";
 import { stampPdfWithSlideNumber } from "./pdf.ts";
 import { toFileServerPath, toRelativeLecturePath } from "./storageRoot.ts";
 
+function requireEnv(key: string): string {
+  const value = Deno.env.get(key);
+  if (!value) throw new Error(`Missing required environment variable: ${key}`);
+  return value;
+}
+
 export async function checkHealth(): Promise<boolean> {
   try {
-    const res = await fetch("http://localhost:8019/", {
+    const res = await fetch(`${requireEnv("FILE_SERVER_URL")}/`, {
       method: "GET",
     });
     return res.ok;
@@ -100,26 +106,29 @@ export async function sendDifyRequest(folder: string, fach: string) {
 
   console.log(`Sending Dify request for folder ${folder}...`);
 
-  const response = await fetch(`http://localhost:8099/v1/workflows/run`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${Deno.env.get("DIFY_API_KEY")}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      inputs: {
-        fach,
-        input_files: files.map((filePath) => ({
-          transfer_method: "remote_url",
-          url: `http://host.docker.internal:8019/${toFileServerPath(filePath)}`,
-          type: "document",
-        })),
-        output_path: toRelativeLecturePath(outputFolder),
+  const response = await fetch(
+    `${requireEnv("DIFY_API_URL")}/v1/workflows/run`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${Deno.env.get("DIFY_API_KEY")}`,
+        "Content-Type": "application/json",
       },
-      response_mode: "streaming",
-      user: "schuler-ph",
-    }),
-  });
+      body: JSON.stringify({
+        inputs: {
+          fach,
+          input_files: files.map((filePath) => ({
+            transfer_method: "remote_url",
+            url: `${requireEnv("DIFY_FILE_SERVER_URL")}/${toFileServerPath(filePath)}`,
+            type: "document",
+          })),
+          output_path: toRelativeLecturePath(outputFolder),
+        },
+        response_mode: "streaming",
+        user: "schuler-ph",
+      }),
+    },
+  );
 
   if (!response.ok || !response.body) {
     const errorBody = await response.text();

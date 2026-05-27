@@ -13,9 +13,9 @@ Jeder Schritt ist atomar und unabhängig ausführbar.
 - [x] `.env` zu `.gitignore` in `src/backend/` hinzufügen → war bereits eingetragen
 - [x] `src/backend/.env.example` erstellen mit allen Keys als Platzhalter (ohne echte Werte)
 - [x] Root `.env.example` erstellen für Frontend-Variablen (`VITE_BACKEND_URL`, etc.)
-- [ ] README-Abschnitt "Setup" ergänzen: welche `.env`-Variablen wo benötigt werden
-- [ ] `orchestrationHelper.ts`: hardcodierte `http://localhost:8019` → `Deno.env.get("FILE_SERVER_URL")`
-- [ ] `orchestrationHelper.ts`: hardcodierte `http://localhost:8099` → `Deno.env.get("DIFY_API_URL")`
+- [x] README-Abschnitt "Setup" ergänzen: welche `.env`-Variablen wo benötigt werden
+- [x] `orchestrationHelper.ts`: hardcodierte `http://localhost:8019` → `Deno.env.get("FILE_SERVER_URL")`
+- [x] `orchestrationHelper.ts`: hardcodierte `http://localhost:8099` → `Deno.env.get("DIFY_API_URL")`
 
 ---
 
