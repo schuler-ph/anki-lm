@@ -1,0 +1,9 @@
+# Replace dify.yourdomain.com with your actual domain (or use an IP block without TLS)
+dify.yourdomain.com {
+  reverse_proxy dify-nginx:80
+}
+
+# If you don't have a domain yet, comment out the block above and use this instead:
+# :80 {
+#   reverse_proxy dify-nginx:80
+# }

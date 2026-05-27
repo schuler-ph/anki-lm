@@ -1,0 +1,4 @@
+hcloud_token   = "your-hetzner-api-token"
+ssh_public_key = "ssh-ed25519 AAAA... your-key-comment"
+location       = "fsn1"
+dify_domain    = "dify.yourdomain.com"

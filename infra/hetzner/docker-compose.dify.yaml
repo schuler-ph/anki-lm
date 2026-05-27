@@ -1,0 +1,151 @@
+services:
+  # ── Caddy (HTTPS reverse proxy) ─────────────────────────────────────────────
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - dify
+    depends_on:
+      - dify-nginx
+
+  # ── Dify API ─────────────────────────────────────────────────────────────────
+  dify-api:
+    image: langgenius/dify-api:0.15.3
+    restart: unless-stopped
+    env_file:
+      - .env.dify
+    volumes:
+      - /mnt/dify-data/app/storage:/app/api/storage
+    networks:
+      - dify
+    depends_on:
+      - dify-db
+      - dify-redis
+
+  # ── Dify Worker ───────────────────────────────────────────────────────────────
+  dify-worker:
+    image: langgenius/dify-api:0.15.3
+    restart: unless-stopped
+    env_file:
+      - .env.dify
+    environment:
+      - SERVER_WORKER_AMOUNT=1
+      - CELERY_WORKER_CLASS=gevent
+    command: worker
+    volumes:
+      - /mnt/dify-data/app/storage:/app/api/storage
+    networks:
+      - dify
+    depends_on:
+      - dify-db
+      - dify-redis
+
+  # ── Dify Web (frontend) ───────────────────────────────────────────────────────
+  dify-web:
+    image: langgenius/dify-web:0.15.3
+    restart: unless-stopped
+    env_file:
+      - .env.dify
+    networks:
+      - dify
+
+  # ── Dify Nginx (internal router) ─────────────────────────────────────────────
+  dify-nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - dify
+    depends_on:
+      - dify-api
+      - dify-web
+
+  # ── PostgreSQL ────────────────────────────────────────────────────────────────
+  dify-db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    env_file:
+      - .env.dify
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - /mnt/dify-data/postgres:/var/lib/postgresql/data
+    networks:
+      - dify
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ─────────────────────────────────────────────────────────────────────
+  dify-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - /mnt/dify-data/redis:/data
+    networks:
+      - dify
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+
+  # ── Weaviate (vector DB for RAG) ──────────────────────────────────────────────
+  dify-weaviate:
+    image: semitechnologies/weaviate:1.19.0
+    restart: unless-stopped
+    environment:
+      - QUERY_DEFAULTS_LIMIT=25
+      - AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED=false
+      - PERSISTENCE_DATA_PATH=/var/lib/weaviate
+      - DEFAULT_VECTORIZER_MODULE=none
+      - CLUSTER_HOSTNAME=node1
+      - AUTHENTICATION_APIKEY_ENABLED=true
+      - AUTHENTICATION_APIKEY_ALLOWED_KEYS=${WEAVIATE_API_KEY}
+      - AUTHENTICATION_APIKEY_USERS=dify
+      - AUTHORIZATION_ADMINLIST_ENABLED=true
+      - AUTHORIZATION_ADMINLIST_USERS=dify
+    volumes:
+      - /mnt/dify-data/weaviate:/var/lib/weaviate
+    networks:
+      - dify
+
+  # ── Sandbox (code execution) ──────────────────────────────────────────────────
+  dify-sandbox:
+    image: langgenius/dify-sandbox:0.2.10
+    restart: unless-stopped
+    environment:
+      - API_KEY=${SANDBOX_API_KEY}
+      - GIN_MODE=release
+      - WORKER_TIMEOUT=15
+      - ENABLE_NETWORK=true
+      - HTTP_PROXY=http://ssrf-proxy:3128
+      - HTTPS_PROXY=http://ssrf-proxy:3128
+    networks:
+      - dify
+
+  # ── SSRF Proxy ────────────────────────────────────────────────────────────────
+  ssrf-proxy:
+    image: ubuntu/squid:latest
+    restart: unless-stopped
+    volumes:
+      - ./ssrf_proxy/squid.conf:/etc/squid/squid.conf:ro
+    networks:
+      - dify
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  dify:
+    driver: bridge

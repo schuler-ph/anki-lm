@@ -1,0 +1,11 @@
+# Terraform state — contains real resource IDs and sensitive outputs
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Real tfvars (keep only .example versions)
+terraform.tfvars
+
+# Dify env file with real secrets
+.env.dify
