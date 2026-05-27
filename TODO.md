@@ -1,190 +1,135 @@
-# AnkiLM — Migration TODO
+# AnkiLM — TODO
 
-> Legend: 🤖 = I (Claude) do this autonomously | 👤 = You must do this manually | 🌍 = Terraform handles it (you run `terraform apply`)
+> Legend: 🤖 = Claude does this | 👤 = You do this manually | 🌍 = `terraform apply`
 
----
-
-## Autonomy Summary
-
-| Category | What you must do manually |
-|---|---|
-| **Dify** | Re-upload knowledge base documents after VPS migration; import updated workflow YAML; set OpenAI API key + env vars on new instance |
-| **Google Cloud** | Create GCP project + link billing account; run `terraform apply`; add service account key as GitHub Secret |
-| **Hetzner** | Create account + add payment; run `terraform apply` (or provision VPS manually); add SSH key |
-| **Security** | Rotate OpenAI + Notion API keys in their dashboards; run `git filter-repo` |
-| **Vercel** | Create account; link GitHub repo; set env vars |
-
-Everything else — all code changes, Dockerfiles, CI/CD, Terraform configs, Dify YAML updates — I generate and commit locally.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the target architecture and
+[docs/DECISIONS.md](docs/DECISIONS.md) for all ADRs.
 
 ---
 
 ## Phase 1 — Security & Git Hygiene ✅
-
-- [x] 🤖 `src/backend/.env` is in `.gitignore` and was never committed — no key rotation needed
-- [x] 🤖 `src/backend/.env.example` updated with all current + upcoming variables
-
----
-
-## Phase 2 — File Naming Convention (~2h)
-
-Goal: Output files get names like `EAI_ArchitekturMuster_summary.md` so AI chat context is unambiguous.
-
-The `fach` variable is already passed into the Dify workflow. The lecture folder name (e.g. `2025-05-20_ArchitekturMuster`) is passed as `output_path`. We just need to extract a clean name and prefix files.
-
-- [ ] 🤖 Add `lectureName` input to Dify workflow Start node (extracted from folder name without date prefix)
-- [ ] 🤖 Update all 6 "Save X" HTTP-Request nodes in Dify YAML to use `{{fach}}_{{lectureName}}_01-summary.md` etc.
-- [ ] 🤖 Update orchestrator: pass `lectureName` extracted from folder basename (strip `YYYY-MM-DD_` prefix)
-- [ ] 🤖 Update `sendDifyRequest()` to pass `lectureName` in inputs
-- [ ] 🤖 Write migration script `scripts/rename-existing-outputs.sh` for existing files
+- [x] `src/backend/.env` is in `.gitignore` and was never committed
+- [x] `src/backend/.env.example` updated with all variables
 
 ---
 
-## Phase 3 — Replace fileAcceptor.ts with Cloud Run + GCS (~3–4h)
-
-**Current**: Dify POSTs files to `http://host.docker.internal:8019` (Mac-local).  
-**New**: A tiny Cloud Run service accepts POST (writes to GCS) and GET (reads from GCS). Same HTTP API — no Dify workflow logic changes, only the URL changes.
-
-### 3a. Google Cloud Infrastructure (Terraform)
-- [ ] 👤 Create GCP project at console.cloud.google.com (note the `PROJECT_ID`)
-- [ ] 👤 Enable billing on the project
-- [ ] 🤖 Write `infra/gcp/main.tf`:
-  - `google_storage_bucket` — `ankilm-files` bucket (private, versioning off)
-  - `google_service_account` — `ankilm-backend` SA
-  - `google_storage_bucket_iam_member` — SA gets `roles/storage.objectAdmin`
-  - `google_cloud_run_v2_service` — deploys file-acceptor container
-  - `google_service_account_key` output (for backend .env + Dify auth header)
-- [ ] 🌍 `cd infra/gcp && terraform init && terraform apply` (you run this)
-
-### 3b. Cloud Run file-acceptor service
-- [ ] 🤖 Write `src/backend/src/fileAcceptorGCS.ts` (Deno/Oak):
-  - `POST /?fileName=<path>` → upload body text to GCS object at `<path>`
-  - `GET /<path>` → stream GCS object to response
-  - Auth: Bearer token check (env var `FILE_ACCEPTOR_SECRET`)
-- [ ] 🤖 Write `src/backend/Dockerfile.file-acceptor`
-- [ ] 🤖 Write GitHub Action `.github/workflows/deploy-file-acceptor.yml` (build → push to Artifact Registry → deploy Cloud Run)
-
-### 3c. Update Dify workflow YAML
-- [ ] 🤖 In `src/backend/workflow/Dify-Summarize.yml`: replace all 6 instances of `http://host.docker.internal:8019` with `{{env.FILE_ACCEPTOR_URL}}`
-- [ ] 🤖 Add `FILE_ACCEPTOR_URL` and `FILE_ACCEPTOR_SECRET` as Dify environment variables in the YAML
-- [ ] 👤 Import updated workflow YAML into Dify UI (DSL Import button) or via Dify API:
-  ```bash
-  # After you have DIFY_ADMIN_TOKEN:
-  curl -X POST http://<dify-host>/console/api/apps/<app-id>/workflows/draft/import \
-    -H "Authorization: Bearer $DIFY_ADMIN_TOKEN" \
-    -F "data=@src/backend/workflow/Dify-Summarize.yml"
-  ```
-- [ ] 👤 Set `FILE_ACCEPTOR_URL` and `FILE_ACCEPTOR_SECRET` in Dify → Settings → Environment Variables
-
-### 3d. Update backend orchestrator
-- [ ] 🤖 Update `orchestrationHelper.ts`: replace `FILE_SERVER_URL` health check with Cloud Run URL
-- [ ] 🤖 Update `orchestrationHelper.ts`: upload processed files directly to GCS (using `@google-cloud/storage` or signed URLs) instead of via fileAcceptor POST
-- [ ] 🤖 Update `sendDifyRequest()`: pass `DIFY_FILE_SERVER_URL` pointing to Cloud Run base URL
+## Phase 2 — File Naming Convention ✅
+- [x] 🤖 `orchestrator.ts` extracts `lectureName` from folder basename (strips date prefix)
+- [x] 🤖 `orchestrationHelper.ts` passes `lectureName` to Dify as workflow input
+- [x] 🤖 Dify YAML: `lectureName` added to Start node; all 6 Save-* params use `<fach>_<lectureName>_` prefix
+- [x] 🤖 `scripts/rename-existing-outputs.sh` for migrating existing files
 
 ---
 
-## Phase 4 — Frontend Hosting → Vercel (~2h)
-
-**Current**: GitHub Pages (static, no env vars, no backend proxy).  
-**New**: Vercel (env vars, rewrite rules for API proxy, auto-deploys).
-
-- [ ] 🤖 Change `vite.config.ts` `base` from `/anki-lm/` to `/`
-- [ ] 🤖 Create `vercel.json` with rewrite rules: `/api/*` → backend URL
-- [ ] 🤖 Update `package.json` build script if needed
-- [ ] 👤 Create Vercel account at vercel.com, import GitHub repo `schuler-ph/dir-praxis`
-- [ ] 👤 Set env vars in Vercel dashboard: `VITE_BACKEND_URL`, etc.
-- [ ] 🤖 Delete `.github/workflows/deploy-github-pages.yml` if it exists, create `.github/workflows/deploy-vercel.yml`
+## Phase 3 — Clean Up Wrong Infra (~1h)
+- [ ] 🤖 Remove Cloud Run + Artifact Registry from `infra/gcp/main.tf` (keep GCS + SA only)
+- [ ] 🤖 Delete `infra/hetzner/` (Dify on RPi instead, no Terraform needed)
+- [ ] 🤖 Delete `src/file-acceptor/` (replaced by webhook endpoint on backend API)
+- [ ] 🤖 Delete `.github/workflows/deploy-file-acceptor.yml`
+- [ ] 🤖 Delete `docker-compose.local.yaml` (will be replaced in Phase 5)
 
 ---
 
-## Phase 5 — Dockerize Frontend & Backend (~2h)
+## Phase 4 — GCS Wiring in Orchestrator (~2h)
+Replace local file serving with GCS. Orchestrator uploads input files to GCS;
+Dify fetches them via signed URL. No more `fileAcceptor.ts` or `FILE_SERVER_URL`.
 
-- [ ] 🤖 Write `src/frontend/Dockerfile` (multi-stage: `node:22-alpine` build → `nginx:alpine` serve)
-- [ ] 🤖 Write `src/backend/Dockerfile.orchestrator` (`denoland/deno:alpine`, includes `ffmpeg` + `pdfcpu` installs)
-- [ ] 🤖 Write `docker-compose.local.yaml` at repo root (orchestrator + file-acceptor-gcs, mounts local LECTURE_ROOT)
-- [ ] 🤖 Write `.dockerignore` files
-
----
-
-## Phase 6 — Dify Migration to Hetzner VPS (~4–6h)
-
-**Why Hetzner over RPi**: 4€/month, reliable uptime, static IP, no power/network dependency.
-
-### 6a. Provision VPS with Terraform
-- [ ] 🤖 Write `infra/hetzner/main.tf`:
-  - `hcloud_server` — CX22 (4GB RAM, 2vCPU, 40GB SSD) ARM64
-  - `hcloud_ssh_key` — your public key
-  - `hcloud_firewall` — allow 22, 80, 443, 5001 (Dify API)
-  - `hcloud_volume` — 20GB persistent volume for Dify DB + files
-- [ ] 👤 Create Hetzner account at hetzner.com/cloud, get API token
-- [ ] 👤 Add Hetzner token to `infra/hetzner/terraform.tfvars`
-- [ ] 🌍 `cd infra/hetzner && terraform init && terraform apply` (you run this)
-
-### 6b. Prepare production docker-compose for Dify
-- [ ] 🤖 Adapt `docker-compose.yaml` → `infra/hetzner/docker-compose.dify.yaml`:
-  - Remove `build:` directives, use official image tags
-  - Add Caddy reverse proxy service (auto-HTTPS)
-  - Mount persistent volume for postgres data + weaviate
-  - Add `restart: unless-stopped` to all services
-- [ ] 🤖 Write `infra/hetzner/caddy/Caddyfile` (HTTPS termination for Dify domain)
-- [ ] 🤖 Write `infra/hetzner/deploy.sh` (rsync compose file, `docker compose pull && up -d`)
-
-### 6c. Knowledge Base migration — MANUAL, no automation possible
-> The RAG knowledge bases live inside Dify's internal Weaviate + Postgres. There is no export API.
-
-- [ ] 👤 SSH into new Hetzner VPS, bring up Dify docker-compose
-- [ ] 👤 Open Dify UI, go to Knowledge → recreate each of the 4 knowledge bases:
-  - **PRPD** (was dataset_id: `DfHClPXl6V...`)
-  - **VSYS** (was dataset_id: `4hSxhf+7/2...`)
-  - **Artemis** (was dataset_id: `CBSKaUAzt0...`)
-  - **EAI** (was dataset_id: `L5tL838/m9...`)
-- [ ] 👤 Upload all source documents to each knowledge base
-- [ ] 👤 Note down the 4 new dataset_ids from the Dify URL (`/datasets/<id>/documents`)
-- [ ] 👤 Share new dataset IDs → I update `Dify-Summarize.yml` with correct IDs
-- [ ] 🤖 Update `Dify-Summarize.yml` with new dataset_ids after you provide them
-- [ ] 👤 Import updated YAML into new Dify instance
-- [ ] 👤 Set all environment variables in new Dify (OpenAI key, lang, all prompts — already in YAML env section)
+- [ ] 🤖 Add `@google-cloud/storage` to `src/backend/deno.json`
+- [ ] 🤖 New `src/backend/src/util/storage.ts`: `uploadToGcs(localPath)` → returns signed URL
+- [ ] 🤖 Update `orchestrationHelper.ts`: replace `toFileServerPath` + `DIFY_FILE_SERVER_URL` with GCS signed URLs
+- [ ] 🤖 Update `orchestrationHelper.ts`: remove `checkHealth()` (no local file server to check)
+- [ ] 🤖 Delete `src/backend/src/fileAcceptor.ts`
+- [ ] 🤖 Delete `src/backend/src/util/storageRoot.ts` `toFileServerPath()` (no longer needed)
+- [ ] 🌍 `cd infra/gcp && terraform apply` — creates GCS bucket + service account
+- [ ] 👤 Copy SA key from Terraform output → `src/backend/.env` as `GOOGLE_APPLICATION_CREDENTIALS`
 
 ---
 
-## Phase 7 — Full-Stack Integration (~2h)
+## Phase 5 — Backend API Service (Cloud Run) (~4h)
+The orchestrator becomes a proper HTTP API service that Dify calls back via webhook.
+Replaces `src/backend/src/orchestrator.ts` as a standalone script.
 
-- [ ] 🤖 Update `src/backend/.env.example` with all new variables (`GCS_BUCKET`, `FILE_ACCEPTOR_URL`, `DIFY_API_URL` pointing to Hetzner, etc.)
-- [ ] 🤖 Update `README.md` with new architecture diagram + setup instructions
-- [ ] 👤 Set all env vars in GitHub Secrets for Actions
-- [ ] 👤 End-to-end test: drop MP3 + PDF into local folder, run orchestrator, verify outputs appear in GCS bucket + Dify produces files
-
----
-
-## Phase 8 — Usability & Extras (ongoing)
-
-- [ ] 🤖 Frontend: file upload UI (drag-and-drop MP3/PDF → triggers orchestrator via API)
-- [ ] 🤖 Frontend: live pipeline status (SSE stream from orchestrator)
-- [ ] 🤖 Frontend: output browser (list GCS bucket contents, view generated markdown files inline)
-- [ ] 🤖 Add Grafana + Loki to Hetzner compose stack for log monitoring
-- [ ] 🤖 GitHub Action: auto-update Dify workflow on YAML changes (calls Dify import API)
-- [ ] 🤖 Add `scripts/migrate-knowledge-base.sh` — documents the Dify KB setup steps for repeatability
+- [ ] 🤖 New `src/backend/src/api/server.ts` (Hono or Oak):
+  - `POST /api/upload` — accept MP3 + PDF, store to GCS, queue Dify job
+  - `POST /api/webhook/dify` — receive Dify output, save files to GCS, update job status
+  - `GET  /api/jobs/:id` — return job status + output file URLs
+  - `GET  /health` — health check
+- [ ] 🤖 Job queue: use in-memory queue for now (Redis/Cloud Tasks later)
+- [ ] 🤖 Update `src/backend/Dockerfile` for the API server
+- [ ] 🤖 Add Cloud Run service back to `infra/gcp/main.tf` (for the API, not file-acceptor)
+- [ ] 🤖 Add Artifact Registry back to `infra/gcp/main.tf`
+- [ ] 🤖 GitHub Action: `.github/workflows/deploy-backend.yml` (build → push → deploy Cloud Run)
+- [ ] 🤖 Update Dify YAML: change `FILE_ACCEPTOR_URL` default to `https://api.ankilm.com/api/webhook/dify`
 
 ---
 
-## Decision Log
-
-| Decision | Choice | Reason |
-|---|---|---|
-| Frontend hosting | **Vercel** | Free tier, env vars, API rewrites; GitHub Pages can't do any of this |
-| Reverse proxy | **Caddy** | Auto-HTTPS, dead-simple config, Docker-native; Envoy is service-mesh overkill |
-| File storage | **GCS** | Free first 5GB/month, Terraform support, signed URLs for Dify input |
-| File acceptor replacement | **Cloud Run micro-service** | Same HTTP API as current fileAcceptor.ts, no Dify workflow logic changes |
-| Dify hosting | **Hetzner CX22** | 4€/month, ARM64, reliable; RPi has power/SD card/home-network reliability issues |
-| VPS provisioning | **Terraform + hcloud provider** | Reproducible, version-controlled; avoids manual Hetzner console clicks |
+## Phase 6 — Dify on Raspberry Pi (~2h)
+- [ ] 👤 Install Docker on RPi: `curl -fsSL https://get.docker.com | sh`
+- [ ] 👤 Create `~/dify/docker-compose.yaml` on RPi (copy from official Dify repo, pin version)
+- [ ] 👤 Set up Cloudflare Tunnel:
+  - Cloudflare dashboard → Zero Trust → Networks → Tunnels → Create tunnel
+  - Install `cloudflared` on RPi: `curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg`
+  - Add tunnel route: `dify.yourdomain.com` → `http://localhost:80`
+  - Run `cloudflared tunnel run <token>` (or add as systemd service)
+- [ ] 👤 Configure Dify: open `https://dify.yourdomain.com`, complete setup wizard
+- [ ] 👤 Add OpenAI API key in Dify → Settings → Model Providers
+- [ ] 👤 Recreate 4 knowledge bases (PRPD, VSYS, EAI, Artemis), upload all source documents
+- [ ] 👤 Note the 4 new dataset IDs from Dify URL → share with Claude
+- [ ] 🤖 Update `Dify-Summarize.yml` with new dataset IDs (after you provide them)
+- [ ] 👤 Import updated `Dify-Summarize.yml` via Dify Studio → DSL Import
+- [ ] 👤 Set environment variables in Dify: `FILE_ACCEPTOR_URL`, `FILE_ACCEPTOR_SECRET`
 
 ---
 
-## What I Need From You Before Starting
+## Phase 7 — Frontend → Cloudflare Pages (~1h)
+- [ ] 🤖 Change `vite.config.ts` base from `/anki-lm/` to `/`
+- [ ] 🤖 Add `vercel.json` → actually `_redirects` file for Cloudflare Pages SPA routing
+- [ ] 🤖 Remove GitHub Pages deploy action if present
+- [ ] 👤 Cloudflare dashboard → Pages → Create project → Connect GitHub repo
+  - Build command: `npm run build`
+  - Output directory: `dist`
+  - Root directory: `/` (repo root)
+- [ ] 👤 Set environment variables in Cloudflare Pages: `VITE_API_URL=https://api.ankilm.com`
+- [ ] 👤 Set custom domain in Cloudflare Pages settings
 
-1. **GCP Project ID** (after you create it) — needed to fill Terraform variables
-2. **Hetzner API token** — for `infra/hetzner/terraform.tfvars`
-3. **Your SSH public key** — for Hetzner server access
-4. **Dify app ID** — visible in the Dify URL when you open the Summarize workflow
-5. **Preferred domain for Dify** (e.g. `dify.yourdomain.com`) or we use the raw Hetzner IP
+---
 
-I don't need any additional MCP server access — I can write all Terraform, Docker, and code changes locally. The Dify YAML can be updated by modifying the file and you import it via the Dify UI (or we script the API call).
+## Phase 8 — Auth + Database (Supabase) (~3h)
+- [ ] 👤 Create Supabase project at supabase.com
+- [ ] 👤 Note: project URL, anon key, service role key
+- [ ] 🤖 Write Supabase migrations: `users`, `jobs`, `subscriptions` tables
+- [ ] 🤖 Add Supabase auth to frontend (login/signup UI)
+- [ ] 🤖 Add JWT verification middleware to backend API
+- [ ] 🤖 Set Supabase env vars in Cloud Run + Cloudflare Pages
+
+---
+
+## Phase 9 — Stripe Payments (~3h)
+- [ ] 👤 Create Stripe account, note API keys
+- [ ] 👤 Create products + pricing in Stripe dashboard
+- [ ] 🤖 Add `POST /api/stripe/webhook` to backend API
+- [ ] 🤖 Add checkout flow to frontend
+- [ ] 🤖 Gate `POST /api/upload` behind active subscription check
+- [ ] 👤 Set Stripe webhook endpoint in Stripe dashboard → `https://api.ankilm.com/api/stripe/webhook`
+
+---
+
+## Phase 10 — Polish & Monitoring (~ongoing)
+- [ ] 🤖 Frontend: live job status (SSE or polling)
+- [ ] 🤖 Frontend: output viewer (list + render generated markdown files)
+- [ ] 🤖 Add Cloud Logging + Error Reporting to backend API
+- [ ] 🤖 GCS lifecycle policy: auto-delete raw MP3/PDF after 30 days
+- [ ] 🤖 Rate limiting on `/api/upload`
+
+---
+
+## What I need from you before each phase
+
+| Phase | What you need to provide |
+|---|---|
+| 4 | GCP project already exists (`anki-lm`) — just run `terraform apply` after Phase 3 cleanup |
+| 5 | SA key from Terraform output (for local `.env`) |
+| 6 | Your Cloudflare domain, new Dify dataset IDs after KB rebuild |
+| 7 | Nothing — pure code + 3 Cloudflare dashboard clicks |
+| 8 | Supabase project URL + keys |
+| 9 | Stripe API keys |
