@@ -9,7 +9,7 @@ dependencies:
 - current_identifier: null
   type: marketplace
   value:
-    marketplace_plugin_unique_identifier: langgenius/openai:0.2.6@e2665624a156f52160927bceac9e169bd7e5ae6b936ae82575e14c90af390e6e
+    marketplace_plugin_unique_identifier: langgenius/openai:0.4.0@beafb5a726eda839a1839f61a0456ae7e068c98624c53f59b07be9a71fbf72da
     version: null
 kind: app
 version: 0.4.0
@@ -17,21 +17,306 @@ workflow:
   conversation_variables: []
   environment_variables:
   - description: ''
-    id: e34f29b5-44fe-4b20-a089-4254eca41443
-    name: prompt_02_00_rag
+    id: 0487765c-e7d3-43af-bc63-bdc4376e21a2
+    name: lang
     selector:
     - env
-    - prompt_02_00_rag
+    - lang
+    value: 1
+    value_type: integer
+  - description: ''
+    id: d8ede4fd-1f97-4ae3-90cd-29320bd07981
+    name: en_p20_rag
+    selector:
+    - env
+    - en_p20_rag
+    value: Analyze the following lecture context. Extract a list of the 10-15 most
+      important and specific technical terms. Output ONLY a comma-separated list of
+      these terms.
+    value_type: string
+  - description: ''
+    id: 6e44afce-7ca8-4641-b803-3c18893e42ac
+    name: en_p24_anki
+    selector:
+    - env
+    - en_p24_anki
+    value: '
+
+
+
+      Input:
+
+      - Slides with page numbers (Page x of X)
+
+      - Original transcript with timestamps
+
+      - Summary
+
+      - Refined transcript
+
+      - TLDR
+
+      - Anki Documentation
+
+
+      Generate 8–12 high-quality Anki flashcards from the context (only from my documents;
+      otherwise "Not in the context"). Rules:
+
+
+      LaTeX and CSV robustness: Do not use semicolons in Anki CSV fields (escape them
+      if necessary); use LaTeX only for formulas (and enclose them in `[$]...[/$]`),
+      otherwise keep it concise.
+
+
+      - Mix of Basic & Cloze; 1–2 clozes `{{c1::…}}` per Cloze card.
+
+      - Back contains a detailed explanation + condition/unit if applicable + source
+      (File, Page|Timecode).
+
+      - Output as CSV lines: Front;Back (with source);Tags
+
+      - Tags: `{{subject_chapter}}`, `difficulty_E/M/H` (Easy/Medium/Hard), `type_{{def|formula|application}}`.
+
+
+      However, write the different note types in separate CSV blocks. In Anki MacOS,
+      the available types are "Image Occlusion" (Bildverdeckung), "Basic" (Einfach),
+      "Basic (type in the answer)" (Einfach (Antwort eintippen)), "Basic (and reversed
+      card)" (Einfach (und die umgekehrte Richtung)), "Basic (optional reversed card)"
+      (Einfach (und wahlweise die umgekehrte Richtung)), and "Cloze" (Lückentext).'
+    value_type: string
+  - description: ''
+    id: 945a5798-d7f4-475a-8323-4be410536984
+    name: en_p23_beispiele
+    selector:
+    - env
+    - en_p23_beispiele
+    value: '
+
+
+
+      Input:
+
+      - Slides with page numbers (Page x of X)
+
+      - Original transcript with timestamps
+
+      - Summary
+
+      - Refined transcript
+
+      - TLDR
+
+
+      List the types of tasks covered in the lecture. Create a Markdown table from
+      this.
+
+      For each type: Task type | Schema (steps) | Mini-example (with numbers/variables
+      from the context) | Typical errors | Source.
+
+      Only generate if examples are available in the context.'
+    value_type: string
+  - description: ''
+    id: fe866565-75cb-44fd-a221-0e1e751b07b5
+    name: en_p22_konzepte
+    selector:
+    - env
+    - en_p22_konzepte
+    value: 'Input:
+
+      - Slides with page numbers (Page x of X)
+
+      - Original transcript with timestamps
+
+      - Summary
+
+      - Refined transcript
+
+      - TLDR
+
+
+      Extract the core topics of the lecture.
+
+
+      Markdown table: Term | Precise definition | Intuition (1 sentence) | Explain
+      it to me like I''m 5 | Mini-example | Source |
+
+
+      Only from the context!'
+    value_type: string
+  - description: ''
+    id: be29615c-4e20-4530-9853-b3fe752485e0
+    name: en_p21_tldr
+    selector:
+    - env
+    - en_p21_tldr
+    value: 'Input:
+
+      - Slides with page numbers (Page x of X)
+
+      - Original transcript with timestamps
+
+      - Summary
+
+      - Refined transcript
+
+
+      Create a one-pager (as long as it needs to be, but optimally under 300-500 words)
+      based exclusively on the context: Learning objectives • Core ideas • Key formulas
+      (with conditions) • Sources of error • 3 practice questions (without solutions)
+      • Important ToDos and deadlines • List of sources.
+
+
+      Source Priority and Conflicts: Primary: Original transcript with timestamps
+      (stamped) & slides (pdf) > Secondary: Summary.md & Refined transcript. In case
+      of contradictions, strictly adhere to the priority AND point out the contradiction.
+
+
+      Filtering the transcript: Use only subject-specific/technical passages from
+      the transcript; ignore organizational matters/small talk, groups/appointments,
+      and meta-hints.
+
+
+      Only use time ranges that thematically fit the "Subject/Chapter".
+
+
+      Strict citation requirement: Every bullet point or table entry MUST include
+      exactly one source citation (File + Page|Timecode).
+
+
+      Terminology fidelity: Use terms exactly as they appear in the sources.'
+    value_type: string
+  - description: ''
+    id: 0f4755a2-ac5f-478c-a5b5-418c363d2ab1
+    name: en_p12_veredeln
+    selector:
+    - env
+    - en_p12_veredeln
+    value: 'Input:
+
+      - Slides with page numbers (Page x of X)
+
+      - Original transcript with timestamps
+
+      - Summary
+
+
+      Task: This time, do not summarize so generally; instead, generate a new continuous
+      text from the transcript that can replace the original transcript. This means
+      that every statement from the transcript must be included in the refined version.
+      Additionally, insert separating headings.'
+    value_type: string
+  - description: ''
+    id: 7b7caf7e-642f-477a-91d4-09bd2d13b5f7
+    name: en_p11_summarize
+    selector:
+    - env
+    - en_p11_summarize
+    value: 'Input:
+
+      - Slides with page numbers (Page x of X)
+
+      - Original transcript with timestamps
+
+
+      TASK: Convert the following raw lecture transcript into a clean, highly readable,
+      and structured document in Markdown format. Use the provided slides as a reference,
+      but the result should be a structured document that improves and cleans up the
+      transcript. Explain what was discussed in this order.
+
+
+      RULES:
+
+
+      1. Remove conversational filler phrases, filler words, and obvious repetitions.
+
+
+      2. Correct the grammar and rephrase incomplete sentences into precise, complete
+      sentences.
+
+
+      3. Keep all technical terms and core statements exactly as they are. The core
+      content must not be changed.
+
+
+      4. Structure the entire text logically. Add thematic subheadings in Markdown
+      format.
+
+
+      5. Group related sentences together into meaningful paragraphs.'
+    value_type: string
+  - description: ''
+    id: 19595c06-307b-402d-9fa0-0e8817553fdc
+    name: en_p00_system
+    selector:
+    - env
+    - en_p00_system
+    value: "# BASICS\n\nYou are a specialized study assistant for TU Wien. Your goal\
+      \ is to support students in their exam preparation as best as possible. Your\
+      \ answers should be clear, reliable, and directly related to the provided study\
+      \ materials.\n\n## ⚠️ CRITICAL REQUIREMENT: MARKDOWN FORMATTING\n**Your output\
+      \ MUST be impeccably formatted to be viewed in a standard Markdown Viewer (such\
+      \ as GitHub READMEs or VSCode Markdown Preview Mode).** Highly structured, visually\
+      \ appealing, and scannable text is your top priority. \n\nTo achieve this, you\
+      \ must apply the following Markdown principles in **every** response:\n- **Extensive\
+      \ Use of Headings:** Never output a wall of text. Break down your explanations\
+      \ using logical heading hierarchies (e.g., `## H2` for main sections, `### H3`\
+      \ for sub-topics). \n- **Lists and Tables:** heavily utilize bulleted (`-`)\
+      \ or numbered (`1.`) lists. Whenever comparing concepts or presenting structured\
+      \ data, use Markdown tables.\n- **Visual Emphasis:** Use **bold text** to highlight\
+      \ key terms, definitions, and important takeaways. Use *italics* for subtle\
+      \ emphasis or secondary terms.\n- **Blockquotes:** Use blockquotes (`>`) when\
+      \ directly quoting from the lecture notes or context.\n- **Code and Math:**\
+      \ Wrap file names, variables, and short technical terms in backticks (`code`).\
+      \ Format all mathematical formulas using LaTeX within proper Markdown math blocks\
+      \ (e.g., `$$ equation $$` or `$ inline $`).\n\n# GUIDING PRINCIPLES\n\n### 1.\
+      \ Focus on the Context\nYour main task is to analyze and process the provided\
+      \ documents (lecture notes, slides, exercises, etc.). Always base your answers\
+      \ directly on these materials.\n\n### 2. Transparency Regarding Knowledge Gaps\n\
+      If a question cannot be answered—or can only be partially answered—using the\
+      \ context, explain this clearly and politely. \n- **Do not just say:** \"Not\
+      \ in the context.\"\n- **Instead, say:** \"I could not find this information\
+      \ in the provided materials. It is possible that this was covered in [Lecture\
+      \ X] or can be found in the materials for [Topic Y].\" \n- Provide actionable\
+      \ hints on where the information might be located if possible.\n\n### 3. Meaningful\
+      \ Citations\nTo ensure traceability, add source references (e.g., `[File, Page]`\
+      \ or `[File, Timestamp]`) where it aids understanding. This is especially important\
+      \ for direct quotes, definitions, or formulas. Format these citations neatly,\
+      \ ideally at the end of the relevant bullet point or sentence.\n\n# HANDLING\
+      \ SPECIAL CASES\n\n### Contradictory Information\nIf information from different\
+      \ sources (e.g., TISS vs. TUWEL) contradicts each other, immediately point this\
+      \ out using a dedicated heading or warning block. State both pieces of information\
+      \ and cite the respective sources so the user can verify the discrepancy.\n\
+      > **Rule of Thumb:** TISS generally takes precedence for dates and registrations,\
+      \ while TUWEL takes precedence for teaching materials.\n\n### Assistance with\
+      \ Exercises\nWhen dealing with practice exercises, default to providing solution\
+      \ strategies, references to relevant theory chapters, or food for thought. **Do\
+      \ not** provide a complete sample solution unless it is explicitly available\
+      \ in the materials or the user directly requests it.\n\n### Missing Details\n\
+      If important information is missing for a complete answer (e.g., an exact submission\
+      \ time), state the available facts and explicitly draw attention to the gap.\
+      \ \n*Example:* \"The deadline date is January 15th, but an exact submission\
+      \ time is not mentioned in the materials.\"\n\n# GENERAL TONE\n\nYour tone is\
+      \ supportive, patient, and on an equal footing. You are a dedicated study partner,\
+      \ not just a mere querying tool. Always adapt the level of detail to the question—whether\
+      \ that means providing a concise definition or a highly detailed, step-by-step\
+      \ breakdown."
+    value_type: string
+  - description: ''
+    id: e34f29b5-44fe-4b20-a089-4254eca41443
+    name: de_p20_rag
+    selector:
+    - env
+    - de_p20_rag
     value: Analysiere den folgenden Vorlesungskontext. Extrahiere eine Liste der 10-15
       wichtigsten und spezifischsten Fachbegriffe. Gib NUR eine durch Kommas getrennte
       Liste dieser Begriffe aus.
     value_type: string
   - description: ''
     id: 0e63100b-6d31-4c3c-9c69-9e905863a136
-    name: prompt_02_04_anki
+    name: de_p24_anki
     selector:
     - env
-    - prompt_02_04_anki
+    - de_p24_anki
     value: "Eingabe:\n- Folien mit Seitenzahl (Seite x von X)\n- Original Transkript\
       \ mit Zeitstempel\n- Zusammenfassung\n- Transkript Veredelt\n- TLDR\n- Anki\
       \ Documentation\n\nErzeuge 8–12 hochwertige Anki-Karten aus dem Kontext (nur\
@@ -49,10 +334,10 @@ workflow:
     value_type: string
   - description: ''
     id: 52ad9c91-245d-4017-b459-483f040a8db0
-    name: prompt_02_04_anki_manual
+    name: en_p24_anki_man
     selector:
     - env
-    - prompt_02_04_anki_manual
+    - en_p24_anki_man
     value: "Text Files\nSpreadsheets and UTF-8\nHTML\nImporting Media\nBulk Media\n\
       Duplicates and Updating\nFile Headers\nNotetype Column\nDeck Column\nGUID Column\n\
       Any plain text file that contains fields separated by commas, semicolons or\
@@ -190,10 +475,10 @@ workflow:
     value_type: string
   - description: ''
     id: dcc7597d-520e-4090-9ee5-068c0051a093
-    name: prompt_02_03_beispiele
+    name: de_p23_beispiele
     selector:
     - env
-    - prompt_02_03_beispiele
+    - de_p23_beispiele
     value: 'Eingabe:
 
       - Folien mit Seitenzahl (Seite x von X)
@@ -207,7 +492,8 @@ workflow:
       - TLDR
 
 
-      Liste die in der Vorlesung behandelten Aufgabentypen.
+      Liste die in der Vorlesung behandelten Aufgabentypen. Erzeuge daraus eine Markdown
+      Tabelle.
 
       Für jeden Typ: Typname | Schema (Schritte) | Mini-Beispiel (mit Zahlen/Variablen
       aus Kontext) | typische Fehler | Quelle.
@@ -218,10 +504,10 @@ workflow:
     value_type: string
   - description: ''
     id: fb9e547f-d220-48d5-86a6-f5e73b6c50c1
-    name: prompt_02_02_konzepte
+    name: de_p22_konzepte
     selector:
     - env
-    - prompt_02_02_konzepte
+    - de_p22_konzepte
     value: 'Eingabe:
 
       - Folien mit Seitenzahl (Seite x von X)
@@ -235,21 +521,21 @@ workflow:
       - TLDR
 
 
-      Extrahiere Kernthemen der Vorlesung. Tabelle: Begriff | präzise Definition |
+      Extrahiere Kernthemen der Vorlesung.
 
-      Intuition (1 Satz) | Mini-Beispiel | Quelle | setzt voraus → / wird benutzt
-      in →
 
-      Nur aus Kontext; fehlendes: „Nicht im Kontext“.
+      Markdown-Tabelle: Begriff | präzise Definition | Intuition (1 Satz) | Erkläre
+      es mir als wäre ich 5 | Mini-Beispiel | Quelle |
 
-      '
+
+      Nur aus Kontext!'
     value_type: string
   - description: ''
     id: b9988d67-263a-4c1b-827c-7e6af89dd806
-    name: prompt_02_01_tldr
+    name: de_p21_tldr
     selector:
     - env
-    - prompt_02_01_tldr
+    - de_p21_tldr
     value: 'Eingabe:
 
       - Folien mit Seitenzahl (Seite x von X)
@@ -297,10 +583,10 @@ workflow:
     value_type: string
   - description: ''
     id: 2cdc886a-48d5-4bee-a926-8fb091325098
-    name: prompt_01_02_veredeln
+    name: de_p12_veredeln
     selector:
     - env
-    - prompt_01_02_veredeln
+    - de_p12_veredeln
     value: 'Eingabe:
 
       - Folien mit Seitenzahl (Seite x von X)
@@ -323,10 +609,10 @@ workflow:
     value_type: string
   - description: ''
     id: 0c0812c3-897c-407b-a6ec-931bcbbf0ebc
-    name: prompt_01_01_summarize
+    name: de_p11_summarize
     selector:
     - env
-    - prompt_01_01_summarize
+    - de_p11_summarize
     value: "Eingabe:\n- Folien mit Seitenzahl (Seite x von X)\n- Original Transkript\
       \ mit Zeitstempel\n\nAUFGABE: Wandle das folgende rohe Vorlesungstranskript\
       \ in ein sauberes, gut\nlesbares und strukturiertes Dokument im Markdown-Format\
@@ -341,51 +627,66 @@ workflow:
       \ im Markdown-Format hinzu.\n\n5. Fasse zusammenhängende Sätze zu sinnvollen\
       \ Absätzen zusammen.\n"
     value_type: string
-  - description: System Prompt
+  - description: ''
     id: 5a986cac-ab68-4c55-ad76-1bff0483bb1c
-    name: prompt_00_system
+    name: de_p00_system
     selector:
     - env
-    - prompt_00_system
+    - de_p00_system
     value: "# GRUNDLAGEN\n\nDu bist ein spezialisierter Studienassistent für die TU\
-      \ Wien. Dein Ziel ist es,\nStudierende bestmöglich bei der Prüfungsvorbereitung\
-      \ zu unterstützen. Deine\nAntworten sollen klar, verlässlich und direkt auf\
-      \ die bereitgestellten\nLernunterlagen bezogen sein.\n\n# LEITPRINZIPIEN\n\n\
-      1. **Fokus auf den Kontext:** Deine Hauptaufgabe ist es, die bereitgestellten\n\
-      \   Dokumente (Skripte, Folien, Übungen etc.) zu analysieren und aufzubereiten.\n\
-      \   Versuche immer, deine Antworten direkt auf diese Unterlagen zu stützen.\n\
-      2. **Transparenz bei Wissenslücken:** Wenn eine Frage nicht oder nur teilweise\n\
-      \   mit dem Kontext beantwortet werden kann, erkläre das klar und freundlich.\n\
-      \   Anstatt nur \"Nicht im Kontext\" zu sagen, formuliere es hilfreicher, z.B.:\n\
-      \   \"Diese Information konnte ich in den vorliegenden Unterlagen nicht finden.\
-      \ Es\n   wäre möglich, dass dies in [Vorlesung X] behandelt wurde oder in den\n\
-      \   Unterlagen zu [Thema Y] zu finden ist.\" Gib, wenn möglich, Hinweise, wo\
-      \ die\n   Information stattdessen stehen könnte.\n3. **Sinnvolle Quellenangaben:**\
-      \ Um die Nachvollziehbarkeit zu gewährleisten,\n   füge Quellenangaben wie `[Datei,\
-      \ Seite]` oder `[Datei, Zeitstempel]` hinzu,\n   wo es zum Verständnis beiträgt,\
-      \ besonders bei direkten Zitaten, Definitionen\n   oder Formeln.\n\n# AUFBEREITUNG\
-      \ DER ANTWORTEN\n\n- **Struktur:** Nutze zur besseren Übersicht Listen, Tabellen\
-      \ und andere\n  Markdown-Formatierungen. Gliedere komplexe Themen in logische\
-      \ Abschnitte.\n- **Fachsprache:** Halte dich an die Terminologie und Notation\
-      \ aus den\n  Unterlagen. Formeln sollten in LaTeX dargestellt werden.\n- **Präzision:**\
-      \ Sei präzise, aber erkläre Zusammenhänge so, dass sie gut\n  verständlich sind.\
-      \ Passe die Ausführlichkeit deiner Antwort der Frage an – mal\n  ist eine kurze\
-      \ Definition gefragt, mal eine detaillierte Erklärung.\n\n# UMGANG MIT SPEZIALFÄLLEN\n\
-      \n- **Widersprüchliche Informationen:** Sollten sich Angaben aus verschiedenen\n\
-      \  Quellen (z.B. TISS und TUWEL) widersprechen, weise darauf hin. Gib beide\n\
-      \  Informationen an und nenne die jeweiligen Quellen, damit der Nutzer die\n\
-      \  Diskrepanz selbst prüfen kann.\n  - _Empfehlung:_ TISS hat bei Terminen und\
-      \ Anmeldungen meist Vorrang, TUWEL bei\n    Lehrmaterialien.\n- **Hilfestellung\
-      \ bei Übungen:** Gib bei Übungsaufgaben standardmäßig\n  Lösungsstrategien,\
-      \ Hinweise auf relevante Theoriekapitel oder Denkanstöße.\n  Eine vollständige\
-      \ Musterlösung solltest du nur dann liefern, wenn sie explizit\n  in den Unterlagen\
-      \ vorhanden ist oder direkt danach gefragt wird.\n- **Fehlende Details:** Wenn\
-      \ wichtige Informationen für eine vollständige\n  Antwort fehlen (z.B. ein genauer\
-      \ Abgabetermin), gib die vorhandenen Fakten\n  wieder und mache auf die Lücke\
-      \ aufmerksam. Zum Beispiel: \"Das Datum ist\n  der 15. Jänner, eine genaue Uhrzeit\
-      \ wird in den Unterlagen jedoch nicht\n  genannt.\"\n\n# ALLGEMEINER TON\n\n\
-      Dein Ton ist unterstützend, geduldig und auf Augenhöhe. Du bist ein Lernpartner,\n\
-      kein reines Abfragewerkzeug.\n"
+      \ Wien. Dein Ziel ist es, Studierende bestmöglich bei der Prüfungsvorbereitung\
+      \ zu unterstützen. Deine Antworten sollen klar, verlässlich und direkt auf die\
+      \ bereitgestellten Lernunterlagen bezogen sein.\n\n## ⚠️ KRITISCHE ANFORDERUNG:\
+      \ MARKDOWN-FORMATIERUNG\n**Deine Ausgabe MUSS perfekt formatiert sein, um in\
+      \ einem Standard-Markdown-Viewer (wie GitHub READMEs oder dem VSCode Markdown\
+      \ Preview Modus) optimal angezeigt zu werden.** Stark strukturierter, optisch\
+      \ ansprechender und leicht erfassbarer Text hat oberste Priorität.\n\nUm dies\
+      \ zu erreichen, musst du in **jeder** Antwort folgende Markdown-Prinzipien anwenden:\n\
+      - **Umfassende Nutzung von Überschriften:** Gib niemals eine unstrukturierte\
+      \ Textwand (Wall of Text) aus. Untergliedere deine Erklärungen mit einer logischen\
+      \ Überschriften-Hierarchie (z.B. `## H2` für Hauptkapitel, `### H3` für Unterthemen).\n\
+      - **Listen und Tabellen:** Nutze intensiv Aufzählungszeichen (`-`) oder nummerierte\
+      \ Listen (`1.`). Verwende Markdown-Tabellen, wenn du Konzepte vergleichst oder\
+      \ strukturierte Daten präsentierst.\n- **Visuelle Hervorhebung:** Nutze **Fettgedrucktes**,\
+      \ um Schlüsselbegriffe, Definitionen und wichtige Erkenntnisse hervorzuheben.\
+      \ Verwende *Kursivschrift* für feine Betonungen oder sekundäre Begriffe.\n-\
+      \ **Blockzitate (Blockquotes):** Verwende Blockzitate (`>`), wenn du direkt\
+      \ aus den Skripten oder dem Kontext zitierst.\n- **Code und Mathematik:** Umschließe\
+      \ Dateinamen, Variablen und kurze Fachbegriffe mit Backticks (`code`). Formatiere\
+      \ alle mathematischen Formeln mit LaTeX in korrekten Markdown-Matheblöcken (z.B.\
+      \ `$$ gleichung $$` oder `$ inline $`).\n\n# LEITPRINZIPIEN\n\n### 1. Fokus\
+      \ auf den Kontext\nDeine Hauptaufgabe ist es, die bereitgestellten Dokumente\
+      \ (Skripte, Folien, Übungen etc.) zu analysieren und aufzubereiten. Versuche\
+      \ immer, deine Antworten direkt auf diese Unterlagen zu stützen.\n\n### 2. Transparenz\
+      \ bei Wissenslücken\nWenn eine Frage nicht oder nur teilweise mit dem Kontext\
+      \ beantwortet werden kann, erkläre das klar und freundlich. \n- **Sag nicht\
+      \ einfach nur:** \"Nicht im Kontext.\"\n- **Formuliere es stattdessen so:**\
+      \ \"Diese Information konnte ich in den vorliegenden Unterlagen nicht finden.\
+      \ Es wäre möglich, dass dies in[Vorlesung X] behandelt wurde oder in den Unterlagen\
+      \ zu [Thema Y] zu finden ist.\" \n- Gib, wenn möglich, verwertbare Hinweise,\
+      \ wo die Information stattdessen stehen könnte.\n\n### 3. Sinnvolle Quellenangaben\n\
+      Um die Nachvollziehbarkeit zu gewährleisten, füge Quellenangaben wie `[Datei,\
+      \ Seite]` oder `[Datei, Zeitstempel]` hinzu, wo es zum Verständnis beiträgt.\
+      \ Das ist besonders bei direkten Zitaten, Definitionen oder Formeln wichtig.\
+      \ Formatiere diese Zitate übersichtlich, idealerweise am Ende des jeweiligen\
+      \ Aufzählungspunkts oder Satzes.\n\n# UMGANG MIT SPEZIALFÄLLEN\n\n### Widersprüchliche\
+      \ Informationen\nSollten sich Angaben aus verschiedenen Quellen (z.B. TISS und\
+      \ TUWEL) widersprechen, weise sofort darauf hin, idealerweise mit einer eigenen\
+      \ Überschrift oder einem Warnhinweis. Gib beide Informationen an und nenne die\
+      \ jeweiligen Quellen, damit der Nutzer die Diskrepanz selbst prüfen kann.\n\
+      > **Faustregel:** TISS hat bei Terminen und Anmeldungen meist Vorrang, TUWEL\
+      \ bei Lehrmaterialien.\n\n### Hilfestellung bei Übungen\nGib bei Übungsaufgaben\
+      \ standardmäßig Lösungsstrategien, Hinweise auf relevante Theoriekapitel oder\
+      \ Denkanstöße. Liefere **keine** vollständige Musterlösung, es sei denn, sie\
+      \ ist explizit in den Unterlagen vorhanden oder der Nutzer fragt direkt danach.\n\
+      \n### Fehlende Details\nWenn wichtige Informationen für eine vollständige Antwort\
+      \ fehlen (z.B. ein genauer Abgabetermin), gib die vorhandenen Fakten wieder\
+      \ und mache explizit auf die Lücke aufmerksam. \n*Beispiel:* \"Das Datum ist\
+      \ der 15. Jänner, eine genaue Uhrzeit wird in den Unterlagen jedoch nicht genannt.\"\
+      \n\n# ALLGEMEINER TON\n\nDein Ton ist unterstützend, geduldig und auf Augenhöhe.\
+      \ Du bist ein engagierter Lernpartner, kein reines Abfragewerkzeug. Passe die\
+      \ Ausführlichkeit deiner Antwort stets der Frage an – mal ist eine kurze Definition\
+      \ gefragt, mal eine detaillierte, Schritt-für-Schritt erklärte Aufschlüsselung."
     value_type: string
   features:
     file_upload:
@@ -437,6 +738,7 @@ workflow:
         sourceType: llm
         targetType: llm
       id: 1762447378185-source-17625136452110-target
+      selected: false
       source: '1762447378185'
       sourceHandle: source
       target: '17625136452110'
@@ -448,20 +750,10 @@ workflow:
         sourceType: llm
         targetType: llm
       id: 17625136452110-source-17625137306400-target
+      selected: false
       source: '17625136452110'
       sourceHandle: source
       target: '17625137306400'
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
-        isInLoop: false
-        sourceType: llm
-        targetType: llm
-      id: 17625137306400-source-17625172016110-target
-      source: '17625137306400'
-      sourceHandle: source
-      target: '17625172016110'
       targetHandle: target
       type: custom
       zIndex: 0
@@ -471,6 +763,7 @@ workflow:
         sourceType: code
         targetType: iteration
       id: 1762517434250-source-1762517469728-target
+      selected: false
       source: '1762517434250'
       sourceHandle: source
       target: '1762517469728'
@@ -484,6 +777,7 @@ workflow:
         sourceType: knowledge-retrieval
         targetType: code
       id: 1762517567247-source-1762519667669-target
+      selected: false
       source: '1762517567247'
       sourceHandle: source
       target: '1762519667669'
@@ -496,6 +790,7 @@ workflow:
         sourceType: iteration
         targetType: code
       id: 1762517469728-source-1762519986978-target
+      selected: false
       source: '1762517469728'
       sourceHandle: source
       target: '1762519986978'
@@ -507,42 +802,10 @@ workflow:
         sourceType: llm
         targetType: code
       id: 17625172016110-source-1762517434250-target
+      selected: false
       source: '17625172016110'
       sourceHandle: source
       target: '1762517434250'
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
-        isInLoop: false
-        sourceType: code
-        targetType: llm
-      id: 1762519986978-source-17625139628550-target
-      source: '1762519986978'
-      sourceHandle: source
-      target: '17625139628550'
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
-        isInLoop: false
-        sourceType: code
-        targetType: llm
-      id: 1762519986978-source-17625140889850-target
-      source: '1762519986978'
-      sourceHandle: source
-      target: '17625140889850'
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
-        isInLoop: false
-        sourceType: code
-        targetType: llm
-      id: 1762519986978-source-17625141139440-target
-      source: '1762519986978'
-      sourceHandle: source
-      target: '17625141139440'
       targetHandle: target
       type: custom
       zIndex: 0
@@ -552,6 +815,7 @@ workflow:
         sourceType: llm
         targetType: http-request
       id: 1762447378185-source-1762593529707-target
+      selected: false
       source: '1762447378185'
       sourceHandle: source
       target: '1762593529707'
@@ -563,6 +827,7 @@ workflow:
         sourceType: llm
         targetType: http-request
       id: 17625136452110-source-17625936193150-target
+      selected: false
       source: '17625136452110'
       sourceHandle: source
       target: '17625936193150'
@@ -574,6 +839,7 @@ workflow:
         sourceType: llm
         targetType: http-request
       id: 17625137306400-source-17625937012150-target
+      selected: false
       source: '17625137306400'
       sourceHandle: source
       target: '17625937012150'
@@ -585,6 +851,7 @@ workflow:
         sourceType: llm
         targetType: http-request
       id: 17625139628550-source-17625938088930-target
+      selected: false
       source: '17625139628550'
       sourceHandle: source
       target: '17625938088930'
@@ -596,6 +863,7 @@ workflow:
         sourceType: llm
         targetType: http-request
       id: 17625140889850-source-17625938553500-target
+      selected: false
       source: '17625140889850'
       sourceHandle: source
       target: '17625938553500'
@@ -607,6 +875,7 @@ workflow:
         sourceType: llm
         targetType: http-request
       id: 17625141139440-source-17625938756350-target
+      selected: false
       source: '17625141139440'
       sourceHandle: source
       target: '17625938756350'
@@ -619,6 +888,7 @@ workflow:
         sourceType: http-request
         targetType: end
       id: 17625938088930-source-1762593903745-target
+      selected: false
       source: '17625938088930'
       sourceHandle: source
       target: '1762593903745'
@@ -630,6 +900,7 @@ workflow:
         sourceType: http-request
         targetType: end
       id: 17625938553500-source-1762593903745-target
+      selected: false
       source: '17625938553500'
       sourceHandle: source
       target: '1762593903745'
@@ -641,6 +912,7 @@ workflow:
         sourceType: http-request
         targetType: end
       id: 17625938756350-source-1762593903745-target
+      selected: false
       source: '17625938756350'
       sourceHandle: source
       target: '1762593903745'
@@ -654,6 +926,7 @@ workflow:
         sourceType: iteration-start
         targetType: if-else
       id: 1762517469728start-source-1762686753644-target
+      selected: false
       source: 1762517469728start
       sourceHandle: source
       target: '1762686753644'
@@ -667,6 +940,7 @@ workflow:
         sourceType: if-else
         targetType: code
       id: 1762686753644-false-1762686852316-target
+      selected: false
       source: '1762686753644'
       sourceHandle: 'false'
       target: '1762686852316'
@@ -680,6 +954,7 @@ workflow:
         sourceType: if-else
         targetType: knowledge-retrieval
       id: 1762686753644-9b4a4f01-7950-40aa-a6d0-03caa4915c4d-17626868919000-target
+      selected: false
       source: '1762686753644'
       sourceHandle: 9b4a4f01-7950-40aa-a6d0-03caa4915c4d
       target: '17626868919000'
@@ -693,6 +968,7 @@ workflow:
         sourceType: if-else
         targetType: knowledge-retrieval
       id: 1762686753644-true-1762517567247-target
+      selected: false
       source: '1762686753644'
       sourceHandle: 'true'
       target: '1762517567247'
@@ -706,6 +982,7 @@ workflow:
         sourceType: knowledge-retrieval
         targetType: code
       id: 17626868919000-source-1762519667669-target
+      selected: false
       source: '17626868919000'
       sourceHandle: source
       target: '1762519667669'
@@ -719,6 +996,7 @@ workflow:
         sourceType: code
         targetType: code
       id: 1762686852316-source-1762519667669-target
+      selected: false
       source: '1762686852316'
       sourceHandle: source
       target: '1762519667669'
@@ -726,24 +1004,13 @@ workflow:
       type: custom
       zIndex: 1002
     - data:
-        isInIteration: false
-        isInLoop: false
-        sourceType: start
-        targetType: iteration
-      id: 1762443028718-source-1762698491479-target
-      source: '1762443028718'
-      sourceHandle: source
-      target: '1762698491479'
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
         isInIteration: true
         isInLoop: false
         iteration_id: '1762698491479'
         sourceType: iteration-start
         targetType: document-extractor
       id: 1762698491479start-source-1762698563377-target
+      selected: false
       source: 1762698491479start
       sourceHandle: source
       target: '1762698563377'
@@ -757,6 +1024,7 @@ workflow:
         sourceType: document-extractor
         targetType: template-transform
       id: 1762698563377-source-1762698587873-target
+      selected: false
       source: '1762698563377'
       sourceHandle: source
       target: '1762698587873'
@@ -769,6 +1037,7 @@ workflow:
         sourceType: iteration
         targetType: template-transform
       id: 1762698491479-source-1762698657016-target
+      selected: false
       source: '1762698491479'
       sourceHandle: source
       target: '1762698657016'
@@ -780,6 +1049,7 @@ workflow:
         sourceType: template-transform
         targetType: llm
       id: 1762698657016-source-1762447378185-target
+      selected: false
       source: '1762698657016'
       sourceHandle: source
       target: '1762447378185'
@@ -793,6 +1063,7 @@ workflow:
         sourceType: if-else
         targetType: knowledge-retrieval
       id: 1762686753644-16b4f48e-f1c8-4555-8872-fa310f5544aa-17665943563470-target
+      selected: false
       source: '1762686753644'
       sourceHandle: 16b4f48e-f1c8-4555-8872-fa310f5544aa
       target: '17665943563470'
@@ -806,12 +1077,300 @@ workflow:
         sourceType: knowledge-retrieval
         targetType: code
       id: 17665943563470-source-1762519667669-target
+      selected: false
       source: '17665943563470'
       sourceHandle: source
       target: '1762519667669'
       targetHandle: target
       type: custom
       zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: if-else
+      id: 17625137306400-source-1773323824225-target
+      selected: false
+      source: '17625137306400'
+      sourceHandle: source
+      target: '1773323824225'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1773323824225-false-17625172016110-target
+      selected: false
+      source: '1773323824225'
+      sourceHandle: 'false'
+      target: '17625172016110'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: 1762686753644-01ba8a54-e9d8-4916-8b41-4acdbd532b79-1773324326222-target
+      selected: false
+      source: '1762686753644'
+      sourceHandle: 01ba8a54-e9d8-4916-8b41-4acdbd532b79
+      target: '1773324326222'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        sourceType: knowledge-retrieval
+        targetType: code
+      id: 1773324326222-source-1762519667669-target
+      selected: false
+      source: '1773324326222'
+      sourceHandle: source
+      target: '1762519667669'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: code
+      id: 1762519986978-source-1773324459724-target
+      selected: false
+      source: '1762519986978'
+      sourceHandle: source
+      target: '1773324459724'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 1773323824225-true-1773324459724-target
+      source: '1773323824225'
+      sourceHandle: 'true'
+      target: '1773324459724'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1773324459724-source-17625139628550-target
+      source: '1773324459724'
+      sourceHandle: source
+      target: '17625139628550'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1773324459724-source-17625140889850-target
+      source: '1773324459724'
+      sourceHandle: source
+      target: '17625140889850'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1773324459724-source-17625141139440-target
+      source: '1773324459724'
+      sourceHandle: source
+      target: '17625141139440'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: template-transform
+      id: 1762443028718-source-1773816005412-target
+      source: '1762443028718'
+      sourceHandle: source
+      target: '1773816005412'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: template-transform
+        targetType: iteration
+      id: 1773816005412-source-1762698491479-target
+      source: '1773816005412'
+      sourceHandle: source
+      target: '1762698491479'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: template-transform
+      id: 1762443028718-source-17738161264160-target
+      source: '1762443028718'
+      sourceHandle: source
+      target: '17738161264160'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: template-transform
+      id: 1762443028718-source-17738161660010-target
+      source: '1762443028718'
+      sourceHandle: source
+      target: '17738161660010'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: template-transform
+      id: 1762443028718-source-17738163726840-target
+      source: '1762443028718'
+      sourceHandle: source
+      target: '17738163726840'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: template-transform
+      id: 1762443028718-source-17738163978060-target
+      source: '1762443028718'
+      sourceHandle: source
+      target: '17738163978060'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: template-transform
+      id: 1762443028718-source-17738164404230-target
+      source: '1762443028718'
+      sourceHandle: source
+      target: '17738164404230'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: template-transform
+      id: 1762443028718-source-17738164691120-target
+      source: '1762443028718'
+      sourceHandle: source
+      target: '17738164691120'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: template-transform
+      id: 1762443028718-source-17738165058370-target
+      source: '1762443028718'
+      sourceHandle: source
+      target: '17738165058370'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: template-transform
+        targetType: iteration
+      id: 17738161264160-source-1762698491479-target
+      source: '17738161264160'
+      sourceHandle: source
+      target: '1762698491479'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: template-transform
+        targetType: iteration
+      id: 17738161660010-source-1762698491479-target
+      source: '17738161660010'
+      sourceHandle: source
+      target: '1762698491479'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: template-transform
+        targetType: iteration
+      id: 17738163726840-source-1762698491479-target
+      source: '17738163726840'
+      sourceHandle: source
+      target: '1762698491479'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: template-transform
+        targetType: iteration
+      id: 17738163978060-source-1762698491479-target
+      source: '17738163978060'
+      sourceHandle: source
+      target: '1762698491479'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: template-transform
+        targetType: iteration
+      id: 17738164404230-source-1762698491479-target
+      source: '17738164404230'
+      sourceHandle: source
+      target: '1762698491479'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: template-transform
+        targetType: iteration
+      id: 17738164691120-source-1762698491479-target
+      source: '17738164691120'
+      sourceHandle: source
+      target: '1762698491479'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: template-transform
+        targetType: iteration
+      id: 17738165058370-source-1762698491479-target
+      source: '17738165058370'
+      sourceHandle: source
+      target: '1762698491479'
+      targetHandle: target
+      type: custom
+      zIndex: 0
     nodes:
     - data:
         selected: false
@@ -855,10 +1414,10 @@ workflow:
       id: '1762443028718'
       position:
         x: 0
-        y: 286
+        y: 360
       positionAbsolute:
         x: 0
-        y: 286
+        y: 360
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -871,15 +1430,21 @@ workflow:
         model:
           completion_params: {}
           mode: chat
-          name: gpt-5-mini
+          name: gpt-5.4-mini
           provider: langgenius/openai/openai
+        prompt_config:
+          jinja2_variables: []
         prompt_template:
-        - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
+        - edition_type: basic
+          id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
+          jinja2_text: '{{{ en_p00_system if lang else de_p00_system }}}'
           role: system
-          text: '{{#env.prompt_00_system#}}'
-        - id: 115ff84a-1c71-4099-96a9-21aedbff029c
+          text: '{{#1773816005412.output#}}'
+        - edition_type: basic
+          id: 115ff84a-1c71-4099-96a9-21aedbff029c
+          jinja2_text: '{{ en_p11_summarize if lang else de_p11_summarize }}'
           role: user
-          text: '{{#env.prompt_01_01_summarize#}}
+          text: '{{#17738161264160.output#}}
 
             '
         - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
@@ -893,11 +1458,11 @@ workflow:
       height: 88
       id: '1762447378185'
       position:
-        x: 1592
-        y: 312
+        x: 1974
+        y: 390
       positionAbsolute:
-        x: 1592
-        y: 312
+        x: 1974
+        y: 390
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -910,20 +1475,16 @@ workflow:
         model:
           completion_params: {}
           mode: chat
-          name: gpt-5-mini
+          name: gpt-5.4-mini
           provider: langgenius/openai/openai
         prompt_template:
         - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
           role: system
-          text: '{{#env.prompt_00_system#}}'
+          text: '{{#1773816005412.output#}}'
         - id: 115ff84a-1c71-4099-96a9-21aedbff029c
           role: user
-          text: 'Aufgabe:
+          text: '{{#17738161660010.output#}}
 
-            {{#env.prompt_01_02_veredeln#}}
-
-
-            Zusammenfassung:
 
             {{#1762447378185.text#}}'
         - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
@@ -937,11 +1498,11 @@ workflow:
       height: 88
       id: '17625136452110'
       position:
-        x: 1954
-        y: 297
+        x: 2336
+        y: 375
       positionAbsolute:
-        x: 1954
-        y: 297
+        x: 2336
+        y: 375
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -954,25 +1515,19 @@ workflow:
         model:
           completion_params: {}
           mode: chat
-          name: gpt-5-mini
+          name: gpt-5.4-mini
           provider: langgenius/openai/openai
         prompt_template:
         - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
           role: system
-          text: '{{#env.prompt_00_system#}}'
+          text: '{{#1773816005412.output#}}'
         - id: 115ff84a-1c71-4099-96a9-21aedbff029c
           role: user
-          text: 'Aufgabe:
+          text: '{{#17738163978060.output#}}
 
-            {{#env.prompt_02_01_tldr#}}
-
-
-            Zusammenfassung:
 
             {{#1762447378185.text#}}
 
-
-            Veredeltes Skriptum:
 
             {{#17625136452110.text#}}'
         - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
@@ -986,12 +1541,12 @@ workflow:
       height: 88
       id: '17625137306400'
       position:
-        x: 2316
-        y: 282
+        x: 2698
+        y: 360
       positionAbsolute:
-        x: 2316
-        y: 282
-      selected: false
+        x: 2698
+        y: 360
+      selected: true
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -1003,44 +1558,38 @@ workflow:
         model:
           completion_params: {}
           mode: chat
-          name: gpt-5-mini
+          name: gpt-5.4-mini
           provider: langgenius/openai/openai
         prompt_config:
           jinja2_variables: []
         prompt_template:
         - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
           role: system
-          text: '{{#env.prompt_00_system#}}'
+          text: '{{#1773816005412.output#}}'
         - id: 115ff84a-1c71-4099-96a9-21aedbff029c
           role: user
-          text: 'Aufgabe:
+          text: '{{#17738164404230.output#}}
 
-            {{#env.prompt_02_02_konzepte#}}
-
-
-            Zusammenfassung:
 
             {{#1762447378185.text#}}
 
 
-            Veredeltes Skriptum:
-
             {{#17625136452110.text#}}
 
-
-            TLDR:
 
             {{#17625137306400.text#}}'
         - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
           role: user
-          text: '{{#1762698657016.output#}}'
+          text: 'Input Files:
+
+            {{#1762698657016.output#}}'
         - edition_type: basic
           id: e9686d66-cdf1-4f0b-8296-60f5276a844c
           jinja2_text: /
           role: user
-          text: 'Zusätzlicher Kontext aus der Wissensbank:
+          text: 'Additional Knowledge from Database:
 
-            {{#1762519986978.result#}}'
+            {{#1773324459724.result#}}'
         selected: false
         title: LM Konzepte
         type: llm
@@ -1049,11 +1598,11 @@ workflow:
       height: 88
       id: '17625139628550'
       position:
-        x: 4994
-        y: 50
+        x: 6100
+        y: 375
       positionAbsolute:
-        x: 4994
-        y: 50
+        x: 6100
+        y: 375
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1066,42 +1615,36 @@ workflow:
         model:
           completion_params: {}
           mode: chat
-          name: gpt-5-mini
+          name: gpt-5.4-mini
           provider: langgenius/openai/openai
         prompt_config:
           jinja2_variables: []
         prompt_template:
         - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
           role: system
-          text: '{{#env.prompt_00_system#}}'
+          text: '{{#1773816005412.output#}}'
         - id: 115ff84a-1c71-4099-96a9-21aedbff029c
           role: user
-          text: 'Aufgabe:
+          text: '{{#17738164691120.output#}}
 
-            {{#env.prompt_02_03_beispiele#}}
-
-
-            Zusammenfassung:
 
             {{#1762447378185.text#}}
 
 
-            Veredeltes Skriptum:
-
             {{#17625136452110.text#}}
 
-
-            TLDR:
 
             {{#17625137306400.text#}}'
         - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
           role: user
-          text: '{{#1762698657016.output#}}'
+          text: 'Input Files:
+
+            {{#1762698657016.output#}}'
         - id: 6189e9b0-ef5d-426e-8753-33bb3f732099
           role: user
-          text: 'Zusätzlicher Kontext aus der Wissensbank:
+          text: 'Additional Knowledge from Database:
 
-            {{#1762519986978.result#}}'
+            {{#1773324459724.result#}}'
         selected: false
         title: LM Beispiele
         type: llm
@@ -1110,11 +1653,11 @@ workflow:
       height: 88
       id: '17625140889850'
       position:
-        x: 4994
-        y: 267
+        x: 6100
+        y: 592
       positionAbsolute:
-        x: 4994
-        y: 267
+        x: 6100
+        y: 592
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1127,47 +1670,39 @@ workflow:
         model:
           completion_params: {}
           mode: chat
-          name: gpt-5
+          name: gpt-5.4-mini
           provider: langgenius/openai/openai
         prompt_config:
           jinja2_variables: []
         prompt_template:
         - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
           role: system
-          text: '{{#env.prompt_00_system#}}'
+          text: '{{#1773816005412.output#}}'
         - id: 115ff84a-1c71-4099-96a9-21aedbff029c
           role: user
-          text: 'Aufgabe:
+          text: '{{#17738165058370.output#}}
 
-            {{#env.prompt_02_04_anki#}}
-
-
-            Zusammenfassung:
 
             {{#1762447378185.text#}}
 
 
-            Veredeltes Skriptum:
-
             {{#17625136452110.text#}}
 
-
-            TLDR:
 
             {{#17625137306400.text#}}
 
 
-            Anki Manual:
-
-            {{#env.prompt_02_04_anki_manual#}}'
+            {{#env.en_p24_anki_man#}}'
         - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
           role: user
-          text: '{{#1762698657016.output#}}'
+          text: 'Input Files:
+
+            {{#1762698657016.output#}}'
         - id: e596a835-36de-4d73-b777-f74e6e68adce
           role: user
-          text: 'Zusätzlicher Kontext aus der Wissensbank:
+          text: 'Additional Knowledge from Database:
 
-            {{#1762519986978.result#}}'
+            {{#1773324459724.result#}}'
         selected: false
         title: LM ANKI
         type: llm
@@ -1176,11 +1711,11 @@ workflow:
       height: 88
       id: '17625141139440'
       position:
-        x: 4994
-        y: 484
+        x: 6100
+        y: 809
       positionAbsolute:
-        x: 4994
-        y: 484
+        x: 6100
+        y: 809
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1193,30 +1728,22 @@ workflow:
         model:
           completion_params: {}
           mode: chat
-          name: gpt-5-mini
+          name: gpt-5.4-nano
           provider: langgenius/openai/openai
         prompt_template:
         - id: e1ea5a9c-8077-4324-8a1a-bfa0801ed99f
           role: system
-          text: '{{#env.prompt_00_system#}}'
+          text: '{{#1773816005412.output#}}'
         - id: 115ff84a-1c71-4099-96a9-21aedbff029c
           role: user
-          text: 'Aufgabe:
+          text: '{{#17738163726840.output#}}
 
-            {{#env.prompt_02_00_rag#}}
-
-
-            Zusammenfassung:
 
             {{#1762447378185.text#}}
 
 
-            Veredeltes Skriptum:
-
             {{#17625136452110.text#}}
 
-
-            TLDR:
 
             {{#17625137306400.text#}}'
         - id: a1f59700-f4ed-4c19-8b24-fbf234ba9d3a
@@ -1230,11 +1757,11 @@ workflow:
       height: 88
       id: '17625172016110'
       position:
-        x: 2678
-        y: 267
+        x: 3422
+        y: 583
       positionAbsolute:
-        x: 2678
-        y: 267
+        x: 3422
+        y: 583
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1262,11 +1789,11 @@ workflow:
       height: 52
       id: '1762517434250'
       position:
-        x: 3020
-        y: 285
+        x: 3764
+        y: 601
       positionAbsolute:
-        x: 3020
-        y: 285
+        x: 3764
+        y: 601
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1274,7 +1801,7 @@ workflow:
       width: 242
     - data:
         error_handle_mode: terminated
-        height: 622
+        height: 897
         is_parallel: true
         iterator_input_type: array[string]
         iterator_selector:
@@ -1290,14 +1817,14 @@ workflow:
         title: Iterate Rag Keywords
         type: iteration
         width: 1170
-      height: 622
+      height: 897
       id: '1762517469728'
       position:
-        x: 3362
-        y: 0
+        x: 4106
+        y: 178
       positionAbsolute:
-        x: 3362
-        y: 0
+        x: 4106
+        y: 178
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1316,10 +1843,10 @@ workflow:
       parentId: '1762517469728'
       position:
         x: 60
-        y: 253
+        y: 381
       positionAbsolute:
-        x: 3422
-        y: 253
+        x: 4166
+        y: 559
       selectable: false
       sourcePosition: right
       targetPosition: left
@@ -1358,8 +1885,8 @@ workflow:
         x: 526
         y: 210
       positionAbsolute:
-        x: 3888
-        y: 210
+        x: 4632
+        y: 388
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1367,32 +1894,17 @@ workflow:
       width: 242
       zIndex: 1002
     - data:
-        code: "# Dify will import the 'List' type hint for you\nfrom typing import\
-          \ List, Dict\n\ndef main(keyword: str, rag_results: List[Dict]) -> Dict:\n\
-          \    \"\"\"\n    Formats the keyword and its corresponding RAG results into\
-          \ a single string.\n\n    Args:\n        keyword (str): The search term\
-          \ for the current iteration.\n        rag_results (List[Dict]): The list\
-          \ of result objects from the Knowledge Retrieval node.\n               \
-          \                   Each object is a dictionary expected to have a 'content'\
-          \ key.\n\n    Returns:\n        Dict: A dictionary with a single key \"\
-          result\" containing the formatted string.\n    \"\"\"\n    # Start building\
-          \ a list of strings. This is more efficient than concatenating.\n    output_parts\
-          \ = []\n    \n    # Add the keyword as the title, followed by two newlines\
-          \ for spacing.\n    output_parts.append(f\"Keyword: {keyword}\")\n    \n\
-          \    # Check if there are any RAG results to process\n    if not rag_results:\n\
-          \        output_parts.append(\"No context found.\")\n    else:\n       \
-          \ # Loop through each result object using enumerate to get an index (starting\
-          \ from 1)\n        for i, result_obj in enumerate(rag_results, start=1):\n\
-          \            # Safely get the content, provide a default text if 'content'\
-          \ key is missing\n            content = result_obj.get('content', 'Content\
-          \ not available.')\n            \n            # Format each context block\
-          \ and add it to our list\n            # \\n adds a newline before each new\
-          \ context for better readability\n            formatted_context = f\"\\\
-          nContext {i}:\\n{content}\"\n            output_parts.append(formatted_context)\n\
-          \            \n    # Join all the individual string parts into one final\
-          \ string\n    final_string = \"\".join(output_parts)\n    \n    return {\n\
-          \        \"result\": final_string\n    }"
-        code_language: python3
+        code: "function main({keyword, ragResults}) {\n    /**\n     * Formats the\
+          \ keyword and its corresponding RAG results into a single string.\n    \
+          \ */\n    \n    const outputParts = [];\n    \n    outputParts.push(`Keyword:\
+          \ ${keyword}`);\n    \n    if (!ragResults || ragResults.length === 0) {\n\
+          \        outputParts.push(\"No context found.\");\n    } else {\n      \
+          \  ragResults.forEach((resultObj, i) => {\n            const content = resultObj.content\
+          \ || 'Content not available.';\n            const formattedContext = `\\\
+          nContext ${i + 1}:\\n${content}`;\n            outputParts.push(formattedContext);\n\
+          \        });\n    }\n    \n    const finalString = outputParts.join('');\n\
+          \    \n    return {\n        result: finalString\n    };\n}"
+        code_language: javascript
         isInIteration: true
         isInLoop: false
         iteration_id: '1762517469728'
@@ -1410,19 +1922,19 @@ workflow:
           value_type: string
           variable: keyword
         - value_selector:
-          - '1762517567247'
+          - '1773324326222'
           - result
           value_type: array[object]
-          variable: rag_results
+          variable: ragResults
       height: 52
       id: '1762519667669'
       parentId: '1762517469728'
       position:
         x: 868
-        y: 234
+        y: 379
       positionAbsolute:
-        x: 4230
-        y: 234
+        x: 4974
+        y: 557
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1449,11 +1961,11 @@ workflow:
       height: 52
       id: '1762519986978'
       position:
-        x: 4632
-        y: 285
+        x: 5376
+        y: 601
       positionAbsolute:
-        x: 4632
-        y: 285
+        x: 5376
+        y: 601
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1487,14 +1999,14 @@ workflow:
         type: http-request
         url: http://host.docker.internal:8019
         variables: []
-      height: 153
+      height: 137
       id: '1762593529707'
       position:
-        x: 1954
-        y: 465
+        x: 2336
+        y: 543
       positionAbsolute:
-        x: 1954
-        y: 465
+        x: 2336
+        y: 543
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1528,14 +2040,14 @@ workflow:
         type: http-request
         url: http://host.docker.internal:8019
         variables: []
-      height: 153
+      height: 137
       id: '17625936193150'
       position:
-        x: 2316
-        y: 450
+        x: 2698
+        y: 528
       positionAbsolute:
-        x: 2316
-        y: 450
+        x: 2698
+        y: 528
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1569,14 +2081,14 @@ workflow:
         type: http-request
         url: http://host.docker.internal:8019
         variables: []
-      height: 153
+      height: 137
       id: '17625937012150'
       position:
-        x: 2678
-        y: 435
+        x: 3060
+        y: 320
       positionAbsolute:
-        x: 2678
-        y: 435
+        x: 3060
+        y: 320
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1610,14 +2122,14 @@ workflow:
         type: http-request
         url: http://host.docker.internal:8019
         variables: []
-      height: 153
+      height: 137
       id: '17625938088930'
       position:
-        x: 5336
-        y: 25
+        x: 6442
+        y: 350
       positionAbsolute:
-        x: 5336
-        y: 25
+        x: 6442
+        y: 350
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1651,14 +2163,14 @@ workflow:
         type: http-request
         url: http://host.docker.internal:8019
         variables: []
-      height: 153
+      height: 137
       id: '17625938553500'
       position:
-        x: 5336
-        y: 242
+        x: 6442
+        y: 567
       positionAbsolute:
-        x: 5336
-        y: 242
+        x: 6442
+        y: 567
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1692,14 +2204,14 @@ workflow:
         type: http-request
         url: http://host.docker.internal:8019
         variables: []
-      height: 153
+      height: 137
       id: '17625938756350'
       position:
-        x: 5336
-        y: 459
+        x: 6442
+        y: 784
       positionAbsolute:
-        x: 5336
-        y: 459
+        x: 6442
+        y: 784
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1713,11 +2225,11 @@ workflow:
       height: 52
       id: '1762593903745'
       position:
-        x: 5698
-        y: 285
+        x: 6801.181753541693
+        y: 610
       positionAbsolute:
-        x: 5698
-        y: 285
+        x: 6801.181753541693
+        y: 610
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1758,22 +2270,33 @@ workflow:
             - fach
           id: 16b4f48e-f1c8-4555-8872-fa310f5544aa
           logical_operator: and
+        - case_id: 01ba8a54-e9d8-4916-8b41-4acdbd532b79
+          conditions:
+          - comparison_operator: contains
+            id: 942a17c8-df34-47de-800d-35721d24de40
+            value: eai
+            varType: string
+            variable_selector:
+            - '1762443028718'
+            - fach
+          id: 01ba8a54-e9d8-4916-8b41-4acdbd532b79
+          logical_operator: and
         isInIteration: true
         isInLoop: false
         iteration_id: '1762517469728'
         selected: false
         title: IF/ELSE
         type: if-else
-      height: 220
+      height: 268
       id: '1762686753644'
       parentId: '1762517469728'
       position:
         x: 184
-        y: 167
+        y: 271
       positionAbsolute:
-        x: 3546
-        y: 167
-      selected: true
+        x: 4290
+        y: 449
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -1790,18 +2313,18 @@ workflow:
             children: null
             type: string
         selected: false
-        title: Code 4
+        title: Throw Unhandled
         type: code
         variables: []
       height: 52
       id: '1762686852316'
       parentId: '1762517469728'
       position:
-        x: 523.5586040140797
+        x: 526
         y: 510
       positionAbsolute:
-        x: 3885.5586040140797
-        y: 510
+        x: 4632
+        y: 688
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1839,8 +2362,8 @@ workflow:
         x: 526
         y: 360
       positionAbsolute:
-        x: 3888
-        y: 360
+        x: 4632
+        y: 538
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1868,11 +2391,11 @@ workflow:
       height: 212
       id: '1762698491479'
       position:
-        x: 342
-        y: 250
+        x: 724
+        y: 328
       positionAbsolute:
-        x: 342
-        y: 250
+        x: 724
+        y: 328
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1893,8 +2416,8 @@ workflow:
         x: 60
         y: 82
       positionAbsolute:
-        x: 402
-        y: 332
+        x: 784
+        y: 410
       selectable: false
       sourcePosition: right
       targetPosition: left
@@ -1919,8 +2442,8 @@ workflow:
         x: 184
         y: 60
       positionAbsolute:
-        x: 526
-        y: 310
+        x: 908
+        y: 388
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1956,8 +2479,8 @@ workflow:
         x: 506
         y: 80
       positionAbsolute:
-        x: 848
-        y: 330
+        x: 1230
+        y: 408
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -1978,11 +2501,11 @@ workflow:
       height: 52
       id: '1762698657016'
       position:
-        x: 1250
-        y: 330
+        x: 1632
+        y: 408
       positionAbsolute:
-        x: 1250
-        y: 330
+        x: 1632
+        y: 408
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -2017,18 +2540,396 @@ workflow:
       parentId: '1762517469728'
       position:
         x: 526
-        y: 60
+        y: 622
       positionAbsolute:
-        x: 3888
-        y: 60
+        x: 4632
+        y: 800
       selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
       width: 242
       zIndex: 1002
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: 5fbc314e-ab17-4afb-bd0b-47e06d6edd69
+            value: lar
+            varType: string
+            variable_selector:
+            - '1762443028718'
+            - fach
+          - comparison_operator: contains
+            id: 88ba7115-13f7-44f9-b8b8-3f34e27e1a93
+            value: iid
+            varType: string
+            variable_selector:
+            - '1762443028718'
+            - fach
+          id: 'true'
+          logical_operator: or
+        selected: false
+        title: IF IGNORED
+        type: if-else
+      height: 150
+      id: '1773323824225'
+      position:
+        x: 3060
+        y: 537
+      positionAbsolute:
+        x: 3060
+        y: 537
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        dataset_ids:
+        - L5tL838/m9/zf67YE4qXTnPwIRlAQMYFXWHDYZcDoCpBxFnd+PuvAtJHuOrrQssf
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762517469728'
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          top_k: 4
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: text-embedding-3-large
+              embedding_provider_name: langgenius/openai/openai
+              vector_weight: 0.7
+            weight_type: customized
+        query_variable_selector:
+        - '1762517469728'
+        - item
+        retrieval_mode: multiple
+        selected: false
+        title: RAG By Keyword EAI
+        type: knowledge-retrieval
+      height: 90
+      id: '1773324326222'
+      parentId: '1762517469728'
+      position:
+        x: 526
+        y: 60
+      positionAbsolute:
+        x: 4632
+        y: 238
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        code: "\nfunction main({arg1}) {\n    return {\n        result: arg1 ?? \"\
+          \"\n    }\n}\n"
+        code_language: javascript
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: Bar Format
+        type: code
+        variables:
+        - value_selector:
+          - '1762519986978'
+          - result
+          value_type: string
+          variable: arg1
+      height: 52
+      id: '1773324459724'
+      position:
+        x: 5738
+        y: 610
+      positionAbsolute:
+        x: 5738
+        y: 610
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        selected: false
+        template: '{{ en if lang else de }}'
+        title: 00 System
+        type: template-transform
+        variables:
+        - value_selector:
+          - env
+          - en_p00_system
+          value_type: string
+          variable: en
+        - value_selector:
+          - env
+          - de_p00_system
+          value_type: string
+          variable: de
+        - value_selector:
+          - env
+          - lang
+          value_type: number
+          variable: lang
+      height: 52
+      id: '1773816005412'
+      position:
+        x: 362
+        y: 0
+      positionAbsolute:
+        x: 362
+        y: 0
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        selected: false
+        template: '{{ en if lang else de }}'
+        title: 11 Summarize
+        type: template-transform
+        variables:
+        - value_selector:
+          - env
+          - en_p11_summarize
+          value_type: string
+          variable: en
+        - value_selector:
+          - env
+          - de_p11_summarize
+          value_type: string
+          variable: de
+        - value_selector:
+          - env
+          - lang
+          value_type: number
+          variable: lang
+      height: 52
+      id: '17738161264160'
+      position:
+        x: 362
+        y: 132
+      positionAbsolute:
+        x: 362
+        y: 132
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        selected: false
+        template: '{{ en if lang else de }}'
+        title: 12 Veredeln
+        type: template-transform
+        variables:
+        - value_selector:
+          - env
+          - en_p12_veredeln
+          value_type: string
+          variable: en
+        - value_selector:
+          - env
+          - de_p12_veredeln
+          value_type: string
+          variable: de
+        - value_selector:
+          - env
+          - lang
+          value_type: number
+          variable: lang
+      height: 52
+      id: '17738161660010'
+      position:
+        x: 362
+        y: 264
+      positionAbsolute:
+        x: 362
+        y: 264
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        selected: false
+        template: '{{ en if lang else de }}'
+        title: 20 rag
+        type: template-transform
+        variables:
+        - value_selector:
+          - env
+          - en_p20_rag
+          value_type: string
+          variable: en
+        - value_selector:
+          - env
+          - de_p20_rag
+          value_type: string
+          variable: de
+        - value_selector:
+          - env
+          - lang
+          value_type: number
+          variable: lang
+      height: 52
+      id: '17738163726840'
+      position:
+        x: 362
+        y: 396
+      positionAbsolute:
+        x: 362
+        y: 396
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        selected: false
+        template: '{{ en if lang else de }}'
+        title: 21 Tldr
+        type: template-transform
+        variables:
+        - value_selector:
+          - env
+          - en_p21_tldr
+          value_type: string
+          variable: en
+        - value_selector:
+          - env
+          - de_p21_tldr
+          value_type: string
+          variable: de
+        - value_selector:
+          - env
+          - lang
+          value_type: number
+          variable: lang
+      height: 52
+      id: '17738163978060'
+      position:
+        x: 362
+        y: 528
+      positionAbsolute:
+        x: 362
+        y: 528
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        selected: false
+        template: '{{ en if lang else de }}'
+        title: 22 Konzepte
+        type: template-transform
+        variables:
+        - value_selector:
+          - env
+          - en_p22_konzepte
+          value_type: string
+          variable: en
+        - value_selector:
+          - env
+          - de_p22_konzepte
+          value_type: string
+          variable: de
+        - value_selector:
+          - env
+          - lang
+          value_type: number
+          variable: lang
+      height: 52
+      id: '17738164404230'
+      position:
+        x: 362
+        y: 660
+      positionAbsolute:
+        x: 362
+        y: 660
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        selected: false
+        template: '{{ en if lang else de }}'
+        title: 23 Beispiele
+        type: template-transform
+        variables:
+        - value_selector:
+          - env
+          - en_p23_beispiele
+          value_type: string
+          variable: en
+        - value_selector:
+          - env
+          - de_p23_beispiele
+          value_type: string
+          variable: de
+        - value_selector:
+          - env
+          - lang
+          value_type: number
+          variable: lang
+      height: 52
+      id: '17738164691120'
+      position:
+        x: 362
+        y: 792
+      positionAbsolute:
+        x: 362
+        y: 792
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        selected: false
+        template: '{{ en if lang else de }}'
+        title: 24 Anki
+        type: template-transform
+        variables:
+        - value_selector:
+          - env
+          - en_p24_anki
+          value_type: string
+          variable: en
+        - value_selector:
+          - env
+          - de_p24_anki
+          value_type: string
+          variable: de
+        - value_selector:
+          - env
+          - lang
+          value_type: number
+          variable: lang
+      height: 52
+      id: '17738165058370'
+      position:
+        x: 362
+        y: 924
+      positionAbsolute:
+        x: 362
+        y: 924
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
     viewport:
-      x: -701.3978330190521
-      y: 163.8774521134082
-      zoom: 0.31716764257501046
+      x: 114.00928891659373
+      y: -15.86059870363232
+      zoom: 0.5653445204817411
   rag_pipeline_variables: []
