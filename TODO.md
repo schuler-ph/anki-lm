@@ -34,12 +34,12 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the target architecture and
 Replace local file serving with GCS. Orchestrator uploads input files to GCS;
 Dify fetches them via signed URL. No more `fileAcceptor.ts` or `FILE_SERVER_URL`.
 
-- [ ] 🤖 Add `@google-cloud/storage` to `src/backend/deno.json`
-- [ ] 🤖 New `src/backend/src/util/storage.ts`: `uploadToGcs(localPath)` → returns signed URL
-- [ ] 🤖 Update `orchestrationHelper.ts`: replace `toFileServerPath` + `DIFY_FILE_SERVER_URL` with GCS signed URLs
-- [ ] 🤖 Update `orchestrationHelper.ts`: remove `checkHealth()` (no local file server to check)
-- [ ] 🤖 Delete `src/backend/src/fileAcceptor.ts`
-- [ ] 🤖 Delete `src/backend/src/util/storageRoot.ts` `toFileServerPath()` (no longer needed)
+- [x] 🤖 Add `@google-cloud/storage` to `src/backend/deno.json`
+- [x] 🤖 New `src/backend/src/util/storage.ts`: `uploadToGcs(localPath)` → returns signed URL
+- [x] 🤖 Update `orchestrationHelper.ts`: replace `toFileServerPath` + `DIFY_FILE_SERVER_URL` with GCS signed URLs
+- [x] 🤖 Update `orchestrationHelper.ts`: remove `checkHealth()` (no local file server to check)
+- [x] 🤖 Delete `src/backend/src/fileAcceptor.ts`
+- [x] 🤖 Delete `src/backend/src/util/storageRoot.ts` `toFileServerPath()` (no longer needed)
 - [ ] 🌍 `cd infra/gcp && terraform apply` — creates GCS bucket + service account
 - [ ] 👤 Copy SA key from Terraform output → `src/backend/.env` as `GOOGLE_APPLICATION_CREDENTIALS`
 

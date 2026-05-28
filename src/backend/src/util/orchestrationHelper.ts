@@ -2,23 +2,12 @@ import { ensureDir, walk } from "@std/fs";
 import Path from "node:path";
 import { transcribe } from "../transcribe.ts";
 import { stampPdfWithSlideNumber } from "./pdf.ts";
-import { toFileServerPath, toRelativeLecturePath } from "./storageRoot.ts";
+import { uploadToGcs } from "./storage.ts";
 
 function requireEnv(key: string): string {
   const value = Deno.env.get(key);
   if (!value) throw new Error(`Missing required environment variable: ${key}`);
   return value;
-}
-
-export async function checkHealth(): Promise<boolean> {
-  try {
-    const res = await fetch(`${requireEnv("FILE_SERVER_URL")}/`, {
-      method: "GET",
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
 }
 
 export async function getFolders(folder: string): Promise<string[]> {
@@ -99,12 +88,13 @@ export async function prepareDifyFolder(folder: string) {
 
 export async function sendDifyRequest(folder: string, fach: string, lectureName: string) {
   const inputFolder = `${folder}/for_dify`;
-  const outputFolder = `${folder}/from_dify`;
 
   const files = await getFilesInFolder(inputFolder);
   console.log(files);
 
   console.log(`Sending Dify request for folder ${folder}...`);
+
+  const fileUrls = await Promise.all(files.map(uploadToGcs));
 
   const response = await fetch(
     `${requireEnv("DIFY_API_URL")}/v1/workflows/run`,
@@ -118,12 +108,11 @@ export async function sendDifyRequest(folder: string, fach: string, lectureName:
         inputs: {
           fach,
           lectureName,
-          input_files: files.map((filePath) => ({
+          input_files: fileUrls.map((url) => ({
             transfer_method: "remote_url",
-            url: `${requireEnv("DIFY_FILE_SERVER_URL")}/${toFileServerPath(filePath)}`,
+            url,
             type: "document",
           })),
-          output_path: toRelativeLecturePath(outputFolder),
         },
         response_mode: "streaming",
         user: "schuler-ph",

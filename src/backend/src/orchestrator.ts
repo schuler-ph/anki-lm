@@ -1,5 +1,4 @@
 import {
-  checkHealth,
   filesInFolderExist,
   getFolders,
   prepareDifyFolder,
@@ -7,8 +6,6 @@ import {
 } from "./util/orchestrationHelper.ts";
 import { resolveLecturePath } from "./util/storageRoot.ts";
 import Path from "node:path";
-
-await checkHealth();
 
 const faecher = ["eai", "lar", "iid"];
 

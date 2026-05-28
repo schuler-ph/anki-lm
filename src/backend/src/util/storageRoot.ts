@@ -36,10 +36,3 @@ export function toRelativeLecturePath(pathInput: string): string {
 
   return relativePath.split(SEPARATOR).join("/");
 }
-
-export function toFileServerPath(pathInput: string): string {
-  return toRelativeLecturePath(pathInput)
-    .split("/")
-    .map((segment) => encodeURIComponent(segment))
-    .join("/");
-}

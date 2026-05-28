@@ -1,10 +1,10 @@
 {
   "tasks": {
     "dev": "deno run --allow-run --env-file --allow-env --allow-net --allow-read --allow-write src/orchestrator.ts",
-    "n8n": "sh ./n8n/start.sh",
-    "file": "deno run --env-file --allow-env --allow-net --allow-read --allow-write src/fileAcceptor.ts"
+    "n8n": "sh ./n8n/start.sh"
   },
   "imports": {
+    "@google-cloud/storage": "npm:@google-cloud/storage@^7",
     "@openai/openai": "jsr:@openai/openai@^6.2.0",
     "@std/assert": "jsr:@std/assert@1",
     "@std/fs": "jsr:@std/fs@^1.0.19",
