@@ -3,6 +3,9 @@
 *.tfstate.backup
 .terraform/
 
+# Service account keys — never commit these
+*.json
+
 # Real tfvars (keep only .example versions)
 terraform.tfvars
 

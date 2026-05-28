@@ -22,7 +22,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the target architecture and
 ---
 
 ## Phase 3 — Clean Up Wrong Infra (~1h)
-- [ ] 🤖 Remove Cloud Run + Artifact Registry from `infra/gcp/main.tf` (keep GCS + SA only)
+- [ ] 🤖 Remove the `file_acceptor` Cloud Run service from `infra/gcp/main.tf` — keep GCS, SA, and Artifact Registry (needed for backend API in Phase 5)
 - [ ] 🤖 Delete `infra/hetzner/` (Dify on RPi instead, no Terraform needed)
 - [ ] 🤖 Delete `src/file-acceptor/` (replaced by webhook endpoint on backend API)
 - [ ] 🤖 Delete `.github/workflows/deploy-file-acceptor.yml`

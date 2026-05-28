@@ -1,4 +1,4 @@
-# AnkiLM — Target Architecture
+# AnkiLM — Architecture
 
 AnkiLM is an automated study assistant that turns university lecture recordings and
 slide PDFs into summaries, flashcards, concept tables, and Anki-ready CSV exports.
@@ -7,7 +7,23 @@ multi-tenant SaaS with Stripe billing.
 
 ---
 
-## Components
+## Current State (as of Phase 2)
+
+| Component | Current Reality | Target (see diagram below) | Phase |
+|---|---|---|---|
+| Frontend | GitHub Pages (`schuler-ph.github.io/anki-lm/`) | Cloudflare Pages (`ankilm.com`) | 7 |
+| Backend | Local Deno script (`src/backend/src/orchestrator.ts`) | Cloud Run HTTP API (`api.ankilm.com`) | 5 |
+| File I/O | Local filesystem + `fileAcceptor.ts` HTTP server (port 8019) | GCS with signed URLs | 4 |
+| Dify file transport | Dify reads/writes files via `fileAcceptor.ts` | Webhook `POST /api/webhook/dify` | 5 |
+| Dify host | Local Docker / RPi (manual, not Terraform-managed) | RPi via Cloudflare Tunnel | 6 |
+| Database | None | Supabase (Postgres + Auth) | 8 |
+| Billing | None | Stripe | 9 |
+
+`infra/hetzner/` contains a complete Hetzner VPS + Dify setup as an upgrade path (ADR-003), but it is not the active setup.
+
+---
+
+## Target Components
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -67,6 +83,21 @@ multi-tenant SaaS with Stripe billing.
 
 ## Data Flow — Processing a Lecture
 
+### Current flow (Phase 1–2)
+```
+1. User runs: deno task dev (orchestrator.ts watches lecture folders)
+2. Orchestrator:
+     a. Transcribe MP3 → text via OpenAI Whisper
+     b. Stamp PDF with page numbers (pdfcpu)
+     c. Save prepared files to {lecturePath}/for_dify/
+     d. Call Dify workflow API with file paths
+3. Dify processes the files (AI pipeline, ~2–5 min)
+4. Dify saves output files via fileAcceptor.ts → {lecturePath}/from_dify/
+   File naming: <FACH>_<LectureName>_<content>.md
+   e.g. EAI_ArchitekturMuster_01-summary.md
+```
+
+### Target flow (Phase 5+)
 ```
 1. User uploads MP3 + PDF via frontend
 2. Backend API:
@@ -76,19 +107,29 @@ multi-tenant SaaS with Stripe billing.
      d. Store prepared files in GCS /input/<jobId>/for_dify/
      e. Call Dify workflow API with GCS signed URLs
 3. Dify processes the files (AI pipeline, ~2–5 min)
-4. Dify POSTs all output files to /api/webhook/dify
+4. Dify POSTs all output files to POST /api/webhook/dify
 5. Backend saves outputs to GCS /output/<fach>/<lectureName>/
 6. Frontend polls /api/jobs/:id, shows outputs when ready
 ```
+
+### Backend modules (`src/backend/src/`)
+- `orchestrator.ts` — watches lecture folders, drives the pipeline
+- `util/openai.ts` — Whisper transcription (MP3 → text)
+- `util/pdf.ts` — PDF page stamping via pdfcpu
+- `util/mp3.ts` — audio splitting
+- `util/orchestrationHelper.ts` — calls Dify workflow API, constructs inputs incl. `lectureName`
+- `util/storageRoot.ts` / `util/input.ts` / `util/output.ts` — local file path helpers (to be replaced by GCS in Phase 4)
+- `fileAcceptor.ts` — local HTTP server (port 8019) Dify uses to save outputs (**deleted in Phase 3**)
+- `transcribe.ts` — transcription orchestration
 
 ---
 
 ## Environments
 
-| Environment | Frontend | Backend API | Dify | Storage |
+| Environment | Frontend | Backend | Dify | Storage |
 |---|---|---|---|---|
 | **Production** | Cloudflare Pages | Cloud Run (auto-scale) | RPi / Hetzner | GCS |
-| **Local dev** | `npm run dev` | `deno run src/api/server.ts` | existing local Dify | GCS (same bucket) |
+| **Local dev** | `npm run dev` | `deno task dev` (orchestrator.ts) | local Docker Dify | local filesystem |
 
 ---
 
