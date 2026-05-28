@@ -22,11 +22,11 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the target architecture and
 ---
 
 ## Phase 3 — Clean Up Wrong Infra (~1h)
-- [ ] 🤖 Remove the `file_acceptor` Cloud Run service from `infra/gcp/main.tf` — keep GCS, SA, and Artifact Registry (needed for backend API in Phase 5)
-- [ ] 🤖 Delete `infra/hetzner/` (Dify on RPi instead, no Terraform needed)
-- [ ] 🤖 Delete `src/file-acceptor/` (replaced by webhook endpoint on backend API)
-- [ ] 🤖 Delete `.github/workflows/deploy-file-acceptor.yml`
-- [ ] 🤖 Delete `docker-compose.local.yaml` (will be replaced in Phase 5)
+- [x] 🤖 Remove the `file_acceptor` Cloud Run service from `infra/gcp/main.tf` — keep GCS, SA, and Artifact Registry (needed for backend API in Phase 5)
+- [x] 🤖 Delete `infra/hetzner/` (Dify on RPi instead, no Terraform needed)
+- [x] 🤖 Delete `src/file-acceptor/` (replaced by webhook endpoint on backend API)
+- [x] 🤖 Delete `.github/workflows/deploy-file-acceptor.yml`
+- [x] 🤖 Delete `docker-compose.local.yaml` (will be replaced in Phase 5)
 
 ---
 

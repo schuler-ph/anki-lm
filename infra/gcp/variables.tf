@@ -15,8 +15,3 @@ variable "bucket_name" {
   default     = "ankilm-files"
 }
 
-variable "file_acceptor_secret" {
-  description = "Shared secret for file-acceptor authentication (also set in Dify as FILE_ACCEPTOR_SECRET)"
-  type        = string
-  sensitive   = true
-}
