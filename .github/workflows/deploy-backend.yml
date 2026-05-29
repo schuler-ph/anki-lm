@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - "src/backend/**"
+      - ".github/workflows/deploy-backend.yml"
   workflow_dispatch:
 
 env:
