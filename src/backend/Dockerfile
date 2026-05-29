@@ -6,8 +6,11 @@ RUN apk add --no-cache ffmpeg curl
 # Install pdfcpu (amd64 — Cloud Run default architecture)
 RUN apk add --no-cache xz && \
     curl -fsSL "https://github.com/pdfcpu/pdfcpu/releases/download/v0.12.1/pdfcpu_0.12.1_Linux_x86_64.tar.xz" \
-    | tar -xJ -C /usr/local/bin pdfcpu && \
-    chmod +x /usr/local/bin/pdfcpu
+    -o /tmp/pdfcpu.tar.xz && \
+    tar -xJf /tmp/pdfcpu.tar.xz -C /tmp && \
+    find /tmp -name pdfcpu -type f -exec mv {} /usr/local/bin/pdfcpu \; && \
+    chmod +x /usr/local/bin/pdfcpu && \
+    rm /tmp/pdfcpu.tar.xz
 
 WORKDIR /app
 
