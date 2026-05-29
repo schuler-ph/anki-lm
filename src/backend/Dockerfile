@@ -4,8 +4,9 @@ FROM denoland/deno:alpine-2.3.3
 RUN apk add --no-cache ffmpeg curl
 
 # Install pdfcpu (amd64 — Cloud Run default architecture)
-RUN curl -fsSL "https://github.com/pdfcpu/pdfcpu/releases/download/v0.9.1/pdfcpu_0.9.1_Linux_amd64.tar.gz" \
-    | tar -xz -C /usr/local/bin pdfcpu && \
+RUN apk add --no-cache xz && \
+    curl -fsSL "https://github.com/pdfcpu/pdfcpu/releases/download/v0.12.1/pdfcpu_0.12.1_Linux_x86_64.tar.xz" \
+    | tar -xJ -C /usr/local/bin pdfcpu && \
     chmod +x /usr/local/bin/pdfcpu
 
 WORKDIR /app
