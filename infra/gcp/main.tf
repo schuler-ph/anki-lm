@@ -69,7 +69,75 @@ resource "google_artifact_registry_repository" "ankilm" {
   depends_on    = [google_project_service.apis]
 }
 
-# ── Outputs ───────────────────────────────────────────────────────────────────
+# ── Cloud Run API service ─────────────────────────────────────────────────────
+
+resource "google_cloud_run_v2_service" "backend_api" {
+  name     = "ankilm-backend-api"
+  location = var.region
+  ingress  = "INGRESS_TRAFFIC_ALL"
+
+  template {
+    service_account = google_service_account.ankilm_backend.email
+
+    timeout = "3600s"
+
+    containers {
+      image = "gcr.io/cloudrun/hello:latest"
+      # Replaced by GitHub Action on first real deploy; placeholder avoids "image not found" on initial terraform apply.
+
+      ports {
+        container_port = 8080
+      }
+
+      env {
+        name  = "GCS_BUCKET"
+        value = var.bucket_name
+      }
+      env {
+        name  = "GCP_PROJECT_ID"
+        value = var.project_id
+      }
+      # OPENAI_API_KEY, DIFY_API_KEY, DIFY_API_URL, FILE_ACCEPTOR_SECRET
+      # are injected at deploy time via --update-env-vars in the GitHub Action.
+      env {
+        name  = "OPENAI_API_KEY"
+        value = "placeholder-set-at-deploy"
+      }
+      env {
+        name  = "DIFY_API_KEY"
+        value = "placeholder-set-at-deploy"
+      }
+      env {
+        name  = "DIFY_API_URL"
+        value = "placeholder-set-at-deploy"
+      }
+      env {
+        name  = "FILE_ACCEPTOR_SECRET"
+        value = "placeholder-set-at-deploy"
+      }
+    }
+  }
+
+  depends_on = [google_project_service.apis]
+
+  lifecycle {
+    # The GitHub Action updates the image and env vars at deploy time;
+    # prevent terraform apply from reverting those changes.
+    ignore_changes = [template]
+  }
+}
+
+resource "google_cloud_run_v2_service_iam_member" "backend_api_allow_unauthenticated" {
+  name     = google_cloud_run_v2_service.backend_api.name
+  location = var.region
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+
+output "backend_api_url" {
+  description = "Cloud Run backend API URL"
+  value       = google_cloud_run_v2_service.backend_api.uri
+}
 
 output "gcs_bucket_name" {
   description = "GCS bucket name — set as GCS_BUCKET in backend .env"

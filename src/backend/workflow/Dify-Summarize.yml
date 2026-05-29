@@ -22,7 +22,7 @@ workflow:
     selector:
     - env
     - FILE_ACCEPTOR_URL
-    value: 'http://host.docker.internal:8019'
+    value: 'http://host.docker.internal:8080/api/webhook/dify'
     value_type: string
   - description: 'Shared secret for file-acceptor auth. Must match FILE_ACCEPTOR_SECRET in the service.'
     id: a1b2c3d4-0002-0002-0002-000000000002

@@ -86,16 +86,12 @@ export async function prepareDifyFolder(folder: string) {
   }
 }
 
-export async function sendDifyRequest(folder: string, fach: string, lectureName: string) {
-  const inputFolder = `${folder}/for_dify`;
-
-  const files = await getFilesInFolder(inputFolder);
-  console.log(files);
-
-  console.log(`Sending Dify request for folder ${folder}...`);
-
-  const fileUrls = await Promise.all(files.map(uploadToGcs));
-
+export async function sendDifyWorkflow(
+  fileUrls: string[],
+  fach: string,
+  lectureName: string,
+  outputPath: string,
+): Promise<void> {
   const response = await fetch(
     `${requireEnv("DIFY_API_URL")}/v1/workflows/run`,
     {
@@ -108,6 +104,7 @@ export async function sendDifyRequest(folder: string, fach: string, lectureName:
         inputs: {
           fach,
           lectureName,
+          output_path: outputPath,
           input_files: fileUrls.map((url) => ({
             transfer_method: "remote_url",
             url,
@@ -122,83 +119,43 @@ export async function sendDifyRequest(folder: string, fach: string, lectureName:
 
   if (!response.ok || !response.body) {
     const errorBody = await response.text();
-    console.error("Failed to fetch stream:", response.statusText, errorBody);
+    console.error("Failed to start Dify workflow:", response.statusText, errorBody);
     return;
   }
 
-  // Convert the byte stream to a text stream
-  const stream = response.body.pipeThrough(new TextDecoderStream());
-
-  let buffer = "";
-  let fullTextOutput = "";
-
-  // Asynchronously iterate over each chunk of text from the stream
-  for await (const chunk of stream) {
-    buffer += chunk;
-    const parts = buffer.split("\n\n");
-
-    // The last part may be incomplete, so keep it in the buffer
-    buffer = parts.pop() || "";
-
-    for (const part of parts) {
-      if (!part.startsWith("data: ")) continue;
-
-      const jsonData = part.substring(6); // Remove "data: "
-      if (!jsonData) continue;
-
-      try {
-        const parsedData = JSON.parse(jsonData);
-
-        // Process the event based on its type
-        switch (parsedData.event) {
-          case "workflow_started":
-            console.log(
-              `Workflow started. Run ID: ${parsedData.workflow_run_id}`,
-            );
-            break;
-          case "node_started":
-            console.log(`[Node Started] > ${parsedData.data.title}`);
-            break;
-          case "text_chunk":
-            // Append the generated text to our variable
-            fullTextOutput += parsedData.data.text;
-            break;
-          case "node_finished":
-            console.log(
-              `[Node Finished] > ${parsedData.data.title} | Status: ${parsedData.data.status}`,
-            );
-            break;
-          case "workflow_finished":
-            console.log(
-              `\nWorkflow finished. Status: ${parsedData.data.status}`,
-            );
-            // The full response is now available
-            console.log("--- Final Generated Text ---");
-            console.log(fullTextOutput);
-            // Now you can save `fullTextOutput` to a file in `outputFolder`
-            // For example:
-            // const outputPath = `${outputFolder}/result.txt`;
-            // await Deno.writeTextFile(outputPath, fullTextOutput);
-            // console.log(`Output saved to ${outputPath}`);
-            break;
-          case "ping":
-            // A keep-alive event, can be ignored.
-            break;
-          default:
-            // In case Dify adds new event types
-            console.log(`Received unhandled event: ${parsedData.event}`);
-        }
-      } catch (error) {
-        console.error("Failed to parse JSON from stream chunk:", error);
-        console.error("Original data part:", jsonData);
+  // Drain the stream in the background so the connection is properly closed.
+  // Outputs arrive via the webhook; we only log the run ID for correlation.
+  (async () => {
+    const stream = response.body!.pipeThrough(new TextDecoderStream());
+    let buffer = "";
+    for await (const chunk of stream) {
+      buffer += chunk;
+      const parts = buffer.split("\n\n");
+      buffer = parts.pop() || "";
+      for (const part of parts) {
+        if (!part.startsWith("data: ")) continue;
+        try {
+          const parsed = JSON.parse(part.substring(6));
+          if (parsed.event === "workflow_started") {
+            console.log(`Dify workflow started. Run ID: ${parsed.workflow_run_id}`);
+          } else if (parsed.event === "workflow_finished") {
+            console.log(`Dify workflow finished. Status: ${parsed.data?.status}`);
+          }
+        } catch { /* ignore malformed chunks */ }
       }
     }
-  }
+  })();
+}
 
-  // This part handles any leftover data in the buffer after the stream closes.
-  // In a well-formed stream, this might not be necessary, but it's good practice.
-  if (buffer.trim().startsWith("data:")) {
-    console.warn("Handling leftover buffer data:", buffer);
-    // You could add final parsing logic here if needed.
-  }
+export async function sendDifyRequest(
+  folder: string,
+  fach: string,
+  lectureName: string,
+  outputPath: string,
+): Promise<void> {
+  const inputFolder = `${folder}/for_dify`;
+  const files = await getFilesInFolder(inputFolder);
+  console.log(`Sending Dify request for folder ${folder}...`);
+  const fileUrls = await Promise.all(files.map(uploadToGcs));
+  await sendDifyWorkflow(fileUrls, fach, lectureName, outputPath);
 }

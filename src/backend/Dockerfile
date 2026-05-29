@@ -3,8 +3,8 @@ FROM denoland/deno:2.3.3-alpine
 # Install system dependencies for audio splitting and PDF stamping
 RUN apk add --no-cache ffmpeg curl
 
-# Install pdfcpu
-RUN curl -fsSL "https://github.com/pdfcpu/pdfcpu/releases/download/v0.9.1/pdfcpu_0.9.1_Linux_arm64.tar.gz" \
+# Install pdfcpu (amd64 — Cloud Run default architecture)
+RUN curl -fsSL "https://github.com/pdfcpu/pdfcpu/releases/download/v0.9.1/pdfcpu_0.9.1_Linux_amd64.tar.gz" \
     | tar -xz -C /usr/local/bin pdfcpu && \
     chmod +x /usr/local/bin/pdfcpu
 
@@ -17,10 +17,10 @@ RUN deno install
 # Copy source
 COPY src/ ./src/
 
-RUN deno cache src/orchestrator.ts
+RUN deno cache src/api/server.ts
 
-# LECTURE_ROOT is mounted as a volume at runtime
-ENV LECTURE_ROOT=/data/lectures
+ENV PORT=8080
+EXPOSE 8080
 
 CMD ["deno", "run", \
   "--allow-net", \
@@ -28,4 +28,4 @@ CMD ["deno", "run", \
   "--allow-read", \
   "--allow-write", \
   "--allow-run", \
-  "src/orchestrator.ts"]
+  "src/api/server.ts"]

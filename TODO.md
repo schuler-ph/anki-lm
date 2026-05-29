@@ -49,17 +49,17 @@ Dify fetches them via signed URL. No more `fileAcceptor.ts` or `FILE_SERVER_URL`
 The orchestrator becomes a proper HTTP API service that Dify calls back via webhook.
 Replaces `src/backend/src/orchestrator.ts` as a standalone script.
 
-- [ ] 🤖 New `src/backend/src/api/server.ts` (Hono or Oak):
+- [x] 🤖 New `src/backend/src/api/server.ts` (Hono or Oak):
   - `POST /api/upload` — accept MP3 + PDF, store to GCS, queue Dify job
   - `POST /api/webhook/dify` — receive Dify output, save files to GCS, update job status
   - `GET  /api/jobs/:id` — return job status + output file URLs
   - `GET  /health` — health check
-- [ ] 🤖 Job queue: use in-memory queue for now (Redis/Cloud Tasks later)
-- [ ] 🤖 Update `src/backend/Dockerfile` for the API server
-- [ ] 🤖 Add Cloud Run service back to `infra/gcp/main.tf` (for the API, not file-acceptor)
-- [ ] 🤖 Add Artifact Registry back to `infra/gcp/main.tf`
-- [ ] 🤖 GitHub Action: `.github/workflows/deploy-backend.yml` (build → push → deploy Cloud Run)
-- [ ] 🤖 Update Dify YAML: change `FILE_ACCEPTOR_URL` default to `https://api.ankilm.com/api/webhook/dify`
+- [x] 🤖 Job queue: use in-memory queue for now (Redis/Cloud Tasks later)
+- [x] 🤖 Update `src/backend/Dockerfile` for the API server
+- [x] 🤖 Add Cloud Run service back to `infra/gcp/main.tf` (for the API, not file-acceptor)
+- [x] 🤖 Add Artifact Registry back to `infra/gcp/main.tf`
+- [x] 🤖 GitHub Action: `.github/workflows/deploy-backend.yml` (build → push → deploy Cloud Run)
+- [x] 🤖 Update Dify YAML: change `FILE_ACCEPTOR_URL` default to `https://api.ankilm.com/api/webhook/dify`
 
 ---
 

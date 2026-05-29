@@ -2,3 +2,4 @@ src/temp
 dify
 .env
 *.mp3
+test/resources/*
