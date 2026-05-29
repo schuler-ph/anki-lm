@@ -69,6 +69,19 @@ resource "google_artifact_registry_repository" "ankilm" {
   depends_on    = [google_project_service.apis]
 }
 
+resource "google_artifact_registry_repository_iam_member" "backend_ar_writer" {
+  repository = google_artifact_registry_repository.ankilm.name
+  location   = var.region
+  role       = "roles/artifactregistry.writer"
+  member     = "serviceAccount:${google_service_account.ankilm_backend.email}"
+}
+
+resource "google_project_iam_member" "backend_run_developer" {
+  project = var.project_id
+  role    = "roles/run.developer"
+  member  = "serviceAccount:${google_service_account.ankilm_backend.email}"
+}
+
 # ── Cloud Run API service ─────────────────────────────────────────────────────
 
 resource "google_cloud_run_v2_service" "backend_api" {
