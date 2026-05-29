@@ -1,4 +1,4 @@
-FROM denoland/deno:2.3.3-alpine
+FROM denoland/deno:alpine-2.3.3
 
 # Install system dependencies for audio splitting and PDF stamping
 RUN apk add --no-cache ffmpeg curl
