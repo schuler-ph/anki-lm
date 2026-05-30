@@ -67,6 +67,15 @@ resource "google_artifact_registry_repository" "ankilm" {
   format        = "DOCKER"
   location      = var.region
   depends_on    = [google_project_service.apis]
+
+  cleanup_policy_dry_run = false
+  cleanup_policies {
+    id     = "keep-1"
+    action = "KEEP"
+    most_recent_versions {
+      keep_count = 1
+    }
+  }
 }
 
 resource "google_artifact_registry_repository_iam_member" "backend_ar_writer" {
@@ -80,6 +89,12 @@ resource "google_project_iam_member" "backend_run_developer" {
   project = var.project_id
   role    = "roles/run.developer"
   member  = "serviceAccount:${google_service_account.ankilm_backend.email}"
+}
+
+resource "google_service_account_iam_member" "backend_act_as_self" {
+  service_account_id = google_service_account.ankilm_backend.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.ankilm_backend.email}"
 }
 
 # ── Cloud Run API service ─────────────────────────────────────────────────────
