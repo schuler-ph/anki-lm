@@ -55,4 +55,4 @@ jobs:
           gcloud run deploy ankilm-backend-api \
             --image ${{ env.IMAGE }}:${{ github.sha }} \
             --region ${{ env.REGION }} \
-            --update-env-vars "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},DIFY_API_KEY=${{ secrets.DIFY_API_KEY }},DIFY_API_URL=${{ secrets.DIFY_API_URL }},FILE_ACCEPTOR_SECRET=${{ secrets.FILE_ACCEPTOR_SECRET }}"
+            --update-env-vars "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},DIFY_API_KEY=${{ secrets.DIFY_API_KEY }},DIFY_API_URL=${{ secrets.DIFY_API_URL }},FILE_ACCEPTOR_SECRET=${{ secrets.FILE_ACCEPTOR_SECRET }},CF_ACCESS_CLIENT_ID=${{ secrets.CF_ACCESS_CLIENT_ID }},CF_ACCESS_CLIENT_SECRET=${{ secrets.CF_ACCESS_CLIENT_SECRET }}"

@@ -97,6 +97,12 @@ resource "google_service_account_iam_member" "backend_act_as_self" {
   member             = "serviceAccount:${google_service_account.ankilm_backend.email}"
 }
 
+resource "google_project_iam_member" "backend_token_creator" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountTokenCreator"
+  member  = "serviceAccount:${google_service_account.ankilm_backend.email}"
+}
+
 # ── Cloud Run API service ─────────────────────────────────────────────────────
 
 resource "google_cloud_run_v2_service" "backend_api" {
