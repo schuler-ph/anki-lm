@@ -92,6 +92,12 @@ export async function sendDifyWorkflow(
   lectureName: string,
   outputPath: string,
 ): Promise<void> {
+  const cfClientId = Deno.env.get("CF_ACCESS_CLIENT_ID");
+  const cfClientSecret = Deno.env.get("CF_ACCESS_CLIENT_SECRET");
+  const cfHeaders = cfClientId && cfClientSecret
+    ? { "CF-Access-Client-Id": cfClientId, "CF-Access-Client-Secret": cfClientSecret }
+    : {};
+
   const response = await fetch(
     `${requireEnv("DIFY_API_URL")}/v1/workflows/run`,
     {
@@ -99,6 +105,7 @@ export async function sendDifyWorkflow(
       headers: {
         Authorization: `Bearer ${Deno.env.get("DIFY_API_KEY")}`,
         "Content-Type": "application/json",
+        ...cfHeaders,
       },
       body: JSON.stringify({
         inputs: {
