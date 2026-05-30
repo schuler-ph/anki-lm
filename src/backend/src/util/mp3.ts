@@ -15,12 +15,14 @@ export async function getAudioDuration(inputFile: string): Promise<number> {
       "default=noprint_wrappers=1:nokey=1",
       inputFile,
     ],
-    stdout: "piped", // capture
-    stderr: "null", // silence
+    stdout: "piped",
+    stderr: "piped",
   });
 
-  const { stdout } = await command.output();
+  const { stdout, stderr } = await command.output();
   const durationStr = new TextDecoder().decode(stdout).trim();
+  const errStr = new TextDecoder().decode(stderr).trim();
+  if (errStr) console.error("ffprobe stderr:", errStr);
   return parseFloat(durationStr);
 }
 
