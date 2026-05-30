@@ -45,10 +45,11 @@ async function processUpload(
   try {
     setJobStatus(job.id, "processing");
 
-    const forDifyPath = Path.join(Path.dirname(mp3Path), "for_dify");
+    const tempDir = Path.dirname(mp3Path);
+    const forDifyPath = Path.join(tempDir, "for_dify");
     await ensureDir(forDifyPath);
 
-    await transcribe(mp3Path, forDifyPath);
+    await transcribe(mp3Path, forDifyPath, tempDir);
 
     const pdfSuccess = await stampPdfWithSlideNumber(pdfPath, forDifyPath);
     if (!pdfSuccess) {
