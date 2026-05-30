@@ -81,6 +81,29 @@ Replaces `src/backend/src/orchestrator.ts` as a standalone script.
 
 ---
 
+## Phase 6.5 — API v2: Zwei-Schritt-Flow & Frontend-Wiring (~5h)
+Der aktuelle `POST /api/upload` startet sofort die Pipeline.
+Die UI erwartet aber: erst Dateien hochladen (Status `preparing`),
+dann manuell den "AI-Pipeline starten"-Button klicken.
+Außerdem muss die Demo-Seite von hardcodierten MDX-Daten auf echte API-Calls umgestellt werden.
+
+### Backend (~2h)
+- [ ] 🤖 `POST /api/jobs` — MP3 + PDF nach GCS hochladen, Job mit Status `preparing` anlegen, Job-ID zurückgeben
+- [ ] 🤖 `POST /api/jobs/:id/start` — Transkription + Dify-Pipeline triggern (der "AI-Pipeline starten"-Button)
+- [ ] 🤖 `GET /api/jobs` — alle Jobs auflisten (für Frontend: Topics/Lectures laden)
+- [ ] 🤖 Job-Status `processing` zwischen `preparing` und `processed` hinzufügen
+- [ ] 🤖 Alten `POST /api/upload` (Upload+Start in einem) entfernen oder auf v2 umleiten
+
+### Frontend (~3h)
+- [ ] 🤖 Hardcodierte Demo-Daten (`content[]` in `Demo/index.tsx`) durch echte `GET /api/jobs` Calls ersetzen
+- [ ] 🤖 "+ Audio" / "+ PDF" Buttons → `POST /api/jobs` (Dateien hochladen, Job anlegen)
+- [ ] 🤖 "AI-Pipeline starten" Button → `POST /api/jobs/:id/start`
+- [ ] 🤖 Status-Polling auf Job-Cards (`GET /api/jobs/:id` bis `processed`)
+- [ ] 🤖 Ergebnis-Dateien aus GCS Signed URLs laden (statt MDX-Imports)
+- [ ] 🤖 `VITE_API_URL` als Env-Variable einbinden (kein hardcodierter API-URL)
+
+---
+
 ## Phase 7 — Frontend → Cloudflare Pages (~1h)
 - [ ] 🤖 Change `vite.config.ts` base from `/anki-lm/` to `/`
 - [ ] 🤖 Add `vercel.json` → actually `_redirects` file for Cloudflare Pages SPA routing
@@ -115,11 +138,9 @@ Replaces `src/backend/src/orchestrator.ts` as a standalone script.
 ---
 
 ## Phase 10 — Polish & Monitoring (~ongoing)
-- [ ] 🤖 Frontend: live job status (SSE or polling)
-- [ ] 🤖 Frontend: output viewer (list + render generated markdown files)
 - [ ] 🤖 Add Cloud Logging + Error Reporting to backend API
 - [ ] 🤖 GCS lifecycle policy: auto-delete raw MP3/PDF after 30 days
-- [ ] 🤖 Rate limiting on `/api/upload`
+- [ ] 🤖 Rate limiting auf `/api/jobs`
 
 ---
 
@@ -130,6 +151,7 @@ Replaces `src/backend/src/orchestrator.ts` as a standalone script.
 | 4 | GCP project already exists (`anki-lm`) — just run `terraform apply` after Phase 3 cleanup |
 | 5 | SA key from Terraform output (for local `.env`) |
 | 6 | Your Cloudflare domain, new Dify dataset IDs after KB rebuild |
+| 6.5 | Nothing — pure code |
 | 7 | Nothing — pure code + 3 Cloudflare dashboard clicks |
 | 8 | Supabase project URL + keys |
 | 9 | Stripe API keys |
