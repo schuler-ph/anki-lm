@@ -2,7 +2,7 @@ FROM denoland/deno:2.3.3
 
 # Install system dependencies for audio splitting and PDF stamping
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg curl xz-utils \
+    ffmpeg curl xz-utils ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Install pdfcpu (amd64 — Cloud Run default architecture)
