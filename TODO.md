@@ -40,8 +40,8 @@ Dify fetches them via signed URL. No more `fileAcceptor.ts` or `FILE_SERVER_URL`
 - [x] 🤖 Update `orchestrationHelper.ts`: remove `checkHealth()` (no local file server to check)
 - [x] 🤖 Delete `src/backend/src/fileAcceptor.ts`
 - [x] 🤖 Delete `src/backend/src/util/storageRoot.ts` `toFileServerPath()` (no longer needed)
-- [ ] 🌍 `cd infra/gcp && terraform apply` — creates GCS bucket + service account
-- [ ] 👤 Copy SA key from Terraform output → `src/backend/.env` as `GOOGLE_APPLICATION_CREDENTIALS`
+- [x] 🌍 `cd infra/gcp && terraform apply` — creates GCS bucket + service account
+- [x] 👤 Copy SA key from Terraform output → `src/backend/.env` as `GOOGLE_APPLICATION_CREDENTIALS`
 
 ---
 
@@ -64,20 +64,20 @@ Replaces `src/backend/src/orchestrator.ts` as a standalone script.
 ---
 
 ## Phase 6 — Dify on Raspberry Pi (~2h)
-- [ ] 👤 Install Docker on RPi: `curl -fsSL https://get.docker.com | sh`
-- [ ] 👤 Create `~/dify/docker-compose.yaml` on RPi (copy from official Dify repo, pin version)
-- [ ] 👤 Set up Cloudflare Tunnel:
+- [x] 👤 Install Docker on RPi: `curl -fsSL https://get.docker.com | sh`
+- [x] 👤 Create `~/dify/docker-compose.yaml` on RPi (copy from official Dify repo, pin version)
+- [x] 👤 Set up Cloudflare Tunnel:
   - Cloudflare dashboard → Zero Trust → Networks → Tunnels → Create tunnel
   - Install `cloudflared` on RPi: `curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg`
   - Add tunnel route: `dify.yourdomain.com` → `http://localhost:80`
   - Run `cloudflared tunnel run <token>` (or add as systemd service)
-- [ ] 👤 Configure Dify: open `https://dify.yourdomain.com`, complete setup wizard
-- [ ] 👤 Add OpenAI API key in Dify → Settings → Model Providers
-- [ ] 👤 Recreate 4 knowledge bases (PRPD, VSYS, EAI, Artemis), upload all source documents
-- [ ] 👤 Note the 4 new dataset IDs from Dify URL → share with Claude
-- [ ] 🤖 Update `Dify-Summarize.yml` with new dataset IDs (after you provide them)
-- [ ] 👤 Import updated `Dify-Summarize.yml` via Dify Studio → DSL Import
-- [ ] 👤 Set environment variables in Dify: `FILE_ACCEPTOR_URL`, `FILE_ACCEPTOR_SECRET`
+- [x] 👤 Configure Dify: open `https://dify.yourdomain.com`, complete setup wizard
+- [x] 👤 Add OpenAI API key in Dify → Settings → Model Providers
+- [x] 👤 Recreate 4 knowledge bases (PRPD, VSYS, EAI, Artemis), upload all source documents
+- [x] 👤 Note the 4 new dataset IDs from Dify URL → share with Claude
+- [x] 🤖 Update `Dify-Summarize.yml` with new dataset IDs (after you provide them)
+- [x] 👤 Import updated `Dify-Summarize.yml` via Dify Studio → DSL Import
+- [x] 👤 Set environment variables in Dify: `FILE_ACCEPTOR_URL`, `FILE_ACCEPTOR_SECRET`
 
 ---
 
