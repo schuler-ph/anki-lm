@@ -6,6 +6,7 @@
   },
   "imports": {
     "@google-cloud/firestore": "npm:@google-cloud/firestore@^7",
+    "jose": "npm:jose@^5",
     "@google-cloud/storage": "npm:@google-cloud/storage@^7",
     "@hono/hono": "jsr:@hono/hono@^4",
     "@openai/openai": "jsr:@openai/openai@^6.2.0",

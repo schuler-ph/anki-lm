@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { authHeaders } from "./api";
 
 function Popover({
   id,
@@ -15,7 +16,8 @@ function Popover({
 
   useEffect(() => {
     let cancelled = false;
-    fetch(contentUrl)
+    authHeaders()
+      .then((headers) => fetch(contentUrl, { headers }))
       .then((r) => r.text())
       .then((t) => { if (!cancelled) setText(t); })
       .catch(() => { if (!cancelled) setText("(Fehler beim Laden)"); });

@@ -6,6 +6,8 @@ import Lectures from "../../components/Demo/Lectures";
 import { BrandingIntro } from "../../components/Demo/BrandingIntro";
 import { fetchJobs } from "../../components/Demo/api";
 import type { Lecture, Topic } from "../../components/Demo/types";
+import { useAuth } from "../../context/AuthContext";
+import Button from "../../components/Button";
 
 function groupByFach(lectures: Lecture[]): Topic[] {
   const map = new Map<string, Lecture[]>();
@@ -18,6 +20,7 @@ function groupByFach(lectures: Lecture[]): Topic[] {
 }
 
 function App() {
+  const { user, loading, signIn } = useAuth();
   const [topics, setTopics] = useState<Topic[]>([]);
   const [currentFach, setCurrentFach] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
@@ -36,20 +39,29 @@ function App() {
   }
 
   useEffect(() => {
-    loadJobs();
+    if (user) loadJobs();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (addingTopic) newFachInputRef.current?.focus();
   }, [addingTopic]);
 
+  if (loading) return null;
+
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <p className="text-gray-600 text-lg">Melde dich an, um AnkiLM zu nutzen.</p>
+        <Button onClick={signIn} name="Mit Google anmelden" />
+      </div>
+    );
+  }
+
   function handleAddTopic(e: React.FormEvent) {
     e.preventDefault();
     const name = newFach.trim();
     if (!name) return;
-    // Create a local-state topic so the Lectures section appears immediately.
-    // It becomes API-backed once the user uploads the first lecture into it.
     setTopics((prev) =>
       prev.some((t) => t.fach === name) ? prev : [...prev, { fach: name, lectures: [] }]
     );
@@ -58,12 +70,10 @@ function App() {
     setAddingTopic(false);
   }
 
-  // After a lecture is uploaded, reload from API so the topic is backed by real data.
   async function handleRefresh() {
     const lectures = await fetchJobs();
     const grouped = groupByFach(lectures);
     setTopics((prev) => {
-      // Merge: keep any local-only topics (fach with no jobs yet) that the user is still editing.
       const apiKeys = new Set(grouped.map((t) => t.fach));
       const localOnly = prev.filter((t) => !apiKeys.has(t.fach));
       return [...grouped, ...localOnly];

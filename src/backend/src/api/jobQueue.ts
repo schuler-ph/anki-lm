@@ -18,6 +18,7 @@ function db(): Firestore {
 function toJob(id: string, data: FirebaseFirestore.DocumentData): Job {
   return {
     id,
+    userId: data.userId as string,
     fach: data.fach as string,
     lectureName: data.lectureName as string,
     status: data.status as JobStatus,
@@ -30,6 +31,7 @@ function toJob(id: string, data: FirebaseFirestore.DocumentData): Job {
 }
 
 export async function createJob(
+  userId: string,
   fach: string,
   lectureName: string,
   mp3GcsPath: string,
@@ -37,6 +39,7 @@ export async function createJob(
 ): Promise<Job> {
   const job: Job = {
     id: crypto.randomUUID(),
+    userId,
     fach,
     lectureName,
     status: "preparing",
@@ -55,15 +58,19 @@ export async function getJob(id: string): Promise<Job | undefined> {
   return toJob(doc.id, doc.data()!);
 }
 
-export async function listJobs(): Promise<Job[]> {
-  const snapshot = await db().collection(COLLECTION).orderBy("createdAt", "desc").get();
-  return snapshot.docs.map((d) => toJob(d.id, d.data()));
+export async function listJobs(userId: string): Promise<Job[]> {
+  const snapshot = await db()
+    .collection(COLLECTION)
+    .where("userId", "==", userId)
+    .get();
+  return snapshot.docs
+    .map((d) => toJob(d.id, d.data()))
+    .sort((a, b) => b.createdAt - a.createdAt);
 }
 
 export async function updateJob(id: string, patch: Partial<Job>): Promise<void> {
   const update: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(patch)) {
-    // Convert undefined values to FieldValue.delete() so Firestore actually removes the field.
     update[k] = v === undefined ? FieldValue.delete() : v;
   }
   await db().collection(COLLECTION).doc(id).update(update);

@@ -13,6 +13,7 @@ import {
 } from "../util/storage.ts";
 import { getFilesInFolder, sendDifyWorkflow } from "../util/orchestrationHelper.ts";
 import { addOutputFile, createJob, getJob, listJobs, setJobStatus, updateJob } from "./jobQueue.ts";
+import { requireAuth } from "./auth.ts";
 import type { Job } from "./types.ts";
 
 interface Env {
@@ -65,7 +66,10 @@ async function processUpload(job: Job): Promise<void> {
     const files = await getFilesInFolder(forDifyPath);
     const fileUrls = await Promise.all(
       files.map((f) =>
-        uploadFileToGcs(f, `input/jobs/${job.id}/for_dify/${Path.basename(f)}`)
+        uploadFileToGcs(
+          f,
+          `input/${job.userId}/jobs/${job.id}/for_dify/${Path.basename(f)}`,
+        )
       ),
     );
 
@@ -79,8 +83,6 @@ async function processUpload(job: Job): Promise<void> {
         await setJobStatus(job.id, "failed", err);
       },
       async () => {
-        // Dify confirmed success — ensure job is marked processed even if
-        // a Firestore transaction race under-counted the webhook files.
         const j = await getJob(job.id);
         if (j && j.status === "processing") await setJobStatus(job.id, "processed");
       },
@@ -93,15 +95,20 @@ async function processUpload(job: Job): Promise<void> {
   }
 }
 
-const app = new Hono();
+const app = new Hono<{ Variables: { userId: string } }>();
 
 app.use("*", cors({ origin: "*" }));
 
 app.get("/health", (c) => c.json({ ok: true }));
 
+// Auth middleware — applied to all /api/jobs routes; webhook uses shared secret instead.
+app.use("/api/jobs", requireAuth);
+app.use("/api/jobs/*", requireAuth);
+
 // ── POST /api/jobs ──────────────────────────────────────────────────────────
 // Step 1: upload files to GCS, create job in "preparing" state.
 app.post("/api/jobs", async (c) => {
+  const userId = c.get("userId");
   const formData = await c.req.formData();
   const mp3File = formData.get("mp3");
   const pdfFile = formData.get("pdf");
@@ -118,8 +125,8 @@ app.post("/api/jobs", async (c) => {
   }
 
   const tempId = crypto.randomUUID();
-  const mp3GcsPath = `input/jobs/${tempId}/raw/input.mp3`;
-  const pdfGcsPath = `input/jobs/${tempId}/raw/input.pdf`;
+  const mp3GcsPath = `input/${userId}/jobs/${tempId}/raw/input.mp3`;
+  const pdfGcsPath = `input/${userId}/jobs/${tempId}/raw/input.pdf`;
 
   const stagingDir = await Deno.makeTempDir({ prefix: `job_upload_${tempId}_` });
   const mp3Local = Path.join(stagingDir, "input.mp3");
@@ -135,7 +142,7 @@ app.post("/api/jobs", async (c) => {
     await Deno.remove(stagingDir, { recursive: true }).catch(() => {});
   }
 
-  const job = await createJob(fach, lectureName, mp3GcsPath, pdfGcsPath);
+  const job = await createJob(userId, fach, lectureName, mp3GcsPath, pdfGcsPath);
   console.log(`Job ${job.id}: created in preparing state`);
 
   return c.json({ jobId: job.id }, 202);
@@ -146,6 +153,7 @@ app.post("/api/jobs", async (c) => {
 app.post("/api/jobs/:id/start", async (c) => {
   const job = await getJob(c.req.param("id"));
   if (!job) return c.json({ error: "Job not found" }, 404);
+  if (job.userId !== c.get("userId")) return c.json({ error: "Forbidden" }, 403);
   if (job.status !== "preparing" && job.status !== "failed") {
     return c.json({ error: `Job is already in status: ${job.status}` }, 409);
   }
@@ -158,12 +166,13 @@ app.post("/api/jobs/:id/start", async (c) => {
 });
 
 // ── GET /api/jobs ───────────────────────────────────────────────────────────
-app.get("/api/jobs", async (c) => c.json(await listJobs()));
+app.get("/api/jobs", async (c) => c.json(await listJobs(c.get("userId"))));
 
 // ── GET /api/jobs/:id ───────────────────────────────────────────────────────
 app.get("/api/jobs/:id", async (c) => {
   const job = await getJob(c.req.param("id"));
   if (!job) return c.json({ error: "Job not found" }, 404);
+  if (job.userId !== c.get("userId")) return c.json({ error: "Forbidden" }, 403);
   return c.json(job);
 });
 
@@ -172,6 +181,7 @@ app.get("/api/jobs/:id", async (c) => {
 app.get("/api/jobs/:id/output/:key", async (c) => {
   const job = await getJob(c.req.param("id"));
   if (!job) return c.json({ error: "Job not found" }, 404);
+  if (job.userId !== c.get("userId")) return c.json({ error: "Forbidden" }, 403);
   const key = c.req.param("key");
   const gcsPath = job.outputFiles[key];
   if (!gcsPath) return c.json({ error: "Output not found" }, 404);
@@ -211,9 +221,9 @@ app.post("/api/webhook/dify", async (c) => {
     return c.json({ error: "Job not found" }, 404);
   }
 
-  const gcsPath = `output/${job.fach}/${job.lectureName}/${baseName}`;
+  const gcsPath = `output/${job.userId}/${job.fach}/${job.lectureName}/${baseName}`;
   const content = await c.req.text();
-  await writeTextToGcs(gcsPath, content); // save to GCS; signed URL not needed (proxy handles reads)
+  await writeTextToGcs(gcsPath, content);
 
   // Key: strip "<fach>_<lectureName>_" prefix and ".md" suffix → "01-summary" etc.
   const typeKey = baseName.replace(/^[^_]+_[^_]+_/, "").replace(/\.md$/, "");
