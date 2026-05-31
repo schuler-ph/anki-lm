@@ -1,6 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { onAuthStateChanged, signInWithPopup, signOut as fbSignOut } from "firebase/auth";
+import {
+  getRedirectResult,
+  onAuthStateChanged,
+  signInWithRedirect,
+  signOut as fbSignOut,
+} from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import { setAuthTokenGetter } from "../components/Demo/api";
 
@@ -22,6 +27,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const u = auth.currentUser;
       return u ? u.getIdToken() : Promise.resolve(null);
     });
+
+    // Pick up the user after Google redirects back to the app.
+    getRedirectResult(auth).catch(() => {});
+
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
@@ -30,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function signIn() {
-    await signInWithPopup(auth, googleProvider);
+    await signInWithRedirect(auth, googleProvider);
   }
 
   async function signOut() {
