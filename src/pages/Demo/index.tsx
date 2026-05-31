@@ -71,7 +71,7 @@ function MDXPopover({
           {label}
         </span>
         <span className="text-[10px] text-gray-600 mt-1 uppercase tracking-wide">
-          Anzeigen
+          Anzeigen Test
         </span>
       </button>
 
