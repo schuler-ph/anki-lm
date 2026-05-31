@@ -9,10 +9,7 @@ export function BrandingIntro({ onComplete }: { onComplete: () => void }) {
 
   useEffect(() => {
     play();
-
-    const timer = setTimeout(() => {
-      onComplete();
-    }, 1500);
+    const timer = setTimeout(onComplete, 1500);
     return () => clearTimeout(timer);
   }, [play, onComplete]);
 

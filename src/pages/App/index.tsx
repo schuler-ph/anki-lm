@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import BaseKnowledge from "../../components/Demo/BaseKnowledge";
@@ -21,6 +21,7 @@ function App() {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [currentFach, setCurrentFach] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const handleIntroComplete = useCallback(() => setShowIntro(false), []);
   const [addingTopic, setAddingTopic] = useState(false);
   const [newFach, setNewFach] = useState("");
   const newFachInputRef = useRef<HTMLInputElement>(null);
@@ -74,7 +75,7 @@ function App() {
   return (
     <>
       <AnimatePresence>
-        {showIntro && <BrandingIntro onComplete={() => setShowIntro(false)} />}
+        {showIntro && <BrandingIntro onComplete={handleIntroComplete} />}
       </AnimatePresence>
 
       <div
