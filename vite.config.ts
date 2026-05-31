@@ -16,5 +16,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: "/anki-lm/",
+  base: "/",
 });

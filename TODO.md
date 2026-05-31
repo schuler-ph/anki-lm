@@ -105,15 +105,15 @@ Außerdem muss die Demo-Seite von hardcodierten MDX-Daten auf echte API-Calls um
 ---
 
 ## Phase 7 — Frontend → Cloudflare Pages (~1h)
-- [ ] 🤖 Change `vite.config.ts` base from `/anki-lm/` to `/`
-- [ ] 🤖 Add `vercel.json` → actually `_redirects` file for Cloudflare Pages SPA routing
-- [ ] 🤖 Remove GitHub Pages deploy action if present
-- [ ] 👤 Cloudflare dashboard → Pages → Create project → Connect GitHub repo
+- [x] 🤖 Change `vite.config.ts` base from `/anki-lm/` to `/`
+- [x] 🤖 Add `vercel.json` → actually `_redirects` file for Cloudflare Pages SPA routing
+- [x] 🤖 Remove GitHub Pages deploy action if present
+- [x] 👤 Cloudflare dashboard → Pages → Create project → Connect GitHub repo
   - Build command: `npm run build`
   - Output directory: `dist`
   - Root directory: `/` (repo root)
-- [ ] 👤 Set environment variables in Cloudflare Pages: `VITE_API_URL=https://api.ankilm.com`
-- [ ] 👤 Set custom domain in Cloudflare Pages settings
+- [x] 👤 Set environment variables in Cloudflare Pages: `VITE_API_URL=https://ankilm-backend-api-j2mn4yc65q-ey.a.run.app`
+- [x] 👤 Set custom domain in Cloudflare Pages settings
 
 ---
 
