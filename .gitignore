@@ -27,3 +27,9 @@ dist-ssr
 src/init/ignore
 
 .env
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
