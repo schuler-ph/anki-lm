@@ -29,11 +29,13 @@ Each ADR captures what was decided, why, and what was explicitly rejected.
 
 ---
 
-## ADR-004 — Supabase for auth and database
+## ADR-004 — Firebase/Firestore for database; Firebase Auth for authentication
 
-**Decision:** Use Supabase for user authentication and the application database (PostgreSQL).
+**Decision:** Use Google Cloud Firestore (native mode) for the job and application database, and Firebase Authentication for user auth.
 
-**Why:** Supabase provides a managed Postgres database and a full auth system (JWT, OAuth, magic links) in a single service with a generous free tier. The alternative would be Firebase Auth + Cloud SQL, which requires managing two separate GCP services and costs more. Supabase's Row Level Security (RLS) makes it straightforward to add tenant isolation later. The Supabase client SDK works well in both the React frontend and the Deno backend.
+**Why:** Firestore is a managed, serverless NoSQL database that integrates natively with GCP — same project, same IAM, same Terraform, same billing account as Cloud Run, GCS, and Artifact Registry. No additional cloud provider to manage. The `@google-cloud/firestore` npm package works in Deno via `preferRest: true` (avoids gRPC). Firestore transactions solve the concurrent-webhook race condition cleanly. Firebase Auth provides JWT-based OAuth (Google login) that works with both the React frontend and the Deno backend, and pairs with Firestore security rules for tenant isolation in Phase 8.
+
+**Replaces:** Supabase (original ADR-004). Supabase was attractive for its combined auth+Postgres free tier, but adding a second cloud provider outside GCP creates unnecessary operational complexity (separate billing, separate credentials, cross-cloud latency). Firestore + Firebase Auth keeps the entire stack in one Google Cloud project.
 
 ---
 

@@ -58,6 +58,13 @@ export async function writeTextToGcs(
   return signedUrl(storage, gcsPath);
 }
 
+// Downloads a GCS object into memory and returns it as a UTF-8 string.
+export async function readTextFromGcs(gcsPath: string): Promise<string> {
+  const storage = getStorage();
+  const [content] = await getBucket(storage).file(gcsPath).download();
+  return content.toString("utf-8");
+}
+
 // Downloads a GCS object to a local file path.
 export async function downloadFromGcs(
   gcsPath: string,

@@ -117,13 +117,15 @@ Außerdem muss die Demo-Seite von hardcodierten MDX-Daten auf echte API-Calls um
 
 ---
 
-## Phase 8 — Auth + Database (Supabase) (~3h)
-- [ ] 👤 Create Supabase project at supabase.com
-- [ ] 👤 Note: project URL, anon key, service role key
-- [ ] 🤖 Write Supabase migrations: `users`, `jobs`, `subscriptions` tables
-- [ ] 🤖 Add Supabase auth to frontend (login/signup UI)
-- [ ] 🤖 Add JWT verification middleware to backend API
-- [ ] 🤖 Set Supabase env vars in Cloud Run + Cloudflare Pages
+## Phase 8 — Auth (Firebase) (~3h)
+Firestore is already wired for job persistence (Phase 6.5+). Phase 8 adds user login.
+
+- [ ] 👤 Enable Firebase Authentication in GCP console → Firebase → Authentication → Sign-in methods → Google
+- [ ] 👤 Note Firebase Web API key (Project Settings → General → Web API key)
+- [ ] 🤖 Add Firebase Auth to frontend (Google sign-in button, auth state in React context)
+- [ ] 🤖 Add JWT verification middleware to backend API (verify Firebase ID token on all `/api/*` routes)
+- [ ] 🤖 Scope GCS paths + Firestore documents by `userId` prefix
+- [ ] 🤖 Set `VITE_FIREBASE_API_KEY` in Cloudflare Pages env vars
 
 ---
 
@@ -153,5 +155,5 @@ Außerdem muss die Demo-Seite von hardcodierten MDX-Daten auf echte API-Calls um
 | 6 | Your Cloudflare domain, new Dify dataset IDs after KB rebuild |
 | 6.5 | Nothing — pure code |
 | 7 | Nothing — pure code + 3 Cloudflare dashboard clicks |
-| 8 | Supabase project URL + keys |
+| 8 | Enable Firebase Auth in GCP console, note Web API key |
 | 9 | Stripe API keys |

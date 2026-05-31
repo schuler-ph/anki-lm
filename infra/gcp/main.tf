@@ -22,6 +22,7 @@ resource "google_project_service" "apis" {
     "artifactregistry.googleapis.com",
     "run.googleapis.com",
     "iamcredentials.googleapis.com",
+    "firestore.googleapis.com",
   ])
   service            = each.key
   disable_on_destroy = false
@@ -39,6 +40,13 @@ resource "google_storage_bucket" "ankilm_files" {
   lifecycle_rule {
     condition { age = 365 }
     action { type = "Delete" }
+  }
+
+  cors {
+    origin          = ["*"]
+    method          = ["GET", "HEAD"]
+    response_header = ["Content-Type"]
+    max_age_seconds = 3600
   }
 }
 
@@ -100,6 +108,22 @@ resource "google_service_account_iam_member" "backend_act_as_self" {
 resource "google_project_iam_member" "backend_token_creator" {
   project = var.project_id
   role    = "roles/iam.serviceAccountTokenCreator"
+  member  = "serviceAccount:${google_service_account.ankilm_backend.email}"
+}
+
+# ── Firestore database ────────────────────────────────────────────────────────
+
+resource "google_firestore_database" "default" {
+  project     = var.project_id
+  name        = "(default)"
+  location_id = var.region
+  type        = "FIRESTORE_NATIVE"
+  depends_on  = [google_project_service.apis]
+}
+
+resource "google_project_iam_member" "backend_firestore_user" {
+  project = var.project_id
+  role    = "roles/datastore.user"
   member  = "serviceAccount:${google_service_account.ankilm_backend.email}"
 }
 

@@ -1,5 +1,6 @@
 import Popover from "./Popover";
 import SimpleLink from "../SimpleLink";
+import { API_BASE } from "./api";
 import type { Lecture } from "./types";
 
 const OUTPUT_TILES: { key: string; label: string }[] = [
@@ -54,14 +55,14 @@ function ProcessSection({
       {lecture.status === "processed" && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {OUTPUT_TILES.map(({ key, label }) => {
-            const url = lecture.outputFiles[key];
-            return url
+            const exists = lecture.outputFiles[key];
+            return exists
               ? (
                 <Popover
                   key={key}
                   id={`${lecture.id}-${key}`}
                   label={label}
-                  contentUrl={url}
+                  contentUrl={`${API_BASE}/api/jobs/${lecture.id}/output/${key}`}
                 />
               )
               : null;

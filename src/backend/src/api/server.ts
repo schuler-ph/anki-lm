@@ -7,6 +7,7 @@ import { transcribe } from "../transcribe.ts";
 import { stampPdfWithSlideNumber } from "../util/pdf.ts";
 import {
   downloadFromGcs,
+  readTextFromGcs,
   uploadFileToGcs,
   writeTextToGcs,
 } from "../util/storage.ts";
@@ -70,23 +71,25 @@ async function processUpload(job: Job): Promise<void> {
 
     const outputPath = `jobs/${job.id}`;
     await sendDifyWorkflow(
-      fileUrls, job.fach, job.lectureName, outputPath,
-      (err) => setJobStatus(job.id, "failed", err),
-      () => {
-        // Safety net: Dify confirmed success — ensure job is marked processed
-        // even if a concurrent webhook race condition under-counted.
-        const j = getJob(job.id);
-        if (j && j.status === "processing") setJobStatus(job.id, "processed");
+      fileUrls,
+      job.fach,
+      job.lectureName,
+      outputPath,
+      async (err) => {
+        await setJobStatus(job.id, "failed", err);
+      },
+      async () => {
+        // Dify confirmed success — ensure job is marked processed even if
+        // a Firestore transaction race under-counted the webhook files.
+        const j = await getJob(job.id);
+        if (j && j.status === "processing") await setJobStatus(job.id, "processed");
       },
     );
 
     console.log(`Job ${job.id}: Dify workflow started`);
   } catch (err) {
     console.error(`Job ${job.id} failed:`, err);
-    setJobStatus(job.id, "failed", String(err));
-  } finally {
-    // The temp dir used for processing is cleaned up asynchronously.
-    // Raw GCS uploads (mp3GcsPath / pdfGcsPath) are preserved for re-runs.
+    await setJobStatus(job.id, "failed", String(err));
   }
 }
 
@@ -114,7 +117,6 @@ app.post("/api/jobs", async (c) => {
     return c.json({ error: "Missing required fields: mp3, pdf, fach, lectureName" }, 400);
   }
 
-  // Generate a temporary ID for the GCS paths; job will carry the real ID.
   const tempId = crypto.randomUUID();
   const mp3GcsPath = `input/jobs/${tempId}/raw/input.mp3`;
   const pdfGcsPath = `input/jobs/${tempId}/raw/input.pdf`;
@@ -133,38 +135,53 @@ app.post("/api/jobs", async (c) => {
     await Deno.remove(stagingDir, { recursive: true }).catch(() => {});
   }
 
-  const job = createJob(fach, lectureName, mp3GcsPath, pdfGcsPath);
+  const job = await createJob(fach, lectureName, mp3GcsPath, pdfGcsPath);
   console.log(`Job ${job.id}: created in preparing state`);
 
   return c.json({ jobId: job.id }, 202);
 });
 
 // ── POST /api/jobs/:id/start ────────────────────────────────────────────────
-// Step 2: trigger AI pipeline for an existing "preparing" job.
-app.post("/api/jobs/:id/start", (c) => {
-  const job = getJob(c.req.param("id"));
+// Step 2: trigger AI pipeline for an existing "preparing" or "failed" job.
+app.post("/api/jobs/:id/start", async (c) => {
+  const job = await getJob(c.req.param("id"));
   if (!job) return c.json({ error: "Job not found" }, 404);
   if (job.status !== "preparing" && job.status !== "failed") {
     return c.json({ error: `Job is already in status: ${job.status}` }, 409);
   }
 
-  // Clear any previous error before re-running.
-  updateJob(job.id, { status: "processing", error: undefined });
-  // Fire and forget — pipeline runs asynchronously.
-  processUpload(job);
+  await updateJob(job.id, { status: "processing", error: undefined });
+  processUpload(job); // fire and forget — pipeline runs asynchronously
 
   console.log(`Job ${job.id}: pipeline started`);
   return c.json({ ok: true }, 202);
 });
 
 // ── GET /api/jobs ───────────────────────────────────────────────────────────
-app.get("/api/jobs", (c) => c.json(listJobs()));
+app.get("/api/jobs", async (c) => c.json(await listJobs()));
 
 // ── GET /api/jobs/:id ───────────────────────────────────────────────────────
-app.get("/api/jobs/:id", (c) => {
-  const job = getJob(c.req.param("id"));
+app.get("/api/jobs/:id", async (c) => {
+  const job = await getJob(c.req.param("id"));
   if (!job) return c.json({ error: "Job not found" }, 404);
   return c.json(job);
+});
+
+// ── GET /api/jobs/:id/output/:key ───────────────────────────────────────────
+// Proxies the GCS output file through the backend to avoid browser CORS issues.
+app.get("/api/jobs/:id/output/:key", async (c) => {
+  const job = await getJob(c.req.param("id"));
+  if (!job) return c.json({ error: "Job not found" }, 404);
+  const key = c.req.param("key");
+  const gcsPath = job.outputFiles[key];
+  if (!gcsPath) return c.json({ error: "Output not found" }, 404);
+
+  try {
+    const text = await readTextFromGcs(gcsPath);
+    return c.text(text, 200, { "Content-Type": "text/markdown; charset=utf-8" });
+  } catch {
+    return c.json({ error: "Failed to fetch from GCS" }, 500);
+  }
 });
 
 // ── POST /api/webhook/dify ──────────────────────────────────────────────────
@@ -189,22 +206,22 @@ app.post("/api/webhook/dify", async (c) => {
   const jobId = parts[1];
   const baseName = parts[2];
 
-  const job = getJob(jobId);
+  const job = await getJob(jobId);
   if (!job) {
     return c.json({ error: "Job not found" }, 404);
   }
 
   const gcsPath = `output/${job.fach}/${job.lectureName}/${baseName}`;
   const content = await c.req.text();
-  const signedUrl = await writeTextToGcs(gcsPath, content);
+  await writeTextToGcs(gcsPath, content); // save to GCS; signed URL not needed (proxy handles reads)
 
   // Key: strip "<fach>_<lectureName>_" prefix and ".md" suffix → "01-summary" etc.
   const typeKey = baseName.replace(/^[^_]+_[^_]+_/, "").replace(/\.md$/, "");
 
-  // Synchronous mutation — safe against concurrent webhook calls losing one file.
-  const count = addOutputFile(jobId, typeKey, signedUrl);
+  // Transactional update — safe against concurrent webhook calls losing a file.
+  const count = await addOutputFile(jobId, typeKey, gcsPath);
   if (count >= EXPECTED_OUTPUT_COUNT) {
-    setJobStatus(jobId, "processed");
+    await setJobStatus(jobId, "processed");
   }
 
   console.log(`Job ${jobId}: received output "${typeKey}" (${count}/${EXPECTED_OUTPUT_COUNT})`);

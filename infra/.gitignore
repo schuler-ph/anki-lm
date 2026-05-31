@@ -11,3 +11,5 @@ terraform.tfvars
 
 # Dify env file with real secrets
 .env.dify
+
+tfplan

@@ -1,6 +1,6 @@
 import type { Lecture } from "./types";
 
-const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:8080";
+export const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:8080";
 
 type ApiJob = {
   id: string;

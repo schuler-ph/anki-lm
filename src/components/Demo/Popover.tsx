@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function Popover({
   id,
@@ -44,13 +46,16 @@ function Popover({
           <h3 className="font-bold text-lg">{label}</h3>
         </div>
         <div
-          className="p-8 overscroll-contain overflow-auto h-full pb-20"
+          className="p-8 overscroll-contain overflow-auto h-full pb-20 prose prose-sm max-w-none
+            prose-headings:font-bold prose-headings:text-gray-900
+            prose-p:text-gray-700 prose-li:text-gray-700
+            prose-table:text-sm prose-th:bg-gray-50 prose-td:align-top"
           tabIndex={0}
           role="region"
         >
           {text === null
-            ? <p className="text-sm text-gray-400">Wird geladen...</p>
-            : <pre className="whitespace-pre-wrap text-sm font-mono text-gray-800">{text}</pre>}
+            ? <p className="text-sm text-gray-400 not-prose">Wird geladen...</p>
+            : <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>}
         </div>
       </div>
     </>
