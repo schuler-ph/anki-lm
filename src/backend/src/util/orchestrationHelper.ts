@@ -91,6 +91,8 @@ export async function sendDifyWorkflow(
   fach: string,
   lectureName: string,
   outputPath: string,
+  onFailed?: (error: string) => void,
+  onSuccess?: () => void,
 ): Promise<void> {
   const cfClientId = Deno.env.get("CF_ACCESS_CLIENT_ID");
   const cfClientSecret = Deno.env.get("CF_ACCESS_CLIENT_SECRET");
@@ -146,7 +148,13 @@ export async function sendDifyWorkflow(
           if (parsed.event === "workflow_started") {
             console.log(`Dify workflow started. Run ID: ${parsed.workflow_run_id}`);
           } else if (parsed.event === "workflow_finished") {
-            console.log(`Dify workflow finished. Status: ${parsed.data?.status}`);
+            const status = parsed.data?.status as string | undefined;
+            console.log(`Dify workflow finished. Status: ${status}`);
+            if (status === "failed" && onFailed) {
+              onFailed(parsed.data?.error ?? "Dify workflow failed");
+            } else if (status === "succeeded" && onSuccess) {
+              onSuccess();
+            }
           }
         } catch { /* ignore malformed chunks */ }
       }

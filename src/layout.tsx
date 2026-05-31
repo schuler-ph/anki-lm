@@ -10,6 +10,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Home from "./content/home.mdx";
 import Prices from "./content/prices.mdx";
 import Demo from "./pages/Demo";
+import AppPage from "./pages/App";
 import Faq from "./content/faq.mdx";
 
 import Contact from "./content/contact.mdx";
@@ -31,6 +32,7 @@ function Layout() {
           <Route path="/" element={<Article Content={Home} />} />
           <Route path="/prices" element={<Article Content={Prices} />} />
           <Route path="/demo" element={<Demo />} />
+          <Route path="/app" element={<AppPage />} />
           <Route path="/faq" element={<Article Content={Faq} />} />
 
           <Route path="/contact" element={<Article Content={Contact} />} />

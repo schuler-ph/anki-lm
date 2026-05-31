@@ -1,46 +1,28 @@
-import pdfFile from "../../assets/icons/file-pdf.svg";
-import Button from "../Button";
+import pdfIcon from "../../assets/icons/file-pdf.svg";
 import type { Lecture } from "./types";
 
 function PdfSection({ lecture }: { lecture: Lecture }) {
+  const filename = lecture.pdfGcsPath
+    ? lecture.pdfGcsPath.split("/").pop() ?? "input.pdf"
+    : null;
+
   return (
     <div>
       <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
         Folien & Skripte (PDF)
       </h4>
       <div className="space-y-2">
-        {lecture.pdf.length === 0
-          ? <p className="text-sm text-gray-500 italic">Keine PDF Dateien.</p>
+        {filename
+          ? (
+            <div className="flex items-center gap-2 p-2 rounded bg-gray-50 border border-gray-100">
+              <img src={pdfIcon} className="h-6 w-6" alt="PDF icon" />
+              <span className="text-sm text-gray-700 truncate">{filename}</span>
+              <span className="ml-auto text-xs text-emerald-600">✓ hochgeladen</span>
+            </div>
+          )
           : (
-            lecture.pdf.map((file: string) => (
-              <div
-                key={file}
-                className="flex justify-between items-center p-2 rounded bg-gray-50 border border-gray-100"
-              >
-                <div className="flex items-center gap-2 overflow-hidden">
-                  <img src={pdfFile} className="h-6 w-6" alt="PDF icon" />
-                  <a
-                    href={"/anki-lm/" + file}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-indigo-600 underline"
-                  >
-                    {file}
-                  </a>
-                </div>
-                {lecture.status === "preparing" && (
-                  <button className="text-xs text-red-600 hover:text-red-700 px-2">
-                    Löschen
-                  </button>
-                )}
-              </div>
-            ))
+            <p className="text-sm text-gray-500 italic">Keine PDF Dateien.</p>
           )}
-        {lecture.status === "preparing" && (
-          <div className="mt-3">
-            <Button name="+ PDF" variant="secondary" />
-          </div>
-        )}
       </div>
     </div>
   );

@@ -1,37 +1,34 @@
-import type { Lecture } from "./types";
+import type { JobStatus } from "./types";
 
-const statusStyles = {
-  processed: "bg-emerald-100 text-emerald-800 border-emerald-200",
+const statusStyles: Record<JobStatus, string> = {
   preparing: "bg-amber-100 text-amber-800 border-amber-200",
+  processing: "bg-blue-100 text-blue-800 border-blue-200",
+  processed: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  failed: "bg-red-100 text-red-800 border-red-200",
 };
 
-const statusLabels = {
-  processed: "Verarbeitung abgeschlossen",
+const statusLabels: Record<JobStatus, string> = {
   preparing: "Warte auf Input",
+  processing: "In Bearbeitung...",
+  processed: "Verarbeitung abgeschlossen",
+  failed: "Fehler",
 };
 
-function StatusChip({ lecture }: { lecture: Lecture }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-          statusStyles[lecture.status as keyof typeof statusStyles]
-        }`}
-      >
-        <span
-          className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-            lecture.status === "processed" ? "bg-emerald-500" : "bg-amber-500"
-          }`}
-        >
-        </span>
-        {statusLabels[lecture.status as keyof typeof statusLabels]}
-      </span>
+const dotColor: Record<JobStatus, string> = {
+  preparing: "bg-amber-500",
+  processing: "bg-blue-500 animate-pulse",
+  processed: "bg-emerald-500",
+  failed: "bg-red-500",
+};
 
-      {
-        /* Transkripte sind hier optional als kleines Icon oder Dropdown denkbar,
-          aber der Einfachheit halber lassen wir die Details im Popover oder hier drunter */
-      }
-    </div>
+function StatusChip({ status }: { status: JobStatus }) {
+  return (
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusStyles[status]}`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${dotColor[status]}`} />
+      {statusLabels[status]}
+    </span>
   );
 }
 

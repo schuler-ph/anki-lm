@@ -57,3 +57,12 @@ export async function writeTextToGcs(
   });
   return signedUrl(storage, gcsPath);
 }
+
+// Downloads a GCS object to a local file path.
+export async function downloadFromGcs(
+  gcsPath: string,
+  localPath: string,
+): Promise<void> {
+  const storage = getStorage();
+  await getBucket(storage).file(gcsPath).download({ destination: localPath });
+}

@@ -88,19 +88,19 @@ dann manuell den "AI-Pipeline starten"-Button klicken.
 Außerdem muss die Demo-Seite von hardcodierten MDX-Daten auf echte API-Calls umgestellt werden.
 
 ### Backend (~2h)
-- [ ] 🤖 `POST /api/jobs` — MP3 + PDF nach GCS hochladen, Job mit Status `preparing` anlegen, Job-ID zurückgeben
-- [ ] 🤖 `POST /api/jobs/:id/start` — Transkription + Dify-Pipeline triggern (der "AI-Pipeline starten"-Button)
-- [ ] 🤖 `GET /api/jobs` — alle Jobs auflisten (für Frontend: Topics/Lectures laden)
-- [ ] 🤖 Job-Status `processing` zwischen `preparing` und `processed` hinzufügen
-- [ ] 🤖 Alten `POST /api/upload` (Upload+Start in einem) entfernen oder auf v2 umleiten
+- [x] 🤖 `POST /api/jobs` — MP3 + PDF nach GCS hochladen, Job mit Status `preparing` anlegen, Job-ID zurückgeben
+- [x] 🤖 `POST /api/jobs/:id/start` — Transkription + Dify-Pipeline triggern (der "AI-Pipeline starten"-Button)
+- [x] 🤖 `GET /api/jobs` — alle Jobs auflisten (für Frontend: Topics/Lectures laden)
+- [x] 🤖 Job-Status `processing` zwischen `preparing` und `processed` hinzufügen
+- [x] 🤖 Alten `POST /api/upload` (Upload+Start in einem) entfernen oder auf v2 umleiten
 
 ### Frontend (~3h)
-- [ ] 🤖 Hardcodierte Demo-Daten (`content[]` in `Demo/index.tsx`) durch echte `GET /api/jobs` Calls ersetzen
-- [ ] 🤖 "+ Audio" / "+ PDF" Buttons → `POST /api/jobs` (Dateien hochladen, Job anlegen)
-- [ ] 🤖 "AI-Pipeline starten" Button → `POST /api/jobs/:id/start`
-- [ ] 🤖 Status-Polling auf Job-Cards (`GET /api/jobs/:id` bis `processed`)
-- [ ] 🤖 Ergebnis-Dateien aus GCS Signed URLs laden (statt MDX-Imports)
-- [ ] 🤖 `VITE_API_URL` als Env-Variable einbinden (kein hardcodierter API-URL)
+- [x] 🤖 Hardcodierte Demo-Daten (`content[]` in `Demo/index.tsx`) durch echte `GET /api/jobs` Calls ersetzen
+- [x] 🤖 "+ Audio" / "+ PDF" Buttons → `POST /api/jobs` (Dateien hochladen, Job anlegen)
+- [x] 🤖 "AI-Pipeline starten" Button → `POST /api/jobs/:id/start`
+- [x] 🤖 Status-Polling auf Job-Cards (`GET /api/jobs/:id` bis `processed`)
+- [x] 🤖 Ergebnis-Dateien aus GCS Signed URLs laden (statt MDX-Imports)
+- [x] 🤖 `VITE_API_URL` als Env-Variable einbinden (kein hardcodierter API-URL)
 
 ---
 
