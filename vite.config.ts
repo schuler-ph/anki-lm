@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => ({
         : "http://localhost:8080"
     ),
     "import.meta.env.VITE_FIREBASE_API_KEY": JSON.stringify("AIzaSyDg3QiaSwonr2u66rC27x9xCITHsm7GNTY"),
-    "import.meta.env.VITE_FIREBASE_AUTH_DOMAIN": JSON.stringify("anki-lm.firebaseapp.com"),
+    "import.meta.env.VITE_FIREBASE_AUTH_DOMAIN": JSON.stringify("ankilm.mkhg.org"),
     "import.meta.env.VITE_FIREBASE_PROJECT_ID": JSON.stringify("anki-lm"),
     "import.meta.env.VITE_FIREBASE_APP_ID": JSON.stringify("1:819170134777:web:a08cfa7a33588d2a57b028"),
   },
