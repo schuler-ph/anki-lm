@@ -2,6 +2,7 @@
   "tasks": {
     "dev": "deno run --allow-run --env-file --allow-env --allow-net --allow-read --allow-write src/orchestrator.ts",
     "server": "deno run --allow-run --env-file --allow-env --allow-net --allow-read --allow-write src/api/server.ts",
+    "import": "deno run --allow-run --env-file --allow-env --allow-net --allow-read --allow-write scripts/import-existing.ts",
     "n8n": "sh ./n8n/start.sh"
   },
   "imports": {

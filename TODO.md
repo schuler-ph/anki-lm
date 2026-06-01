@@ -104,6 +104,45 @@ Außerdem muss die Demo-Seite von hardcodierten MDX-Daten auf echte API-Calls um
 
 ---
 
+## Phase 6.6 — Multi-File Upload & UX Polish (~3h)
+
+### Multi-File Support per Lecture (~2h)
+Currently `POST /api/jobs` accepts exactly one MP3 and one PDF. Target: arbitrary number of each.
+
+- [ ] 🤖 Backend `types.ts`: change `mp3GcsPath?: string` / `pdfGcsPath?: string` to `mp3GcsPaths: string[]` / `pdfGcsPaths: string[]` in `Job`
+- [ ] 🤖 `POST /api/jobs`: accept `mp3` / `pdf` as repeated form fields (multiple files); upload all to GCS
+- [ ] 🤖 `processUpload` in `server.ts`: download all input files, pass all to transcription/stamping loop (already supported by `prepareDifyFolder`)
+- [ ] 🤖 Frontend `NewLectureForm`: allow adding multiple MP3 and PDF files before submitting
+
+### Fach Display Name (~0.5h)
+Currently `fach` is the raw shortname ("eai") everywhere — in GCS paths, Dify switch key, and the UI.
+Goal: keep shortname as the technical key; add a human-readable full name for display.
+
+- [ ] 🤖 Backend `types.ts`: add `fachDisplayName?: string` to `Job`
+- [ ] 🤖 `POST /api/jobs`: accept optional `fachDisplayName` form field, store in job
+- [ ] 🤖 Frontend `types.ts`: add `displayName?: string` to `Topic`; derive from first lecture's `fachDisplayName`
+- [ ] 🤖 "Add New Topic" sidebar form: add "Full Name" input (optional) alongside the existing shortname field
+- [ ] 🤖 Sidebar + header: display `displayName` when set, fall back to `fach`
+
+### Intermediate Files & Lazy Loading (~0.5h)
+- [ ] 🤖 `GET /api/jobs/:id/intermediates` — list transcript (.txt) and stamped PDF from GCS `input/{userId}/jobs/{id}/for_dify/` with signed download URLs
+- [ ] 🤖 Frontend: show "Transcript" and "Stamped PDF" links in job detail view once `status !== "preparing"`
+- [ ] 🤖 Retry optimization in `processUpload`: skip transcription/PDF stamping if `for_dify/` files already exist in GCS (so a Dify failure doesn't re-run Whisper)
+- [ ] 🤖 Frontend: lazy-load output file content (summary, ANKI, etc.) on popup/modal open — not on page load
+
+---
+
+## Phase 6.7 — Import Existing Lectures from Google Drive (~1h)
+One-time migration of locally downloaded Drive lectures into GCS + Firestore.
+
+- [ ] 👤 `brew install rclone && rclone config` — add "gdrive" remote
+- [ ] 👤 `rclone copy "gdrive:Files/Uni/6Sem/" ./lectures-import/ --include "*.mp3" --include "*.pdf" --include "*.md" --include "*.txt" --progress`
+- [ ] 👤 Get Supabase user ID from Supabase dashboard → Authentication → Users
+- [ ] 👤 `cd src/backend && deno task import -- --source ../../lectures-import/ --user-id <uid> --dry-run` — verify output
+- [ ] 👤 `deno task import -- --source ../../lectures-import/ --user-id <uid>` — real import
+
+---
+
 ## Phase 7 — Frontend → Cloudflare Pages (~1h)
 - [x] 🤖 Change `vite.config.ts` base from `/anki-lm/` to `/`
 - [x] 🤖 Add `vercel.json` → actually `_redirects` file for Cloudflare Pages SPA routing
@@ -127,9 +166,9 @@ Auth via Supabase Google OAuth. Firebase Auth was attempted and removed (see ADR
 - [x] 🤖 `src/context/AuthContext.tsx` — `signInWithOAuth` / `onAuthStateChange` / `signOut`
 - [x] 🤖 `src/backend/src/api/auth.ts` — JWT verification via Supabase JWKS endpoint
 - [x] 🤖 Delete `src/worker.ts` and `src/firebase.ts`; simplify `wrangler.jsonc`
-- [ ] 👤 Set `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` in Cloudflare Pages env vars
-- [ ] 👤 Deploy: `npm run deploy`
-- [ ] 👤 Sign in on `https://ankilm.mkhg.org` to verify end-to-end
+- [x] 👤 Set `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` in Cloudflare Pages env vars
+- [x] 👤 Deploy: `npm run deploy`
+- [x] 👤 Sign in on `https://ankilm.mkhg.org` to verify end-to-end
 
 ---
 
@@ -150,6 +189,27 @@ Auth via Supabase Google OAuth. Firebase Auth was attempted and removed (see ADR
 
 ---
 
+## Phase 11 — Knowledge Base Management (Extension / Pre-SaaS)
+Automate RAG knowledge base uploads via Dify API instead of manual Dify Studio clicks.
+The Dify switch statement still hardcodes dataset IDs per fach — adding a new fach requires
+updating the workflow YAML and re-importing. This phase reduces that friction.
+
+### Backend
+- [ ] 🤖 `GET /api/knowledge` — list all faecher and their Dify dataset IDs (from a config or GCS-stored JSON)
+- [ ] 🤖 `POST /api/knowledge/:fach` — create a new Dify dataset for this fach via `POST /v1/datasets`
+- [ ] 🤖 `POST /api/knowledge/:fach/documents` — upload a file to the fach KB via Dify `POST /v1/datasets/{id}/document/create-by-file`
+- [ ] 🤖 `DELETE /api/knowledge/:fach/documents/:docId` — remove a document from the KB
+
+### Workflow
+- [ ] 🤖 Replace hardcoded switch in `Dify-Summarize.yml` with a config-driven approach: store fach → dataset_id map in a Dify env variable (JSON string) and use a Code node to look up the right ID, eliminating per-fach switch branches
+- [ ] 👤 Re-import updated `Dify-Summarize.yml` via Dify Studio → DSL Import
+
+### Frontend
+- [ ] 🤖 KB management view: list subjects, show document count per KB, upload/delete documents
+- [ ] 🤖 "Add Fach" flow: creates dataset via API, adds to workflow config
+
+---
+
 ## What I need from you before each phase
 
 | Phase | What you need to provide |
@@ -158,6 +218,8 @@ Auth via Supabase Google OAuth. Firebase Auth was attempted and removed (see ADR
 | 5 | SA key from Terraform output (for local `.env`) |
 | 6 | Your Cloudflare domain, new Dify dataset IDs after KB rebuild |
 | 6.5 | Nothing — pure code |
+| 6.6 | Nothing — pure code |
 | 7 | Nothing — pure code + 3 Cloudflare dashboard clicks |
 | 8 | Enable Firebase Auth in GCP console, note Web API key |
 | 9 | Stripe API keys |
+| 11 | Dify dataset IDs for existing KBs (from Dify Studio URLs) |
