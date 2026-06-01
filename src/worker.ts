@@ -8,9 +8,8 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    // Proxy Firebase auth handler through our domain to avoid third-party
-    // storage blocking in modern browsers (Chrome 115+, Firefox, Safari).
-    if (url.pathname.startsWith("/__/auth/")) {
+    // Proxy all Firebase-served paths (auth handler + firebase JS assets).
+    if (url.pathname.startsWith("/__/")) {
       const target = new URL(
         url.pathname + url.search,
         "https://anki-lm.firebaseapp.com",
