@@ -1,12 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { User } from "firebase/auth";
-import {
-  getRedirectResult,
-  onAuthStateChanged,
-  signInWithRedirect,
-  signOut as fbSignOut,
-} from "firebase/auth";
-import { auth, googleProvider } from "../firebase";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "../supabase";
 import { setAuthTokenGetter } from "../components/Demo/api";
 
 interface AuthContextValue {
@@ -23,27 +17,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setAuthTokenGetter(() => {
-      const u = auth.currentUser;
-      return u ? u.getIdToken() : Promise.resolve(null);
+    setAuthTokenGetter(async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session?.access_token ?? null;
     });
 
-    // Pick up the user after Google redirects back to the app.
-    getRedirectResult(auth).catch(() => {});
-
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u);
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
       setLoading(false);
     });
-    return unsub;
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   async function signIn() {
-    await signInWithRedirect(auth, googleProvider);
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin },
+    });
   }
 
   async function signOut() {
-    await fbSignOut(auth);
+    await supabase.auth.signOut();
   }
 
   return (

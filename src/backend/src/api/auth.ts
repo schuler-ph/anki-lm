@@ -3,15 +3,14 @@ import type { MiddlewareHandler } from "@hono/hono";
 
 const JWKS = createRemoteJWKSet(
   new URL(
-    "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com",
+    "https://xqnmnnhicbpjkaksagmg.supabase.co/auth/v1/.well-known/jwks.json",
   ),
 );
 
-async function verifyFirebaseToken(token: string): Promise<string> {
-  const projectId = Deno.env.get("GCP_PROJECT_ID") ?? "anki-lm";
+async function verifySupabaseToken(token: string): Promise<string> {
   const { payload } = await jwtVerify(token, JWKS, {
-    issuer: `https://securetoken.google.com/${projectId}`,
-    audience: projectId,
+    issuer: "https://xqnmnnhicbpjkaksagmg.supabase.co/auth/v1",
+    audience: "authenticated",
   });
   return payload.sub!;
 }
@@ -23,7 +22,7 @@ export const requireAuth: MiddlewareHandler<{ Variables: { userId: string } }> =
   const header = c.req.header("Authorization");
   if (!header?.startsWith("Bearer ")) return c.json({ error: "Unauthorized" }, 401);
   try {
-    const uid = await verifyFirebaseToken(header.slice(7));
+    const uid = await verifySupabaseToken(header.slice(7));
     c.set("userId", uid);
     await next();
   } catch {

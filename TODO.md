@@ -117,15 +117,19 @@ Außerdem muss die Demo-Seite von hardcodierten MDX-Daten auf echte API-Calls um
 
 ---
 
-## Phase 8 — Auth (Firebase) (~3h)
-Firestore is already wired for job persistence (Phase 6.5+). Phase 8 adds user login.
+## Phase 8 — Auth (Supabase) (~1h)
+Auth via Supabase Google OAuth. Firebase Auth was attempted and removed (see ADR-009).
 
-- [ ] 👤 Enable Firebase Authentication in GCP console → Firebase → Authentication → Sign-in methods → Google
-- [ ] 👤 Note Firebase Web API key (Project Settings → General → Web API key)
-- [ ] 🤖 Add Firebase Auth to frontend (Google sign-in button, auth state in React context)
-- [ ] 🤖 Add JWT verification middleware to backend API (verify Firebase ID token on all `/api/*` routes)
-- [ ] 🤖 Scope GCS paths + Firestore documents by `userId` prefix
-- [ ] 🤖 Set `VITE_FIREBASE_API_KEY` in Cloudflare Pages env vars
+- [x] 👤 Create Supabase project, enable Google OAuth provider
+- [x] 👤 Add `https://ankilm.mkhg.org` as Site URL + Redirect URL in Supabase Auth settings
+- [x] 🤖 Replace Firebase SDK with `@supabase/supabase-js`
+- [x] 🤖 `src/supabase.ts` — Supabase client init
+- [x] 🤖 `src/context/AuthContext.tsx` — `signInWithOAuth` / `onAuthStateChange` / `signOut`
+- [x] 🤖 `src/backend/src/api/auth.ts` — JWT verification via Supabase JWKS endpoint
+- [x] 🤖 Delete `src/worker.ts` and `src/firebase.ts`; simplify `wrangler.jsonc`
+- [ ] 👤 Set `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` in Cloudflare Pages env vars
+- [ ] 👤 Deploy: `npm run deploy`
+- [ ] 👤 Sign in on `https://ankilm.mkhg.org` to verify end-to-end
 
 ---
 

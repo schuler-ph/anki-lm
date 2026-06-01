@@ -9,7 +9,7 @@ function LoginAndSignup() {
   if (user) {
     return (
       <div className="flex gap-2 items-center">
-        <span className="text-sm text-gray-600 hidden sm:block">{user.displayName}</span>
+        <span className="text-sm text-gray-600 hidden sm:block">{user.user_metadata.full_name as string}</span>
         <Button onClick={signOut} name="Abmelden" variant="secondary" />
       </div>
     );

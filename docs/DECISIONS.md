@@ -68,3 +68,17 @@ Each ADR captures what was decided, why, and what was explicitly rejected.
 **Decision:** All output files are named `<FACH>_<LectureName>_<content>.md`, e.g. `EAI_ArchitekturMuster_01-summary.md`.
 
 **Why:** The previous convention used bare filenames like `01-summary.md`. When multiple lecture outputs are loaded into an AI chat context simultaneously, the model has no way to identify which file belongs to which subject or lecture. The new convention makes every file self-identifying without opening it. The `fach` prefix groups files by subject; the `lectureName` suffix (stripped of the `YYYY-MM-DD_` date prefix from folder names) provides the topic. The content suffix preserves sort order and type at a glance.
+
+---
+
+## ADR-009 — Supabase Auth instead of Firebase Auth
+
+**Decision:** Use Supabase Auth (Google OAuth provider) for Phase 8 authentication. Firebase Auth was implemented and then removed.
+
+**Why:** Firebase Auth requires the `/__/auth/handler` endpoint to be served from the same origin as the app. On Cloudflare Pages this means a Worker proxy that forwards all `/__/` paths to `anki-lm.firebaseapp.com`. After two days of debugging this proxy, the flow still failed in production (handler HTML loaded but its JS never ran, OAuth redirect URIs missing, ASSETS binding intercepting before the Worker). The root cause is that Firebase Auth is designed for Firebase Hosting — the proxy approach fights the platform.
+
+Supabase Auth's OAuth flow is fully hosted on `<project>.supabase.co`, so the callback never touches our domain's static file server. The app only needs to call `supabase.auth.signInWithOAuth()` and handle the return redirect — no proxies, no `/__/` paths, no Worker needed. JWT verification on the backend uses the same `jose`+JWKS pattern (endpoint: `<project>.supabase.co/auth/v1/.well-known/jwks.json`), keeping the middleware interface identical.
+
+Additionally, Supabase was already the planned Phase 8 technology per CLAUDE.md (Auth/DB: Supabase). The Firebase pivot was undocumented and contradicted the architecture plan.
+
+**Rejected:** Firebase Auth — requires Firebase Hosting or a fragile same-origin proxy; incompatible with Cloudflare Pages static hosting.
