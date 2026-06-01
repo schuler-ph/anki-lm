@@ -24,8 +24,12 @@ function toJob(id: string, data: FirebaseFirestore.DocumentData): Job {
     status: data.status as JobStatus,
     outputFiles: (data.outputFiles ?? {}) as Record<string, string>,
     createdAt: data.createdAt as number,
-    mp3GcsPath: data.mp3GcsPath as string | undefined,
-    pdfGcsPath: data.pdfGcsPath as string | undefined,
+    // Backward compat: old docs have singular mp3GcsPath/pdfGcsPath
+    mp3GcsPaths: (data.mp3GcsPaths ?? (data.mp3GcsPath ? [data.mp3GcsPath] : [])) as string[],
+    pdfGcsPaths: (data.pdfGcsPaths ?? (data.pdfGcsPath ? [data.pdfGcsPath] : [])) as string[],
+    mp3OriginalNames: (data.mp3OriginalNames ?? []) as string[],
+    pdfOriginalNames: (data.pdfOriginalNames ?? []) as string[],
+    fachDisplayName: data.fachDisplayName as string | undefined,
     error: data.error as string | undefined,
   };
 }
@@ -34,8 +38,11 @@ export async function createJob(
   userId: string,
   fach: string,
   lectureName: string,
-  mp3GcsPath: string,
-  pdfGcsPath: string,
+  mp3GcsPaths: string[],
+  pdfGcsPaths: string[],
+  mp3OriginalNames: string[],
+  pdfOriginalNames: string[],
+  fachDisplayName?: string,
 ): Promise<Job> {
   const job: Job = {
     id: crypto.randomUUID(),
@@ -45,8 +52,11 @@ export async function createJob(
     status: "preparing",
     outputFiles: {},
     createdAt: Date.now(),
-    mp3GcsPath,
-    pdfGcsPath,
+    mp3GcsPaths,
+    pdfGcsPaths,
+    mp3OriginalNames,
+    pdfOriginalNames,
+    ...(fachDisplayName !== undefined && { fachDisplayName }),
   };
   await db().collection(COLLECTION).doc(job.id).set(job);
   return job;
@@ -80,6 +90,26 @@ export async function setJobStatus(id: string, status: JobStatus, error?: string
   const patch: Record<string, unknown> = { status };
   if (error !== undefined) patch.error = error;
   await db().collection(COLLECTION).doc(id).update(patch);
+}
+
+export async function setFachDisplayName(
+  userId: string,
+  fach: string,
+  displayName: string | undefined,
+): Promise<void> {
+  const snapshot = await db()
+    .collection(COLLECTION)
+    .where("userId", "==", userId)
+    .where("fach", "==", fach)
+    .get();
+  if (snapshot.empty) return;
+  const batch = db().batch();
+  for (const doc of snapshot.docs) {
+    batch.update(doc.ref, {
+      fachDisplayName: displayName !== undefined ? displayName : FieldValue.delete(),
+    });
+  }
+  await batch.commit();
 }
 
 // Transactional read-modify-write — safe against concurrent webhook calls.

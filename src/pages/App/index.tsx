@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import BaseKnowledge from "../../components/Demo/BaseKnowledge";
 import Lectures from "../../components/Demo/Lectures";
 import { BrandingIntro } from "../../components/Demo/BrandingIntro";
-import { fetchJobs } from "../../components/Demo/api";
+import { fetchJobs, updateTopicDisplayName } from "../../components/Demo/api";
 import type { Lecture, Topic } from "../../components/Demo/types";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/Button";
@@ -16,7 +16,11 @@ function groupByFach(lectures: Lecture[]): Topic[] {
     list.push(l);
     map.set(l.fach, list);
   }
-  return [...map.entries()].map(([fach, ls]) => ({ fach, lectures: ls }));
+  return [...map.entries()].map(([fach, ls]) => ({
+    fach,
+    displayName: ls[0]?.fachDisplayName,
+    lectures: ls,
+  }));
 }
 
 function App() {
@@ -27,7 +31,11 @@ function App() {
   const handleIntroComplete = useCallback(() => setShowIntro(false), []);
   const [addingTopic, setAddingTopic] = useState(false);
   const [newFach, setNewFach] = useState("");
+  const [newDisplayName, setNewDisplayName] = useState("");
   const newFachInputRef = useRef<HTMLInputElement>(null);
+  const [editingDisplayName, setEditingDisplayName] = useState(false);
+  const [editDisplayNameValue, setEditDisplayNameValue] = useState("");
+  const editDisplayNameRef = useRef<HTMLInputElement>(null);
 
   async function loadJobs() {
     const lectures = await fetchJobs();
@@ -44,8 +52,17 @@ function App() {
   }, [user]);
 
   useEffect(() => {
+    setEditingDisplayName(false);
+    setEditDisplayNameValue("");
+  }, [currentFach]);
+
+  useEffect(() => {
     if (addingTopic) newFachInputRef.current?.focus();
   }, [addingTopic]);
+
+  useEffect(() => {
+    if (editingDisplayName) editDisplayNameRef.current?.focus();
+  }, [editingDisplayName]);
 
   if (loading) return null;
 
@@ -62,12 +79,33 @@ function App() {
     e.preventDefault();
     const name = newFach.trim();
     if (!name) return;
+    const display = newDisplayName.trim() || undefined;
     setTopics((prev) =>
-      prev.some((t) => t.fach === name) ? prev : [...prev, { fach: name, lectures: [] }]
+      prev.some((t) => t.fach === name)
+        ? prev
+        : [...prev, { fach: name, displayName: display, lectures: [] }]
     );
     setCurrentFach(name);
     setNewFach("");
+    setNewDisplayName("");
     setAddingTopic(false);
+  }
+
+  function handleStartEditDisplayName() {
+    if (!currentTopic) return;
+    setEditDisplayNameValue(currentTopic.displayName ?? "");
+    setEditingDisplayName(true);
+  }
+
+  async function handleSaveDisplayName(e: React.FormEvent) {
+    e.preventDefault();
+    if (!currentFach) return;
+    const val = editDisplayNameValue.trim() || undefined;
+    await updateTopicDisplayName(currentFach, val);
+    setTopics((prev) =>
+      prev.map((t) => t.fach === currentFach ? { ...t, displayName: val } : t)
+    );
+    setEditingDisplayName(false);
   }
 
   async function handleRefresh() {
@@ -112,20 +150,28 @@ function App() {
                     : "border-transparent text-gray-600")}
                 onClick={() => setCurrentFach(topic.fach)}
               >
-                {topic.fach}
+                {topic.displayName ?? topic.fach}
               </button>
             ))}
 
             {addingTopic
               ? (
-                <form onSubmit={handleAddTopic} className="mt-2 mx-4 flex gap-1">
+                <form onSubmit={handleAddTopic} className="mt-2 mx-4 flex flex-col gap-1">
                   <input
                     ref={newFachInputRef}
                     type="text"
                     value={newFach}
                     onChange={(e) => setNewFach(e.target.value)}
-                    placeholder="Themenname"
-                    className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    placeholder="Kürzel (z.B. eai)"
+                    className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    onKeyDown={(e) => e.key === "Escape" && setAddingTopic(false)}
+                  />
+                  <input
+                    type="text"
+                    value={newDisplayName}
+                    onChange={(e) => setNewDisplayName(e.target.value)}
+                    placeholder="Vollständiger Name (optional)"
+                    className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
                     onKeyDown={(e) => e.key === "Escape" && setAddingTopic(false)}
                   />
                   <button
@@ -153,9 +199,50 @@ function App() {
             ? (
               <>
                 <header className="bg-white border-b border-gray-200 px-8 py-6 pr-6">
-                  <h1 className="text-2xl font-bold text-gray-800">
-                    {currentTopic.fach}
-                  </h1>
+                  {editingDisplayName
+                    ? (
+                      <form onSubmit={handleSaveDisplayName} className="flex items-center gap-2">
+                        <input
+                          ref={editDisplayNameRef}
+                          type="text"
+                          value={editDisplayNameValue}
+                          onChange={(e) => setEditDisplayNameValue(e.target.value)}
+                          placeholder={currentTopic.fach}
+                          className="text-2xl font-bold text-gray-800 border-b-2 border-indigo-400 bg-transparent outline-none w-72"
+                          onKeyDown={(e) => e.key === "Escape" && setEditingDisplayName(false)}
+                        />
+                        <button
+                          type="submit"
+                          className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                        >
+                          Speichern
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditingDisplayName(false)}
+                          className="text-gray-400 hover:text-gray-600 text-sm"
+                        >
+                          Abbrechen
+                        </button>
+                      </form>
+                    )
+                    : (
+                      <div className="flex items-center gap-3">
+                        <h1 className="text-2xl font-bold text-gray-800">
+                          {currentTopic.displayName ?? currentTopic.fach}
+                        </h1>
+                        <button
+                          onClick={handleStartEditDisplayName}
+                          title="Namen bearbeiten"
+                          className="text-gray-400 hover:text-indigo-600 transition-colors"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                  <p className="text-xs text-gray-400 mt-1">Kürzel: <code>{currentTopic.fach}</code></p>
                 </header>
                 <div className="px-8 py-8 space-y-8">
                   <BaseKnowledge currentItem={{ knowledge: [] }} />

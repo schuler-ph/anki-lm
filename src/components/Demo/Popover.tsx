@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { authHeaders } from "./api";
@@ -12,17 +12,25 @@ function Popover({
   label: string;
   contentUrl: string;
 }) {
-  const [text, setText] = useState<string | null>(null);
+  const [text, setText] = useState<string | null | "idle">("idle");
+  const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let cancelled = false;
-    authHeaders()
-      .then((headers) => fetch(contentUrl, { headers }))
-      .then((r) => r.text())
-      .then((t) => { if (!cancelled) setText(t); })
-      .catch(() => { if (!cancelled) setText("(Fehler beim Laden)"); });
-    return () => { cancelled = true; };
-  }, [contentUrl]);
+    const el = popoverRef.current;
+    if (!el) return;
+    const handleToggle = (e: Event) => {
+      if ((e as ToggleEvent).newState !== "open") return;
+      if (text !== "idle") return;
+      setText(null);
+      authHeaders()
+        .then((headers) => fetch(contentUrl, { headers }))
+        .then((r) => r.text())
+        .then((t) => setText(t))
+        .catch(() => setText("(Fehler beim Laden)"));
+    };
+    el.addEventListener("toggle", handleToggle);
+    return () => el.removeEventListener("toggle", handleToggle);
+  }, [contentUrl, text]);
 
   return (
     <>
@@ -40,6 +48,7 @@ function Popover({
       </button>
 
       <div
+        ref={popoverRef}
         id={`popover-${id}`}
         popover="auto"
         className="fixed inset-0 m-auto w-full max-w-3xl h-[80vh] bg-white rounded-xl shadow-2xl p-0 overflow-hidden backdrop:bg-gray-900/50"
@@ -55,7 +64,7 @@ function Popover({
           tabIndex={0}
           role="region"
         >
-          {text === null
+          {text === "idle" || text === null
             ? <p className="text-sm text-gray-400 not-prose">Wird geladen...</p>
             : <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>}
         </div>

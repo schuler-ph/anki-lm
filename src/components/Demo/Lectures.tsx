@@ -10,14 +10,16 @@ const POLL_INTERVAL_MS = 3000;
 
 function NewLectureForm({
   fach,
+  fachDisplayName,
   onCreated,
 }: {
   fach: string;
+  fachDisplayName?: string;
   onCreated: () => void;
 }) {
   const [name, setName] = useState("");
-  const [mp3, setMp3] = useState<File | null>(null);
-  const [pdf, setPdf] = useState<File | null>(null);
+  const [mp3s, setMp3s] = useState<File[]>([]);
+  const [pdfs, setPdfs] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mp3Ref = useRef<HTMLInputElement>(null);
@@ -25,12 +27,15 @@ function NewLectureForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!mp3 || !pdf || !name.trim()) return;
+    if (mp3s.length === 0 || pdfs.length === 0 || !name.trim()) return;
     setUploading(true);
     setError(null);
     try {
-      await createJob(mp3, pdf, fach, name.trim());
+      await createJob(mp3s, pdfs, fach, name.trim(), fachDisplayName);
       onCreated();
+      setMp3s([]);
+      setPdfs([]);
+      setName("");
     } catch (err) {
       setError(String(err));
     } finally {
@@ -68,16 +73,35 @@ function NewLectureForm({
             ref={mp3Ref}
             type="file"
             accept=".mp3,audio/mpeg"
+            multiple
             className="hidden"
-            onChange={(e) => setMp3(e.target.files?.[0] ?? null)}
+            onChange={(e) => {
+              const existing = new Set(mp3s.map((f) => f.name));
+              const added = Array.from(e.target.files ?? []).filter((f) => !existing.has(f.name));
+              setMp3s((prev) => [...prev, ...added]);
+            }}
           />
-          <button
-            type="button"
-            onClick={() => mp3Ref.current?.click()}
-            className="w-full border border-dashed border-gray-300 rounded px-3 py-2 text-sm text-gray-600 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-left"
-          >
-            {mp3 ? mp3.name : "+ Audio"}
-          </button>
+          <div className="space-y-1">
+            {mp3s.map((f, i) => (
+              <div key={i} className="flex items-center border border-gray-300 rounded px-3 py-2 text-sm text-gray-700 bg-white">
+                <span className="truncate flex-1">{f.name}</span>
+                <button
+                  type="button"
+                  onClick={() => setMp3s((prev) => prev.filter((_, j) => j !== i))}
+                  className="ml-2 text-gray-400 hover:text-red-500 flex-shrink-0"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => mp3Ref.current?.click()}
+              className="w-full border border-dashed border-gray-300 rounded px-3 py-2 text-sm text-gray-600 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-left"
+            >
+              + Audio
+            </button>
+          </div>
         </div>
 
         <div>
@@ -88,16 +112,35 @@ function NewLectureForm({
             ref={pdfRef}
             type="file"
             accept=".pdf,application/pdf"
+            multiple
             className="hidden"
-            onChange={(e) => setPdf(e.target.files?.[0] ?? null)}
+            onChange={(e) => {
+              const existing = new Set(pdfs.map((f) => f.name));
+              const added = Array.from(e.target.files ?? []).filter((f) => !existing.has(f.name));
+              setPdfs((prev) => [...prev, ...added]);
+            }}
           />
-          <button
-            type="button"
-            onClick={() => pdfRef.current?.click()}
-            className="w-full border border-dashed border-gray-300 rounded px-3 py-2 text-sm text-gray-600 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-left"
-          >
-            {pdf ? pdf.name : "+ PDF"}
-          </button>
+          <div className="space-y-1">
+            {pdfs.map((f, i) => (
+              <div key={i} className="flex items-center border border-gray-300 rounded px-3 py-2 text-sm text-gray-700 bg-white">
+                <span className="truncate flex-1">{f.name}</span>
+                <button
+                  type="button"
+                  onClick={() => setPdfs((prev) => prev.filter((_, j) => j !== i))}
+                  className="ml-2 text-gray-400 hover:text-red-500 flex-shrink-0"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => pdfRef.current?.click()}
+              className="w-full border border-dashed border-gray-300 rounded px-3 py-2 text-sm text-gray-600 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-left"
+            >
+              + PDF
+            </button>
+          </div>
         </div>
       </div>
 
@@ -105,7 +148,7 @@ function NewLectureForm({
 
       <button
         type="submit"
-        disabled={!mp3 || !pdf || !name.trim() || uploading}
+        disabled={mp3s.length === 0 || pdfs.length === 0 || !name.trim() || uploading}
         className="w-full bg-indigo-600 text-white text-sm font-semibold py-2 rounded hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
       >
         {uploading ? "Wird hochgeladen..." : "Hochladen & Anlegen"}
@@ -224,6 +267,7 @@ function Lectures({
           ? (
             <NewLectureForm
               fach={topic.fach}
+              fachDisplayName={topic.displayName}
               onCreated={handleCreated}
             />
           )

@@ -8,7 +8,10 @@ export interface Job {
   status: JobStatus;
   outputFiles: Record<string, string>;
   createdAt: number;
-  mp3GcsPath?: string;
-  pdfGcsPath?: string;
+  mp3GcsPaths: string[];
+  pdfGcsPaths: string[];
+  mp3OriginalNames: string[];
+  pdfOriginalNames: string[];
+  fachDisplayName?: string;
   error?: string;
 }

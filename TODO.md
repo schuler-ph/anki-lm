@@ -109,26 +109,26 @@ Außerdem muss die Demo-Seite von hardcodierten MDX-Daten auf echte API-Calls um
 ### Multi-File Support per Lecture (~2h)
 Currently `POST /api/jobs` accepts exactly one MP3 and one PDF. Target: arbitrary number of each.
 
-- [ ] 🤖 Backend `types.ts`: change `mp3GcsPath?: string` / `pdfGcsPath?: string` to `mp3GcsPaths: string[]` / `pdfGcsPaths: string[]` in `Job`
-- [ ] 🤖 `POST /api/jobs`: accept `mp3` / `pdf` as repeated form fields (multiple files); upload all to GCS
-- [ ] 🤖 `processUpload` in `server.ts`: download all input files, pass all to transcription/stamping loop (already supported by `prepareDifyFolder`)
-- [ ] 🤖 Frontend `NewLectureForm`: allow adding multiple MP3 and PDF files before submitting
+- [x] 🤖 Backend `types.ts`: change `mp3GcsPath?: string` / `pdfGcsPath?: string` to `mp3GcsPaths: string[]` / `pdfGcsPaths: string[]` in `Job`
+- [x] 🤖 `POST /api/jobs`: accept `mp3` / `pdf` as repeated form fields (multiple files); upload all to GCS
+- [x] 🤖 `processUpload` in `server.ts`: download all input files, pass all to transcription/stamping loop (already supported by `prepareDifyFolder`)
+- [x] 🤖 Frontend `NewLectureForm`: allow adding multiple MP3 and PDF files before submitting
 
 ### Fach Display Name (~0.5h)
 Currently `fach` is the raw shortname ("eai") everywhere — in GCS paths, Dify switch key, and the UI.
 Goal: keep shortname as the technical key; add a human-readable full name for display.
 
-- [ ] 🤖 Backend `types.ts`: add `fachDisplayName?: string` to `Job`
-- [ ] 🤖 `POST /api/jobs`: accept optional `fachDisplayName` form field, store in job
-- [ ] 🤖 Frontend `types.ts`: add `displayName?: string` to `Topic`; derive from first lecture's `fachDisplayName`
-- [ ] 🤖 "Add New Topic" sidebar form: add "Full Name" input (optional) alongside the existing shortname field
-- [ ] 🤖 Sidebar + header: display `displayName` when set, fall back to `fach`
+- [x] 🤖 Backend `types.ts`: add `fachDisplayName?: string` to `Job`
+- [x] 🤖 `POST /api/jobs`: accept optional `fachDisplayName` form field, store in job
+- [x] 🤖 Frontend `types.ts`: add `displayName?: string` to `Topic`; derive from first lecture's `fachDisplayName`
+- [x] 🤖 "Add New Topic" sidebar form: add "Full Name" input (optional) alongside the existing shortname field
+- [x] 🤖 Sidebar + header: display `displayName` when set, fall back to `fach`
 
 ### Intermediate Files & Lazy Loading (~0.5h)
-- [ ] 🤖 `GET /api/jobs/:id/intermediates` — list transcript (.txt) and stamped PDF from GCS `input/{userId}/jobs/{id}/for_dify/` with signed download URLs
-- [ ] 🤖 Frontend: show "Transcript" and "Stamped PDF" links in job detail view once `status !== "preparing"`
-- [ ] 🤖 Retry optimization in `processUpload`: skip transcription/PDF stamping if `for_dify/` files already exist in GCS (so a Dify failure doesn't re-run Whisper)
-- [ ] 🤖 Frontend: lazy-load output file content (summary, ANKI, etc.) on popup/modal open — not on page load
+- [x] 🤖 `GET /api/jobs/:id/intermediates` — list transcript (.txt) and stamped PDF from GCS `input/{userId}/jobs/{id}/for_dify/` with signed download URLs
+- [x] 🤖 Frontend: show "Transcript" and "Stamped PDF" links in job detail view once `status !== "preparing"`
+- [x] 🤖 Retry optimization in `processUpload`: skip transcription/PDF stamping if `for_dify/` files already exist in GCS (so a Dify failure doesn't re-run Whisper)
+- [x] 🤖 Frontend: lazy-load output file content (summary, ANKI, etc.) on popup/modal open — not on page load
 
 ---
 

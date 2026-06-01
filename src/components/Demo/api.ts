@@ -20,8 +20,11 @@ type ApiJob = {
   status: Lecture["status"];
   outputFiles: Record<string, string>;
   createdAt: number;
-  mp3GcsPath?: string;
-  pdfGcsPath?: string;
+  mp3GcsPaths?: string[];
+  pdfGcsPaths?: string[];
+  mp3OriginalNames?: string[];
+  pdfOriginalNames?: string[];
+  fachDisplayName?: string;
   error?: string;
 };
 
@@ -33,8 +36,11 @@ function toLecture(job: ApiJob): Lecture {
     status: job.status,
     outputFiles: job.outputFiles,
     createdAt: job.createdAt,
-    mp3GcsPath: job.mp3GcsPath,
-    pdfGcsPath: job.pdfGcsPath,
+    mp3GcsPaths: job.mp3GcsPaths,
+    pdfGcsPaths: job.pdfGcsPaths,
+    mp3OriginalNames: job.mp3OriginalNames,
+    pdfOriginalNames: job.pdfOriginalNames,
+    fachDisplayName: job.fachDisplayName,
     error: job.error,
   };
 }
@@ -47,16 +53,18 @@ export async function fetchJobs(): Promise<Lecture[]> {
 }
 
 export async function createJob(
-  mp3: File,
-  pdf: File,
+  mp3s: File[],
+  pdfs: File[],
   fach: string,
   lectureName: string,
+  fachDisplayName?: string,
 ): Promise<{ jobId: string }> {
   const form = new FormData();
-  form.append("mp3", mp3);
-  form.append("pdf", pdf);
+  for (const f of mp3s) form.append("mp3", f);
+  for (const f of pdfs) form.append("pdf", f);
   form.append("fach", fach);
   form.append("lectureName", lectureName);
+  if (fachDisplayName) form.append("fachDisplayName", fachDisplayName);
 
   const res = await fetch(`${API_BASE}/api/jobs`, {
     method: "POST",
@@ -80,4 +88,26 @@ export async function pollJob(id: string): Promise<Lecture> {
   if (!res.ok) throw new Error(`pollJob failed: ${res.status}`);
   const job: ApiJob = await res.json();
   return toLecture(job);
+}
+
+export async function updateTopicDisplayName(
+  fach: string,
+  displayName: string | undefined,
+): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/topics/${encodeURIComponent(fach)}`, {
+    method: "PATCH",
+    headers: { ...await authHeaders(), "Content-Type": "application/json" },
+    body: JSON.stringify({ displayName: displayName ?? null }),
+  });
+  if (!res.ok) throw new Error(`updateTopicDisplayName failed: ${res.status}`);
+}
+
+export async function fetchIntermediates(
+  jobId: string,
+): Promise<{ name: string; url: string }[]> {
+  const res = await fetch(`${API_BASE}/api/jobs/${jobId}/intermediates`, {
+    headers: await authHeaders(),
+  });
+  if (!res.ok) return [];
+  return res.json();
 }

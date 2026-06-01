@@ -73,3 +73,15 @@ export async function downloadFromGcs(
   const storage = getStorage();
   await getBucket(storage).file(gcsPath).download({ destination: localPath });
 }
+
+// Lists all GCS object paths under a prefix.
+export async function listGcsFiles(prefix: string): Promise<string[]> {
+  const storage = getStorage();
+  const [files] = await getBucket(storage).getFiles({ prefix });
+  return files.map((f) => f.name);
+}
+
+// Returns a signed read URL for an existing GCS object.
+export async function getSignedUrl(gcsPath: string): Promise<string> {
+  return signedUrl(getStorage(), gcsPath);
+}
