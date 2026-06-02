@@ -116,7 +116,16 @@ for await (const fachEntry of walk(source, { maxDepth: 1, includeDirs: true, inc
   const fach = Path.basename(fachEntry.path).toLowerCase();
   const lecPath = Path.join(fachEntry.path, "lec");
 
-  for await (const lecEntry of walk(lecPath, { maxDepth: 1, includeDirs: true, includeFiles: false }).catch(() => [])) {
+  let lecEntries: { path: string }[];
+  try {
+    lecEntries = [];
+    for await (const e of walk(lecPath, { maxDepth: 1, includeDirs: true, includeFiles: false })) {
+      lecEntries.push(e);
+    }
+  } catch {
+    continue;
+  }
+  for (const lecEntry of lecEntries) {
     if (lecEntry.path === lecPath) continue;
 
     const folderBasename = Path.basename(lecEntry.path);
@@ -154,7 +163,7 @@ for await (const fachEntry of walk(source, { maxDepth: 1, includeDirs: true, inc
     if (dryRun) {
       console.log(`  raw: ${rawMp3s.length} mp3, ${rawPdfs.length} pdf`);
       console.log(`  for_dify: ${forDifyFiles.length} files`);
-      console.log(`  from_dify: ${fromDifyFiles.map(Path.basename).join(", ") || "none"}`);
+      console.log(`  from_dify: ${fromDifyFiles.map((f) => Path.basename(f)).join(", ") || "none"}`);
       continue;
     }
 
@@ -202,12 +211,10 @@ for await (const fachEntry of walk(source, { maxDepth: 1, includeDirs: true, inc
         status,
         outputFiles,
         createdAt: Date.now(),
-        // Phase 6.6: store as arrays (script already collects them that way)
         mp3GcsPaths,
         pdfGcsPaths,
-        // Legacy single-file fields for current server.ts compatibility
-        ...(mp3GcsPaths[0] ? { mp3GcsPath: mp3GcsPaths[0] } : {}),
-        ...(pdfGcsPaths[0] ? { pdfGcsPath: pdfGcsPaths[0] } : {}),
+        mp3OriginalNames: rawMp3s.map((f) => Path.basename(f)),
+        pdfOriginalNames: rawPdfs.map((f) => Path.basename(f)),
       };
       await db.collection("jobs").doc(jobId).set(job);
 

@@ -8,6 +8,37 @@ import type { Lecture, Topic } from "./types";
 
 const POLL_INTERVAL_MS = 3000;
 
+type SortKey = "name-asc" | "name-desc" | "date-desc" | "date-asc";
+
+const SORT_STORAGE_KEY = "ankilm.lectures.sortKey";
+const SORT_KEYS: readonly SortKey[] = ["name-asc", "name-desc", "date-desc", "date-asc"];
+
+function loadSortKey(): SortKey {
+  try {
+    const stored = localStorage.getItem(SORT_STORAGE_KEY);
+    if (stored && (SORT_KEYS as readonly string[]).includes(stored)) {
+      return stored as SortKey;
+    }
+  } catch {
+    // localStorage unavailable (private mode, SSR) — fall through
+  }
+  return "date-desc";
+}
+
+function sortLectures(lectures: Lecture[], sortKey: SortKey): Lecture[] {
+  const sorted = [...lectures];
+  switch (sortKey) {
+    case "name-asc":
+      return sorted.sort((a, b) => a.title.localeCompare(b.title, "de"));
+    case "name-desc":
+      return sorted.sort((a, b) => b.title.localeCompare(a.title, "de"));
+    case "date-desc":
+      return sorted.sort((a, b) => b.createdAt - a.createdAt);
+    case "date-asc":
+      return sorted.sort((a, b) => a.createdAt - b.createdAt);
+  }
+}
+
 function NewLectureForm({
   fach,
   fachDisplayName,
@@ -157,11 +188,23 @@ function NewLectureForm({
   );
 }
 
+function formatDate(ts: number): string {
+  return new Date(ts).toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
 function LectureCard({
   lecture,
+  isOpen,
+  onToggle,
   onUpdate,
 }: {
   lecture: Lecture;
+  isOpen: boolean;
+  onToggle: () => void;
   onUpdate: (updated: Lecture) => void;
 }) {
   async function handleStart() {
@@ -169,26 +212,51 @@ function LectureCard({
     onUpdate({ ...lecture, status: "processing" });
   }
 
+  const mp3Count = lecture.mp3OriginalNames?.length ?? lecture.mp3GcsPaths?.length ?? 0;
+  const pdfCount = lecture.pdfOriginalNames?.length ?? lecture.pdfGcsPaths?.length ?? 0;
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-        <h3 className="font-bold text-gray-800">{lecture.title}</h3>
-        <StatusChip status={lecture.status} />
-      </div>
-
-      <div className="p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Mp3Section lecture={lecture} />
-          <PdfSection lecture={lecture} />
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-shadow hover:shadow-md">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        className="w-full bg-gray-50 hover:bg-gray-100 px-6 py-4 border-b border-gray-200 flex justify-between items-center gap-4 text-left transition-colors"
+      >
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <span
+            className={`text-gray-400 transition-transform duration-200 ${
+              isOpen ? "rotate-90" : ""
+            }`}
+            aria-hidden="true"
+          >
+            ▶
+          </span>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-bold text-gray-800 truncate">{lecture.title}</h3>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {formatDate(lecture.createdAt)} · 🎧 {mp3Count} · 📄 {pdfCount}
+            </p>
+          </div>
         </div>
+        <StatusChip status={lecture.status} />
+      </button>
 
-        <div className="border-t border-gray-100" />
+      {isOpen && (
+        <div className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Mp3Section lecture={lecture} />
+            <PdfSection lecture={lecture} />
+          </div>
 
-        <ProcessSection
-          lecture={lecture}
-          onStart={handleStart}
-        />
-      </div>
+          <div className="border-t border-gray-100" />
+
+          <ProcessSection
+            lecture={lecture}
+            onStart={handleStart}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -202,6 +270,41 @@ function Lectures({
 }) {
   const [lectures, setLectures] = useState<Lecture[]>(topic.lectures);
   const [showForm, setShowForm] = useState(false);
+  const [sortKey, setSortKey] = useState<SortKey>(loadSortKey);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SORT_STORAGE_KEY, sortKey);
+    } catch {
+      // ignore — non-critical preference
+    }
+  }, [sortKey]);
+  const [openIds, setOpenIds] = useState<Set<string>>(new Set());
+
+  const sortedLectures = sortLectures(lectures, sortKey);
+
+  function toggleOpen(id: string) {
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function isOpen(lecture: Lecture): boolean {
+    // Auto-open lectures that need attention.
+    if (lecture.status === "processing" || lecture.status === "failed") return true;
+    return openIds.has(lecture.id);
+  }
+
+  function expandAll() {
+    setOpenIds(new Set(lectures.map((l) => l.id)));
+  }
+
+  function collapseAll() {
+    setOpenIds(new Set());
+  }
 
   // Keep in sync when parent refreshes the topic.
   useEffect(() => {
@@ -244,37 +347,74 @@ function Lectures({
 
   return (
     <section>
-      <div className="mb-6">
-        <h2 className="text-lg font-bold text-gray-900">
-          Vorlesungen & Verarbeitung
-        </h2>
-        <p className="text-sm text-gray-500">
-          Verwalten Sie hier Ihre Aufzeichnungen. Der Status zeigt an, ob
-          Lernmaterialien bereits generiert wurden.
-        </p>
+      <div className="mb-6 flex justify-between items-end gap-4 flex-wrap">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900">
+            Vorlesungen & Verarbeitung
+          </h2>
+          <p className="text-sm text-gray-500">
+            Verwalten Sie hier Ihre Aufzeichnungen. Der Status zeigt an, ob
+            Lernmaterialien bereits generiert wurden.
+          </p>
+        </div>
+        <label className="text-xs text-gray-600 flex items-center gap-2">
+          Sortieren:
+          <select
+            value={sortKey}
+            onChange={(e) => setSortKey(e.target.value as SortKey)}
+            className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            <option value="date-desc">Datum (neueste zuerst)</option>
+            <option value="date-asc">Datum (älteste zuerst)</option>
+            <option value="name-asc">Name (A–Z)</option>
+            <option value="name-desc">Name (Z–A)</option>
+          </select>
+        </label>
       </div>
 
-      <div className="space-y-8">
-        {lectures.map((lecture) => (
+      <div className="mb-3 flex justify-end gap-3 text-xs">
+        <button
+          type="button"
+          onClick={expandAll}
+          className="text-indigo-600 hover:text-indigo-800 hover:underline"
+        >
+          Alle ausklappen
+        </button>
+        <span className="text-gray-300">|</span>
+        <button
+          type="button"
+          onClick={collapseAll}
+          className="text-indigo-600 hover:text-indigo-800 hover:underline"
+        >
+          Alle einklappen
+        </button>
+      </div>
+
+      <div className="space-y-3">
+        {sortedLectures.map((lecture) => (
           <LectureCard
             key={lecture.id}
             lecture={lecture}
+            isOpen={isOpen(lecture)}
+            onToggle={() => toggleOpen(lecture.id)}
             onUpdate={updateLecture}
           />
         ))}
 
         {showForm
           ? (
-            <NewLectureForm
-              fach={topic.fach}
-              fachDisplayName={topic.displayName}
-              onCreated={handleCreated}
-            />
+            <div className="pt-5">
+              <NewLectureForm
+                fach={topic.fach}
+                fachDisplayName={topic.displayName}
+                onCreated={handleCreated}
+              />
+            </div>
           )
           : (
             <button
               onClick={() => setShowForm(true)}
-              className="w-full py-3 border border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-sm"
+              className="w-full mt-5 py-3 border border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-sm"
             >
               + Neue Vorlesung hinzufügen
             </button>

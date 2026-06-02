@@ -32,7 +32,7 @@ function Button({
     ghost: "text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700",
   };
 
-  const style = `${baseStyles} ${variants[variant]} mr-2 mb-2`;
+  const style = `${baseStyles} ${variants[variant]}`;
 
   return (
     to ? <>

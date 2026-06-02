@@ -143,7 +143,18 @@ One-time migration of locally downloaded Drive lectures into GCS + Firestore.
 
 ---
 
-## Phase 7 — Frontend → Cloudflare Pages (~1h)
+## Phase 6.8 — Lecture Ordering & Reordering (~2h)
+Currently lectures within a topic are sorted by `createdAt`. Add explicit ordering support.
+
+- [ ] 🤖 Backend `types.ts`: add `sortOrder?: number` to `Job`
+- [ ] 🤖 `POST /api/jobs`: set `sortOrder` to `Date.now()` on creation (stable default)
+- [ ] 🤖 `PATCH /api/jobs/:id`: accept `{ sortOrder: number }` to update position
+- [ ] 🤖 `GET /api/jobs`: sort by `sortOrder` ascending (fall back to `createdAt`)
+- [ ] 🤖 Frontend: drag-and-drop reordering on lecture list (e.g. via `@dnd-kit/core`)
+  - On drop: PATCH the moved job with new `sortOrder` (average of neighbours, or integer gap strategy)
+- [ ] 🤖 Import script: set `sortOrder` from `NN_` numeric prefix of folder name (e.g. `01_kickoff` → `1`)
+
+---
 - [x] 🤖 Change `vite.config.ts` base from `/anki-lm/` to `/`
 - [x] 🤖 Add `vercel.json` → actually `_redirects` file for Cloudflare Pages SPA routing
 - [x] 🤖 Remove GitHub Pages deploy action if present
