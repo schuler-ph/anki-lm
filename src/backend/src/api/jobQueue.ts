@@ -25,8 +25,10 @@ function toJob(id: string, data: FirebaseFirestore.DocumentData): Job {
     outputFiles: (data.outputFiles ?? {}) as Record<string, string>,
     createdAt: data.createdAt as number,
     // Backward compat: old docs have singular mp3GcsPath/pdfGcsPath
-    mp3GcsPaths: (data.mp3GcsPaths ?? (data.mp3GcsPath ? [data.mp3GcsPath] : [])) as string[],
-    pdfGcsPaths: (data.pdfGcsPaths ?? (data.pdfGcsPath ? [data.pdfGcsPath] : [])) as string[],
+    mp3GcsPaths: (data.mp3GcsPaths ??
+      (data.mp3GcsPath ? [data.mp3GcsPath] : [])) as string[],
+    pdfGcsPaths: (data.pdfGcsPaths ??
+      (data.pdfGcsPath ? [data.pdfGcsPath] : [])) as string[],
     mp3OriginalNames: (data.mp3OriginalNames ?? []) as string[],
     pdfOriginalNames: (data.pdfOriginalNames ?? []) as string[],
     fachDisplayName: data.fachDisplayName as string | undefined,
@@ -43,9 +45,10 @@ export async function createJob(
   mp3OriginalNames: string[],
   pdfOriginalNames: string[],
   fachDisplayName?: string,
+  id?: string,
 ): Promise<Job> {
   const job: Job = {
-    id: crypto.randomUUID(),
+    id: id ?? crypto.randomUUID(),
     userId,
     fach,
     lectureName,
@@ -78,7 +81,10 @@ export async function listJobs(userId: string): Promise<Job[]> {
     .sort((a, b) => b.createdAt - a.createdAt);
 }
 
-export async function updateJob(id: string, patch: Partial<Job>): Promise<void> {
+export async function updateJob(
+  id: string,
+  patch: Partial<Job>,
+): Promise<void> {
   const update: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(patch)) {
     update[k] = v === undefined ? FieldValue.delete() : v;
@@ -86,7 +92,11 @@ export async function updateJob(id: string, patch: Partial<Job>): Promise<void> 
   await db().collection(COLLECTION).doc(id).update(update);
 }
 
-export async function setJobStatus(id: string, status: JobStatus, error?: string): Promise<void> {
+export async function setJobStatus(
+  id: string,
+  status: JobStatus,
+  error?: string,
+): Promise<void> {
   const patch: Record<string, unknown> = { status };
   if (error !== undefined) patch.error = error;
   await db().collection(COLLECTION).doc(id).update(patch);
@@ -106,7 +116,8 @@ export async function setFachDisplayName(
   const batch = db().batch();
   for (const doc of snapshot.docs) {
     batch.update(doc.ref, {
-      fachDisplayName: displayName !== undefined ? displayName : FieldValue.delete(),
+      fachDisplayName:
+        displayName !== undefined ? displayName : FieldValue.delete(),
     });
   }
   await batch.commit();
@@ -114,7 +125,11 @@ export async function setFachDisplayName(
 
 // Transactional read-modify-write — safe against concurrent webhook calls.
 // Returns the new total count of stored output files.
-export async function addOutputFile(id: string, key: string, url: string): Promise<number> {
+export async function addOutputFile(
+  id: string,
+  key: string,
+  url: string,
+): Promise<number> {
   const ref = db().collection(COLLECTION).doc(id);
   return db().runTransaction(async (t) => {
     const doc = await t.get(ref);

@@ -44,8 +44,8 @@ resource "google_storage_bucket" "ankilm_files" {
 
   cors {
     origin          = ["*"]
-    method          = ["GET", "HEAD"]
-    response_header = ["Content-Type"]
+    method          = ["GET", "HEAD", "PUT"]
+    response_header = ["Content-Type", "ETag"]
     max_age_seconds = 3600
   }
 }

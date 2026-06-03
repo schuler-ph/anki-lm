@@ -14,10 +14,7 @@ function getBucket(storage: Storage): ReturnType<Storage["bucket"]> {
   return storage.bucket(bucket);
 }
 
-async function signedUrl(
-  storage: Storage,
-  gcsPath: string,
-): Promise<string> {
+async function signedUrl(storage: Storage, gcsPath: string): Promise<string> {
   const bucket = getBucket(storage);
   const [url] = await bucket.file(gcsPath).getSignedUrl({
     version: "v4",
@@ -82,6 +79,23 @@ export async function listGcsFiles(prefix: string): Promise<string[]> {
 }
 
 // Returns a signed read URL for an existing GCS object.
-export async function getSignedUrl(gcsPath: string): Promise<string> {
+export function getSignedUrl(gcsPath: string): Promise<string> {
   return signedUrl(getStorage(), gcsPath);
+}
+
+// Returns a signed PUT URL so the browser can upload directly to GCS,
+// bypassing the Cloud Run 32 MB request-body limit.
+export async function getSignedUploadUrl(
+  gcsPath: string,
+  contentType: string,
+): Promise<string> {
+  const storage = getStorage();
+  const bucket = getBucket(storage);
+  const [url] = await bucket.file(gcsPath).getSignedUrl({
+    version: "v4",
+    action: "write",
+    contentType,
+    expires: Date.now() + 60 * 60 * 1000, // 1 hour
+  });
+  return url;
 }

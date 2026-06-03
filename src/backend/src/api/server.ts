@@ -7,6 +7,7 @@ import { transcribe } from "../transcribe.ts";
 import { stampPdfWithSlideNumber } from "../util/pdf.ts";
 import {
   downloadFromGcs,
+  getSignedUploadUrl,
   getSignedUrl,
   listGcsFiles,
   readTextFromGcs,
@@ -133,61 +134,67 @@ app.use("/api/topics/*", requireAuth);
 // Step 1: upload files to GCS, create job in "preparing" state.
 app.post("/api/jobs", async (c) => {
   const userId = c.get("userId");
-  const formData = await c.req.formData();
-  const mp3Files = formData.getAll("mp3").filter((f) => f instanceof File) as File[];
-  const pdfFiles = formData.getAll("pdf").filter((f) => f instanceof File) as File[];
-  const fach = formData.get("fach");
-  const lectureName = formData.get("lectureName");
 
-  if (
-    mp3Files.length === 0 ||
-    pdfFiles.length === 0 ||
-    typeof fach !== "string" ||
-    typeof lectureName !== "string"
-  ) {
-    return c.json({ error: "Missing required fields: mp3, pdf, fach, lectureName" }, 400);
+  type FileDesc = { name: string; fileType: "mp3" | "pdf"; contentType: string };
+  const body = await c.req.json<{
+    fach: string;
+    lectureName: string;
+    fachDisplayName?: string;
+    files: FileDesc[];
+  }>();
+
+  const { fach, lectureName, fachDisplayName, files } = body;
+  if (!fach || !lectureName || !Array.isArray(files) || files.length === 0) {
+    return c.json({ error: "Missing required fields: fach, lectureName, files" }, 400);
   }
 
-  const tempId = crypto.randomUUID();
-  const stagingDir = await Deno.makeTempDir({ prefix: `job_upload_${tempId}_` });
-
-  try {
-    const mp3GcsPaths = await Promise.all(
-      mp3Files.map(async (file, i) => {
-        const localPath = Path.join(stagingDir, `mp3_${i}.mp3`);
-        await Deno.writeFile(localPath, new Uint8Array(await file.arrayBuffer()));
-        const gcsPath = `input/${userId}/jobs/${tempId}/raw/mp3_${i}.mp3`;
-        await uploadFileToGcs(localPath, gcsPath);
-        return gcsPath;
-      }),
-    );
-
-    const pdfGcsPaths = await Promise.all(
-      pdfFiles.map(async (file, i) => {
-        const localPath = Path.join(stagingDir, `pdf_${i}.pdf`);
-        await Deno.writeFile(localPath, new Uint8Array(await file.arrayBuffer()));
-        const gcsPath = `input/${userId}/jobs/${tempId}/raw/pdf_${i}.pdf`;
-        await uploadFileToGcs(localPath, gcsPath);
-        return gcsPath;
-      }),
-    );
-
-    const mp3OriginalNames = mp3Files.map((f) => f.name);
-    const pdfOriginalNames = pdfFiles.map((f) => f.name);
-
-    const fachDisplayNameRaw = formData.get("fachDisplayName");
-    const fachDisplayName = typeof fachDisplayNameRaw === "string" && fachDisplayNameRaw.trim()
-      ? fachDisplayNameRaw.trim()
-      : undefined;
-
-    const job = await createJob(userId, fach, lectureName, mp3GcsPaths, pdfGcsPaths, mp3OriginalNames, pdfOriginalNames, fachDisplayName);
-    console.log(`Job ${job.id}: created in preparing state (${mp3GcsPaths.length} MP3, ${pdfGcsPaths.length} PDF)`);
-
-    return c.json({ jobId: job.id }, 202);
-  } finally {
-    await Deno.remove(stagingDir, { recursive: true }).catch(() => {});
+  const mp3Files = files.filter((f) => f.fileType === "mp3");
+  const pdfFiles = files.filter((f) => f.fileType === "pdf");
+  if (mp3Files.length === 0 || pdfFiles.length === 0) {
+    return c.json({ error: "At least one mp3 and one pdf file descriptor required" }, 400);
   }
-});
+
+  const jobId = crypto.randomUUID();
+
+  // Pre-assign GCS paths and generate signed PUT URLs — no file bytes touch Cloud Run.
+  const mp3GcsPaths = mp3Files.map((_, i) => `input/${userId}/jobs/${jobId}/raw/mp3_${i}.mp3`);
+  const pdfGcsPaths = pdfFiles.map((_, i) => `input/${userId}/jobs/${jobId}/raw/pdf_${i}.pdf`);
+  const mp3OriginalNames = mp3Files.map((f) => f.name);
+  const pdfOriginalNames = pdfFiles.map((f) => f.name);
+
+  const uploadUrls = await Promise.all([
+    ...mp3Files.map((f, i) =>
+      getSignedUploadUrl(mp3GcsPaths[i], f.contentType || "audio/mpeg").then((signedUrl) => ({
+        index: i,
+        fileType: "mp3" as const,
+        gcsPath: mp3GcsPaths[i],
+        signedUrl,
+      }))
+    ),
+    ...pdfFiles.map((f, i) =>
+      getSignedUploadUrl(pdfGcsPaths[i], f.contentType || "application/pdf").then((signedUrl) => ({
+        index: i,
+        fileType: "pdf" as const,
+        gcsPath: pdfGcsPaths[i],
+        signedUrl,
+      }))
+    ),
+  ]);
+
+  const job = await createJob(
+    userId,
+    fach,
+    lectureName,
+    mp3GcsPaths,
+    pdfGcsPaths,
+    mp3OriginalNames,
+    pdfOriginalNames,
+    fachDisplayName?.trim() || undefined,
+    jobId,
+  );
+  console.log(`Job ${job.id}: created (${mp3GcsPaths.length} MP3, ${pdfGcsPaths.length} PDF), signed upload URLs issued`);
+
+  return c.json({ jobId: job.id, uploadUrls }, 202);
 
 // ── POST /api/jobs/:id/start ────────────────────────────────────────────────
 // Step 2: trigger AI pipeline for an existing "preparing" or "failed" job.
