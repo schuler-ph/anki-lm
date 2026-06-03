@@ -195,6 +195,7 @@ app.post("/api/jobs", async (c) => {
   console.log(`Job ${job.id}: created (${mp3GcsPaths.length} MP3, ${pdfGcsPaths.length} PDF), signed upload URLs issued`);
 
   return c.json({ jobId: job.id, uploadUrls }, 202);
+});
 
 // ── POST /api/jobs/:id/start ────────────────────────────────────────────────
 // Step 2: trigger AI pipeline for an existing "preparing" or "failed" job.
