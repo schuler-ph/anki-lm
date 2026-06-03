@@ -3,7 +3,7 @@ app:
   icon: 🌊
   icon_background: '#FFEAD5'
   mode: workflow
-  name: Summarize
+  name: Summarize New
   use_icon_as_answer_icon: false
 dependencies:
 - current_identifier: null
@@ -16,21 +16,23 @@ version: 0.4.0
 workflow:
   conversation_variables: []
   environment_variables:
-  - description: 'URL of the file-acceptor service (Cloud Run or local). Set this after deploying.'
+  - description: URL of the file-acceptor service (Cloud Run or local). Set this after
+      deploying.
     id: a1b2c3d4-0001-0001-0001-000000000001
     name: FILE_ACCEPTOR_URL
     selector:
     - env
     - FILE_ACCEPTOR_URL
-    value: 'http://host.docker.internal:8080/api/webhook/dify'
+    value: https://ankilm-backend-api-j2mn4yc65q-ey.a.run.app/api/webhook/dify
     value_type: string
-  - description: 'Shared secret for file-acceptor auth. Must match FILE_ACCEPTOR_SECRET in the service.'
+  - description: Shared secret for file-acceptor auth. Must match FILE_ACCEPTOR_SECRET
+      in the service.
     id: a1b2c3d4-0002-0002-0002-000000000002
     name: FILE_ACCEPTOR_SECRET
     selector:
     - env
     - FILE_ACCEPTOR_SECRET
-    value: 'change-me'
+    value: Mullets8-Shield-Customary-Fang
     value_type: string
   - description: ''
     id: 0487765c-e7d3-43af-bc63-bdc4376e21a2
@@ -1114,18 +1116,6 @@ workflow:
       type: custom
       zIndex: 0
     - data:
-        isInLoop: false
-        sourceType: if-else
-        targetType: llm
-      id: 1773323824225-false-17625172016110-target
-      selected: false
-      source: '1773323824225'
-      sourceHandle: 'false'
-      target: '17625172016110'
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
         isInIteration: true
         isInLoop: false
         iteration_id: '1762517469728'
@@ -1162,17 +1152,6 @@ workflow:
       selected: false
       source: '1762519986978'
       sourceHandle: source
-      target: '1773324459724'
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
-        isInLoop: false
-        sourceType: if-else
-        targetType: code
-      id: 1773323824225-true-1773324459724-target
-      source: '1773323824225'
-      sourceHandle: 'true'
       target: '1773324459724'
       targetHandle: target
       type: custom
@@ -1387,6 +1366,28 @@ workflow:
       targetHandle: target
       type: custom
       zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1773323824225-true-17625172016110-target
+      source: '1773323824225'
+      sourceHandle: 'true'
+      target: '17625172016110'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 1773323824225-false-1773324459724-target
+      source: '1773323824225'
+      sourceHandle: 'false'
+      target: '1773324459724'
+      targetHandle: target
+      type: custom
+      zIndex: 0
     nodes:
     - data:
         selected: false
@@ -1419,15 +1420,15 @@ workflow:
           variable: input_files
         - default: ''
           hint: ''
-          label: output_path
+          label: jobId
           max_length: 48
           options: []
           placeholder: ''
           required: true
           type: text-input
-          variable: output_path
+          variable: jobId
         - default: ''
-          hint: 'Lecture name without date prefix, e.g. ArchitekturMuster'
+          hint: Lecture name without date prefix, e.g. ArchitekturMuster
           label: lectureName
           max_length: 128
           options: []
@@ -1435,7 +1436,7 @@ workflow:
           required: true
           type: text-input
           variable: lectureName
-      height: 168
+      height: 166
       id: '1762443028718'
       position:
         x: 0
@@ -1571,7 +1572,7 @@ workflow:
       positionAbsolute:
         x: 2698
         y: 360
-      selected: true
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -1919,17 +1920,13 @@ workflow:
       width: 242
       zIndex: 1002
     - data:
-        code: "function main({keyword, ragResults}) {\n    /**\n     * Formats the\
-          \ keyword and its corresponding RAG results into a single string.\n    \
-          \ */\n    \n    const outputParts = [];\n    \n    outputParts.push(`Keyword:\
-          \ ${keyword}`);\n    \n    if (!ragResults || ragResults.length === 0) {\n\
-          \        outputParts.push(\"No context found.\");\n    } else {\n      \
-          \  ragResults.forEach((resultObj, i) => {\n            const content = resultObj.content\
-          \ || 'Content not available.';\n            const formattedContext = `\\\
-          nContext ${i + 1}:\\n${content}`;\n            outputParts.push(formattedContext);\n\
-          \        });\n    }\n    \n    const finalString = outputParts.join('');\n\
-          \    \n    return {\n        result: finalString\n    };\n}"
-        code_language: javascript
+        code: "def main(keyword: str, ragResults: list) -> dict:\n    output_parts\
+          \ = [f\"Keyword: {keyword}\"]\n\n    if not ragResults:\n        output_parts.append(\"\
+          No context found.\")\n    else:\n        for i, content in enumerate(ragResults):\n\
+          \            output_parts.append(f\"\\nContext {i + 1}:\\n{content or 'Content\
+          \ not available.'}\")\n\n    return {\n        \"result\": \"\".join(output_parts)\n\
+          \    }"
+        code_language: python3
         isInIteration: true
         isInLoop: false
         iteration_id: '1762517469728'
@@ -1947,9 +1944,9 @@ workflow:
           value_type: string
           variable: keyword
         - value_selector:
-          - '1773324326222'
+          - '1762517434250'
           - result
-          value_type: array[object]
+          value_type: array[string]
           variable: ragResults
       height: 52
       id: '1762519667669'
@@ -1967,9 +1964,9 @@ workflow:
       width: 242
       zIndex: 1002
     - data:
-        code: "\nfunction main({arg1}) {\n    return {\n        result: arg1.join(\"\
-          \\n\\n\")\n    }\n}\n"
-        code_language: javascript
+        code: "def main(arg1: list) -> dict:\n    return {\n        \"result\": \"\
+          \\n\\n\".join(arg1)\n    }"
+        code_language: python3
         outputs:
           result:
             children: null
@@ -2007,9 +2004,11 @@ workflow:
             type: text
             value: '{{#1762447378185.text#}}'
           type: raw-text
-        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
+        headers: Authorization:Bearer {{#env.FILE_ACCEPTOR_SECRET#}}
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_01-summary.md
+        params: 'jobId:{{#1762443028718.jobId#}}
+
+          key:01-summary'
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -2024,7 +2023,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 137
+      height: 142
       id: '1762593529707'
       position:
         x: 2336
@@ -2048,9 +2047,11 @@ workflow:
             type: text
             value: '{{#17625136452110.text#}}'
           type: raw-text
-        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
+        headers: Authorization:Bearer {{#env.FILE_ACCEPTOR_SECRET#}}
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_02-veredelt.md
+        params: 'jobId:{{#1762443028718.jobId#}}
+
+          key:02-veredelt'
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -2065,7 +2066,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 137
+      height: 142
       id: '17625936193150'
       position:
         x: 2698
@@ -2089,9 +2090,11 @@ workflow:
             type: text
             value: '{{#17625137306400.text#}}'
           type: raw-text
-        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
+        headers: Authorization:Bearer {{#env.FILE_ACCEPTOR_SECRET#}}
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_03-tldr.md
+        params: 'jobId:{{#1762443028718.jobId#}}
+
+          key:03-tldr'
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -2106,7 +2109,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 137
+      height: 142
       id: '17625937012150'
       position:
         x: 3060
@@ -2130,9 +2133,11 @@ workflow:
             type: text
             value: '{{#17625139628550.text#}}'
           type: raw-text
-        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
+        headers: Authorization:Bearer {{#env.FILE_ACCEPTOR_SECRET#}}
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_04-konzepte.md
+        params: 'jobId:{{#1762443028718.jobId#}}
+
+          key:04-konzepte'
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -2147,7 +2152,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 137
+      height: 142
       id: '17625938088930'
       position:
         x: 6442
@@ -2171,9 +2176,11 @@ workflow:
             type: text
             value: '{{#17625140889850.text#}}'
           type: raw-text
-        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
+        headers: Authorization:Bearer {{#env.FILE_ACCEPTOR_SECRET#}}
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_05-beispiele.md
+        params: 'jobId:{{#1762443028718.jobId#}}
+
+          key:05-beispiele'
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -2188,7 +2195,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 137
+      height: 142
       id: '17625938553500'
       position:
         x: 6442
@@ -2212,9 +2219,11 @@ workflow:
             type: text
             value: '{{#17625141139440.text#}}'
           type: raw-text
-        headers: 'Authorization: Bearer {{#env.FILE_ACCEPTOR_SECRET#}}'
+        headers: Authorization:Bearer {{#env.FILE_ACCEPTOR_SECRET#}}
         method: post
-        params: fileName:{{#1762443028718.output_path#}}/{{#1762443028718.fach#}}_{{#1762443028718.lectureName#}}_06-anki.md
+        params: 'jobId:{{#1762443028718.jobId#}}
+
+          key:06-anki'
         retry_config:
           max_retries: 3
           retry_enabled: true
@@ -2229,7 +2238,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 137
+      height: 142
       id: '17625938756350'
       position:
         x: 6442
@@ -2237,7 +2246,7 @@ workflow:
       positionAbsolute:
         x: 6442
         y: 784
-      selected: false
+      selected: true
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -2346,10 +2355,10 @@ workflow:
       parentId: '1762517469728'
       position:
         x: 526
-        y: 510
+        y: 508.3550998625751
       positionAbsolute:
         x: 4632
-        y: 688
+        y: 686.3550998625751
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -2581,14 +2590,28 @@ workflow:
           conditions:
           - comparison_operator: contains
             id: 5fbc314e-ab17-4afb-bd0b-47e06d6edd69
-            value: lar
+            value: eai
             varType: string
             variable_selector:
             - '1762443028718'
             - fach
           - comparison_operator: contains
             id: 88ba7115-13f7-44f9-b8b8-3f34e27e1a93
-            value: iid
+            value: prpd
+            varType: string
+            variable_selector:
+            - '1762443028718'
+            - fach
+          - comparison_operator: contains
+            id: 861968e8-df28-46c3-b4b4-5889bd067c57
+            value: vsys
+            varType: string
+            variable_selector:
+            - '1762443028718'
+            - fach
+          - comparison_operator: contains
+            id: 92047650-a8c5-43f2-b6b9-81a24ec8cf07
+            value: arte
             varType: string
             variable_selector:
             - '1762443028718'
@@ -2598,7 +2621,7 @@ workflow:
         selected: false
         title: IF IGNORED
         type: if-else
-      height: 150
+      height: 202
       id: '1773323824225'
       position:
         x: 3060
@@ -2652,9 +2675,9 @@ workflow:
       width: 242
       zIndex: 1002
     - data:
-        code: "\nfunction main({arg1}) {\n    return {\n        result: arg1 ?? \"\
-          \"\n    }\n}\n"
-        code_language: javascript
+        code: "def main(arg1: str) -> dict:\n    return {\n        \"result\": arg1\
+          \ if arg1 is not None else \"\"\n    }"
+        code_language: python3
         outputs:
           result:
             children: null
@@ -2954,7 +2977,7 @@ workflow:
       type: custom
       width: 242
     viewport:
-      x: 114.00928891659373
-      y: -15.86059870363232
-      zoom: 0.5653445204817411
+      x: -3096.4434259905975
+      y: -90.21054849409813
+      zoom: 0.5633096142486393
   rag_pipeline_variables: []

@@ -90,15 +90,19 @@ export async function sendDifyWorkflow(
   fileUrls: string[],
   fach: string,
   lectureName: string,
-  outputPath: string,
+  jobId: string,
   onFailed?: (error: string) => void | Promise<void>,
   onSuccess?: () => void | Promise<void>,
 ): Promise<void> {
   const cfClientId = Deno.env.get("CF_ACCESS_CLIENT_ID");
   const cfClientSecret = Deno.env.get("CF_ACCESS_CLIENT_SECRET");
-  const cfHeaders = cfClientId && cfClientSecret
-    ? { "CF-Access-Client-Id": cfClientId, "CF-Access-Client-Secret": cfClientSecret }
-    : {};
+  const cfHeaders =
+    cfClientId && cfClientSecret
+      ? {
+          "CF-Access-Client-Id": cfClientId,
+          "CF-Access-Client-Secret": cfClientSecret,
+        }
+      : {};
 
   const response = await fetch(
     `${requireEnv("DIFY_API_URL")}/v1/workflows/run`,
@@ -113,7 +117,7 @@ export async function sendDifyWorkflow(
         inputs: {
           fach,
           lectureName,
-          output_path: outputPath,
+          jobId,
           input_files: fileUrls.map((url) => ({
             transfer_method: "remote_url",
             url,
@@ -128,7 +132,11 @@ export async function sendDifyWorkflow(
 
   if (!response.ok || !response.body) {
     const errorBody = await response.text();
-    console.error("Failed to start Dify workflow:", response.statusText, errorBody);
+    console.error(
+      "Failed to start Dify workflow:",
+      response.statusText,
+      errorBody,
+    );
     return;
   }
 
@@ -146,7 +154,9 @@ export async function sendDifyWorkflow(
         try {
           const parsed = JSON.parse(part.substring(6));
           if (parsed.event === "workflow_started") {
-            console.log(`Dify workflow started. Run ID: ${parsed.workflow_run_id}`);
+            console.log(
+              `Dify workflow started. Run ID: ${parsed.workflow_run_id}`,
+            );
           } else if (parsed.event === "workflow_finished") {
             const status = parsed.data?.status as string | undefined;
             console.log(`Dify workflow finished. Status: ${status}`);
@@ -156,7 +166,9 @@ export async function sendDifyWorkflow(
               await onSuccess();
             }
           }
-        } catch { /* ignore malformed chunks */ }
+        } catch {
+          /* ignore malformed chunks */
+        }
       }
     }
   })();

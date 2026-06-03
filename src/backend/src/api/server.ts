@@ -123,7 +123,7 @@ async function processUpload(job: Job): Promise<void> {
       );
     }
 
-    const outputPath = `jobs/${job.id}`;
+    const outputPath = job.id;
     await sendDifyWorkflow(
       fileUrls,
       job.fach,
@@ -337,6 +337,8 @@ app.get("/api/jobs/:id/output/:key", async (c) => {
 });
 
 // ── POST /api/webhook/dify ──────────────────────────────────────────────────
+// ── POST /api/webhook/dify ──────────────────────────────────────────────────
+// Dify sends structured query params — no name parsing on this side.
 app.post("/api/webhook/dify", async (c) => {
   const env = getEnv();
 
@@ -345,39 +347,30 @@ app.post("/api/webhook/dify", async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const fileName = c.req.query("fileName");
-  if (!fileName) {
-    return c.json({ error: "Missing fileName query param" }, 400);
+  const jobId = c.req.query("jobId");
+  const key = c.req.query("key");
+  if (!jobId || !key) {
+    return c.json({ error: "Missing jobId or key query param" }, 400);
   }
-
-  // fileName format: jobs/<jobId>/<fach>_<lectureName>_0N-<type>.md
-  const parts = fileName.split("/");
-  if (parts.length < 3 || parts[0] !== "jobs") {
-    return c.json({ error: "Invalid fileName format" }, 400);
-  }
-  const jobId = parts[1];
-  const baseName = parts[2];
 
   const job = await getJob(jobId);
   if (!job) {
     return c.json({ error: "Job not found" }, 404);
   }
 
-  const gcsPath = `output/${job.userId}/${job.fach}/${job.lectureName}/${baseName}`;
+  const fileName = `${job.fach}_${job.lectureName}_${key}.md`;
+  const gcsPath = `output/${job.userId}/${job.fach}/${job.lectureName}/${fileName}`;
+
   const content = await c.req.text();
   await writeTextToGcs(gcsPath, content);
 
-  // Key: strip "<fach>_<lectureName>_" prefix and ".md" suffix → "01-summary" etc.
-  const typeKey = baseName.replace(/^[^_]+_[^_]+_/, "").replace(/\.md$/, "");
-
-  // Transactional update — safe against concurrent webhook calls losing a file.
-  const count = await addOutputFile(jobId, typeKey, gcsPath);
+  const count = await addOutputFile(jobId, key, gcsPath);
   if (count >= EXPECTED_OUTPUT_COUNT) {
     await setJobStatus(jobId, "processed");
   }
 
   console.log(
-    `Job ${jobId}: received output "${typeKey}" (${count}/${EXPECTED_OUTPUT_COUNT})`,
+    `Job ${jobId}: received output "${key}" (${count}/${EXPECTED_OUTPUT_COUNT})`,
   );
 
   return c.json({ ok: true });
