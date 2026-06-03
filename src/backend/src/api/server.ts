@@ -14,8 +14,20 @@ import {
   uploadFileToGcs,
   writeTextToGcs,
 } from "../util/storage.ts";
-import { getFilesInFolder, sendDifyWorkflow } from "../util/orchestrationHelper.ts";
-import { addOutputFile, createJob, getJob, listJobs, setFachDisplayName, setJobStatus, updateJob } from "./jobQueue.ts";
+import {
+  getFilesInFolder,
+  sendDifyWorkflow,
+} from "../util/orchestrationHelper.ts";
+import {
+  addOutputFile,
+  createJob,
+  getJob,
+  listJobs,
+  resetOrphanedJobs,
+  setFachDisplayName,
+  setJobStatus,
+  updateJob,
+} from "./jobQueue.ts";
 import { requireAuth } from "./auth.ts";
 import type { Job } from "./types.ts";
 
@@ -46,6 +58,9 @@ function getEnv(): Env {
 
 const EXPECTED_OUTPUT_COUNT = 6;
 
+// Tracks in-flight processUpload promises so the SIGTERM handler can wait for them.
+const activeJobs = new Set<Promise<void>>();
+
 async function processUpload(job: Job): Promise<void> {
   try {
     const forDifyGcsPrefix = `input/${job.userId}/jobs/${job.id}/for_dify/`;
@@ -54,10 +69,16 @@ async function processUpload(job: Job): Promise<void> {
     let fileUrls: string[];
 
     if (existingGcsPaths.length > 0) {
-      console.log(`Job ${job.id}: reusing ${existingGcsPaths.length} existing for_dify files`);
-      fileUrls = await Promise.all(existingGcsPaths.map((p) => getSignedUrl(p)));
+      console.log(
+        `Job ${job.id}: reusing ${existingGcsPaths.length} existing for_dify files`,
+      );
+      fileUrls = await Promise.all(
+        existingGcsPaths.map((p) => getSignedUrl(p)),
+      );
     } else {
-      const tempDir = await Deno.makeTempDir({ prefix: `job_${job.id}_process_` });
+      const tempDir = await Deno.makeTempDir({
+        prefix: `job_${job.id}_process_`,
+      });
       const forDifyPath = Path.join(tempDir, "for_dify");
       await ensureDir(forDifyPath);
 
@@ -84,15 +105,20 @@ async function processUpload(job: Job): Promise<void> {
       for (const pdfPath of pdfPaths) {
         const pdfSuccess = await stampPdfWithSlideNumber(pdfPath, forDifyPath);
         if (!pdfSuccess) {
-          console.warn(`PDF stamping failed for job ${job.id}, copying ${Path.basename(pdfPath)}`);
-          await Deno.copyFile(pdfPath, Path.join(forDifyPath, Path.basename(pdfPath)));
+          console.warn(
+            `PDF stamping failed for job ${job.id}, copying ${Path.basename(pdfPath)}`,
+          );
+          await Deno.copyFile(
+            pdfPath,
+            Path.join(forDifyPath, Path.basename(pdfPath)),
+          );
         }
       }
 
       const files = await getFilesInFolder(forDifyPath);
       fileUrls = await Promise.all(
         files.map((f) =>
-          uploadFileToGcs(f, `${forDifyGcsPrefix}${Path.basename(f)}`)
+          uploadFileToGcs(f, `${forDifyGcsPrefix}${Path.basename(f)}`),
         ),
       );
     }
@@ -108,7 +134,8 @@ async function processUpload(job: Job): Promise<void> {
       },
       async () => {
         const j = await getJob(job.id);
-        if (j && j.status === "processing") await setJobStatus(job.id, "processed");
+        if (j && j.status === "processing")
+          await setJobStatus(job.id, "processed");
       },
     );
 
@@ -135,7 +162,11 @@ app.use("/api/topics/*", requireAuth);
 app.post("/api/jobs", async (c) => {
   const userId = c.get("userId");
 
-  type FileDesc = { name: string; fileType: "mp3" | "pdf"; contentType: string };
+  type FileDesc = {
+    name: string;
+    fileType: "mp3" | "pdf";
+    contentType: string;
+  };
   const body = await c.req.json<{
     fach: string;
     lectureName: string;
@@ -145,39 +176,54 @@ app.post("/api/jobs", async (c) => {
 
   const { fach, lectureName, fachDisplayName, files } = body;
   if (!fach || !lectureName || !Array.isArray(files) || files.length === 0) {
-    return c.json({ error: "Missing required fields: fach, lectureName, files" }, 400);
+    return c.json(
+      { error: "Missing required fields: fach, lectureName, files" },
+      400,
+    );
   }
 
   const mp3Files = files.filter((f) => f.fileType === "mp3");
   const pdfFiles = files.filter((f) => f.fileType === "pdf");
   if (mp3Files.length === 0 || pdfFiles.length === 0) {
-    return c.json({ error: "At least one mp3 and one pdf file descriptor required" }, 400);
+    return c.json(
+      { error: "At least one mp3 and one pdf file descriptor required" },
+      400,
+    );
   }
 
   const jobId = crypto.randomUUID();
 
   // Pre-assign GCS paths and generate signed PUT URLs — no file bytes touch Cloud Run.
-  const mp3GcsPaths = mp3Files.map((_, i) => `input/${userId}/jobs/${jobId}/raw/mp3_${i}.mp3`);
-  const pdfGcsPaths = pdfFiles.map((_, i) => `input/${userId}/jobs/${jobId}/raw/pdf_${i}.pdf`);
+  const mp3GcsPaths = mp3Files.map(
+    (_, i) => `input/${userId}/jobs/${jobId}/raw/mp3_${i}.mp3`,
+  );
+  const pdfGcsPaths = pdfFiles.map(
+    (_, i) => `input/${userId}/jobs/${jobId}/raw/pdf_${i}.pdf`,
+  );
   const mp3OriginalNames = mp3Files.map((f) => f.name);
   const pdfOriginalNames = pdfFiles.map((f) => f.name);
 
   const uploadUrls = await Promise.all([
     ...mp3Files.map((f, i) =>
-      getSignedUploadUrl(mp3GcsPaths[i], f.contentType || "audio/mpeg").then((signedUrl) => ({
-        index: i,
-        fileType: "mp3" as const,
-        gcsPath: mp3GcsPaths[i],
-        signedUrl,
-      }))
+      getSignedUploadUrl(mp3GcsPaths[i], f.contentType || "audio/mpeg").then(
+        (signedUrl) => ({
+          index: i,
+          fileType: "mp3" as const,
+          gcsPath: mp3GcsPaths[i],
+          signedUrl,
+        }),
+      ),
     ),
     ...pdfFiles.map((f, i) =>
-      getSignedUploadUrl(pdfGcsPaths[i], f.contentType || "application/pdf").then((signedUrl) => ({
+      getSignedUploadUrl(
+        pdfGcsPaths[i],
+        f.contentType || "application/pdf",
+      ).then((signedUrl) => ({
         index: i,
         fileType: "pdf" as const,
         gcsPath: pdfGcsPaths[i],
         signedUrl,
-      }))
+      })),
     ),
   ]);
 
@@ -192,7 +238,9 @@ app.post("/api/jobs", async (c) => {
     fachDisplayName?.trim() || undefined,
     jobId,
   );
-  console.log(`Job ${job.id}: created (${mp3GcsPaths.length} MP3, ${pdfGcsPaths.length} PDF), signed upload URLs issued`);
+  console.log(
+    `Job ${job.id}: created (${mp3GcsPaths.length} MP3, ${pdfGcsPaths.length} PDF), signed upload URLs issued`,
+  );
 
   return c.json({ jobId: job.id, uploadUrls }, 202);
 });
@@ -202,13 +250,20 @@ app.post("/api/jobs", async (c) => {
 app.post("/api/jobs/:id/start", async (c) => {
   const job = await getJob(c.req.param("id"));
   if (!job) return c.json({ error: "Job not found" }, 404);
-  if (job.userId !== c.get("userId")) return c.json({ error: "Forbidden" }, 403);
-  if (job.status !== "preparing" && job.status !== "failed") {
+  if (job.userId !== c.get("userId"))
+    return c.json({ error: "Forbidden" }, 403);
+  if (
+    job.status !== "preparing" &&
+    job.status !== "failed" &&
+    job.status !== "processing"
+  ) {
     return c.json({ error: `Job is already in status: ${job.status}` }, 409);
   }
 
   await updateJob(job.id, { status: "processing", error: undefined });
-  processUpload(job); // fire and forget — pipeline runs asynchronously
+
+  const p = processUpload(job).finally(() => activeJobs.delete(p!));
+  activeJobs.add(p);
 
   console.log(`Job ${job.id}: pipeline started`);
   return c.json({ ok: true }, 202);
@@ -221,7 +276,8 @@ app.get("/api/jobs", async (c) => c.json(await listJobs(c.get("userId"))));
 app.get("/api/jobs/:id", async (c) => {
   const job = await getJob(c.req.param("id"));
   if (!job) return c.json({ error: "Job not found" }, 404);
-  if (job.userId !== c.get("userId")) return c.json({ error: "Forbidden" }, 403);
+  if (job.userId !== c.get("userId"))
+    return c.json({ error: "Forbidden" }, 403);
   return c.json(job);
 });
 
@@ -231,7 +287,8 @@ app.get("/api/jobs/:id", async (c) => {
 app.get("/api/jobs/:id/intermediates", async (c) => {
   const job = await getJob(c.req.param("id"));
   if (!job) return c.json({ error: "Job not found" }, 404);
-  if (job.userId !== c.get("userId")) return c.json({ error: "Forbidden" }, 403);
+  if (job.userId !== c.get("userId"))
+    return c.json({ error: "Forbidden" }, 403);
 
   const prefix = `input/${job.userId}/jobs/${job.id}/for_dify/`;
   const gcsPaths = await listGcsFiles(prefix);
@@ -250,9 +307,10 @@ app.patch("/api/topics/:fach", async (c) => {
   const userId = c.get("userId");
   const fach = c.req.param("fach");
   const body = await c.req.json<{ displayName?: string | null }>();
-  const displayName = typeof body.displayName === "string" && body.displayName.trim()
-    ? body.displayName.trim()
-    : undefined;
+  const displayName =
+    typeof body.displayName === "string" && body.displayName.trim()
+      ? body.displayName.trim()
+      : undefined;
   await setFachDisplayName(userId, fach, displayName);
   return c.json({ ok: true });
 });
@@ -262,14 +320,17 @@ app.patch("/api/topics/:fach", async (c) => {
 app.get("/api/jobs/:id/output/:key", async (c) => {
   const job = await getJob(c.req.param("id"));
   if (!job) return c.json({ error: "Job not found" }, 404);
-  if (job.userId !== c.get("userId")) return c.json({ error: "Forbidden" }, 403);
+  if (job.userId !== c.get("userId"))
+    return c.json({ error: "Forbidden" }, 403);
   const key = c.req.param("key");
   const gcsPath = job.outputFiles[key];
   if (!gcsPath) return c.json({ error: "Output not found" }, 404);
 
   try {
     const text = await readTextFromGcs(gcsPath);
-    return c.text(text, 200, { "Content-Type": "text/markdown; charset=utf-8" });
+    return c.text(text, 200, {
+      "Content-Type": "text/markdown; charset=utf-8",
+    });
   } catch {
     return c.json({ error: "Failed to fetch from GCS" }, 500);
   }
@@ -315,7 +376,9 @@ app.post("/api/webhook/dify", async (c) => {
     await setJobStatus(jobId, "processed");
   }
 
-  console.log(`Job ${jobId}: received output "${typeKey}" (${count}/${EXPECTED_OUTPUT_COUNT})`);
+  console.log(
+    `Job ${jobId}: received output "${typeKey}" (${count}/${EXPECTED_OUTPUT_COUNT})`,
+  );
 
   return c.json({ ok: true });
 });
@@ -329,5 +392,25 @@ try {
   console.error("Startup failed:", err);
   Deno.exit(1);
 }
+
+// Recover jobs that were stuck in "processing" from a previous instance.
+resetOrphanedJobs()
+  .then((n) => {
+    if (n > 0)
+      console.log(`Startup: reset ${n} orphaned processing job(s) to failed`);
+  })
+  .catch((err) => console.error("resetOrphanedJobs failed:", err));
+
+// Graceful shutdown: Cloud Run sends SIGTERM before killing the instance.
+// Wait up to 290 s for active pipelines to finish, then exit cleanly.
+Deno.addSignalListener("SIGTERM", async () => {
+  console.log(
+    `SIGTERM received — waiting for ${activeJobs.size} active pipeline(s)…`,
+  );
+  const deadline = new Promise<void>((r) => setTimeout(r, 290_000));
+  await Promise.race([Promise.allSettled([...activeJobs]), deadline]);
+  console.log("Shutdown complete.");
+  Deno.exit(0);
+});
 
 Deno.serve({ port }, app.fetch);

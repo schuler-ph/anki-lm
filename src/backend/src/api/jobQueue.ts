@@ -125,6 +125,25 @@ export async function setFachDisplayName(
 
 // Transactional read-modify-write — safe against concurrent webhook calls.
 // Returns the new total count of stored output files.
+// Reset all "processing" jobs to "failed" — called on startup to recover orphaned jobs
+// that were interrupted by a Cloud Run instance being killed mid-pipeline.
+export async function resetOrphanedJobs(): Promise<number> {
+  const snapshot = await db()
+    .collection(COLLECTION)
+    .where("status", "==", "processing")
+    .get();
+  if (snapshot.empty) return 0;
+  const batch = db().batch();
+  for (const doc of snapshot.docs) {
+    batch.update(doc.ref, {
+      status: "failed",
+      error: "Pipeline unterbrochen durch Server-Neustart – erneut starten.",
+    });
+  }
+  await batch.commit();
+  return snapshot.size;
+}
+
 export async function addOutputFile(
   id: string,
   key: string,
