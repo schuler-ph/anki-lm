@@ -11,9 +11,10 @@ export const client = new OpenAI({
   apiKey: Deno.env.get("OPENAI_API_KEY"),
   timeout: 120_000,
   fetch: (input, init = {}) => {
-    const headers = init.headers instanceof Headers
-      ? init.headers
-      : new Headers(init.headers);
+    const headers =
+      init.headers instanceof Headers
+        ? init.headers
+        : new Headers(init.headers);
     headers.set("Connection", "close");
     headers.set("Cache-Control", "no-store");
     return fetch(input, { ...init, headers });
@@ -47,9 +48,7 @@ async function transcribePartWithRetry(
       ...(lang ? { language: lang } : {}),
     });
   } catch (e: unknown) {
-    if (
-      attempt < MAX_RETRIES
-    ) {
+    if (attempt < MAX_RETRIES) {
       console.warn(
         `Retry ${attempt}/${MAX_RETRIES} for "${basename(filePath)}"${
           idx !== undefined ? ` (File ${idx + 1}/${total})` : ""
@@ -63,19 +62,33 @@ async function transcribePartWithRetry(
   }
 }
 
-export async function createTranscriptionFromParts(
-  files: string[],
-) {
+// Max parallel Whisper calls. Each call loads the chunk (~9 MB) into memory
+// plus the response buffer. 3 concurrent = ~80 MB peak, safe within 2 GiB.
+const WHISPER_CONCURRENCY = 3;
+
+export async function createTranscriptionFromParts(files: string[]) {
   let successCount = 0;
   const total = files.length;
+  const results: Awaited<ReturnType<typeof transcribePartWithRetry>>[] =
+    new Array(total);
 
-  const jobs = files.map(async (filePath, idx) => {
-    console.log(`Start (${idx + 1}/${total}): ${basename(filePath)}`);
-    const res = await transcribePartWithRetry(filePath, 1, idx, total);
+  // Process in sliding window of WHISPER_CONCURRENCY to bound memory usage.
+  let idx = 0;
+  async function runNext(): Promise<void> {
+    const i = idx++;
+    if (i >= total) return;
+    console.log(`Start (${i + 1}/${total}): ${basename(files[i])}`);
+    results[i] = await transcribePartWithRetry(files[i], 1, i, total);
     successCount++;
-    console.log(`Done (${successCount}/${total}): ${basename(filePath)}`);
-    return res;
-  });
+    console.log(`Done (${successCount}/${total}): ${basename(files[i])}`);
+    await runNext();
+  }
 
-  return await Promise.all(jobs);
+  const workers = Array.from(
+    { length: Math.min(WHISPER_CONCURRENCY, total) },
+    () => runNext(),
+  );
+  await Promise.all(workers);
+
+  return results;
 }
