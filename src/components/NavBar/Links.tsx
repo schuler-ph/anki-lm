@@ -1,33 +1,41 @@
 import { Link } from "react-router-dom";
 
-function Links() {
-  return (
-    <div className="flex gap-3 items-center text-gray-700 text-sm">
-      <Link
-        to="/"
-        className="hover:scale-110 transition-all hover:text-indigo-600"
-      >
-        Home
-      </Link>
-      <Link
-        to="/prices"
-        className="hover:scale-110 transition-all hover:text-indigo-600"
-      >
-        Preise
-      </Link>
-      <Link
-        to="/faq"
-        className="hover:scale-110 transition-all hover:text-indigo-600"
-      >
-        FAQ
-      </Link>
+const LINKS = [
+  { to: "/", label: "Home" },
+  { to: "/prices", label: "Preise" },
+  { to: "/faq", label: "FAQ" },
+  { to: "/about", label: "About" },
+];
 
-      <Link
-        to="/about"
-        className="hover:scale-110 transition-all hover:text-indigo-600"
-      >
-        About
-      </Link>
+function Links({
+  vertical = false,
+  onNavigate,
+}: {
+  vertical?: boolean;
+  onNavigate?: () => void;
+}) {
+  return (
+    <div
+      className={
+        vertical
+          ? "flex flex-col gap-1 text-gray-700"
+          : "flex gap-3 items-center text-gray-700 text-sm"
+      }
+    >
+      {LINKS.map((link) => (
+        <Link
+          key={link.to}
+          to={link.to}
+          onClick={onNavigate}
+          className={
+            vertical
+              ? "py-3 px-2 rounded-md hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+              : "hover:scale-110 transition-all hover:text-indigo-600"
+          }
+        >
+          {link.label}
+        </Link>
+      ))}
     </div>
   );
 }

@@ -127,24 +127,24 @@ function App() {
       </AnimatePresence>
 
       <div
-        className={`grid grid-cols-12 min-h-screen ${
+        className={`flex flex-col md:grid md:grid-cols-12 min-h-screen ${
           showIntro ? "overflow-hidden h-screen" : ""
         }`}
       >
-        <aside className="flex flex-col col-span-3 border-r border-gray-200 bg-white">
-          <h2 className="font-bold border-b border-gray-200 text-gray-500 text-xs uppercase tracking-wider p-4 pl-10 pb-2">
+        <aside className="flex flex-col md:col-span-3 border-b md:border-b-0 md:border-r border-gray-200 bg-white">
+          <h2 className="font-bold border-b border-gray-200 text-gray-500 text-xs uppercase tracking-wider p-4 pl-4 md:pl-10 pb-2">
             Themen
           </h2>
-          <div className="pl-6 flex flex-col">
+          <div className="px-2 md:pl-6 flex flex-row md:flex-col overflow-x-auto md:overflow-visible">
             {topics.length === 0 && !addingTopic && (
-              <p className="text-sm text-gray-400 italic px-4 py-3">
+              <p className="text-sm text-gray-400 italic px-4 py-3 whitespace-nowrap md:whitespace-normal">
                 Noch keine Themen. Füge ein neues Thema hinzu.
               </p>
             )}
             {topics.map((topic) => (
               <button
                 key={topic.fach}
-                className={"py-3 px-4 cursor-pointer text-left hover:bg-indigo-50 transition-colors border-l-4 " +
+                className={"py-3 px-4 cursor-pointer text-left hover:bg-indigo-50 transition-colors shrink-0 whitespace-nowrap border-b-4 md:border-b-0 md:border-l-4 " +
                   (currentFach === topic.fach
                     ? "bg-indigo-50 border-indigo-600 text-indigo-700 font-medium"
                     : "border-transparent text-gray-600")}
@@ -156,7 +156,7 @@ function App() {
 
             {addingTopic
               ? (
-                <form onSubmit={handleAddTopic} className="mt-2 mx-4 flex flex-col gap-1">
+                <form onSubmit={handleAddTopic} className="mt-2 mx-4 flex flex-col gap-1 shrink-0 w-56 md:w-auto">
                   <input
                     ref={newFachInputRef}
                     type="text"
@@ -186,7 +186,7 @@ function App() {
               : (
                 <button
                   onClick={() => setAddingTopic(true)}
-                  className="mt-2 mx-4 py-2 px-4 border border-dashed border-gray-300 rounded text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-sm"
+                  className="my-2 mx-4 py-2 px-4 border border-dashed border-gray-300 rounded text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-sm shrink-0 whitespace-nowrap self-center md:self-auto"
                 >
                   + Neues Thema
                 </button>
@@ -194,21 +194,21 @@ function App() {
           </div>
         </aside>
 
-        <article className="col-span-9">
+        <article className="md:col-span-9">
           {currentTopic
             ? (
               <>
-                <header className="bg-white border-b border-gray-200 px-8 py-6 pr-6">
+                <header className="bg-white border-b border-gray-200 px-4 sm:px-6 md:px-8 py-6">
                   {editingDisplayName
                     ? (
-                      <form onSubmit={handleSaveDisplayName} className="flex items-center gap-2">
+                      <form onSubmit={handleSaveDisplayName} className="flex items-center gap-2 flex-wrap">
                         <input
                           ref={editDisplayNameRef}
                           type="text"
                           value={editDisplayNameValue}
                           onChange={(e) => setEditDisplayNameValue(e.target.value)}
                           placeholder={currentTopic.fach}
-                          className="text-2xl font-bold text-gray-800 border-b-2 border-indigo-400 bg-transparent outline-none w-72"
+                          className="text-2xl font-bold text-gray-800 border-b-2 border-indigo-400 bg-transparent outline-none min-w-0 flex-1 max-w-72"
                           onKeyDown={(e) => e.key === "Escape" && setEditingDisplayName(false)}
                         />
                         <button
@@ -244,7 +244,7 @@ function App() {
                     )}
                   <p className="text-xs text-gray-400 mt-1">Kürzel: <code>{currentTopic.fach}</code></p>
                 </header>
-                <div className="px-8 py-8 space-y-8">
+                <div className="px-4 sm:px-6 md:px-8 py-8 space-y-8">
                   <BaseKnowledge currentItem={{ knowledge: [] }} />
                   <Lectures topic={currentTopic} onRefresh={handleRefresh} />
                 </div>

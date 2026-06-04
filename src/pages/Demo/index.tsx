@@ -78,12 +78,20 @@ function MDXPopover({
       <div
         id={`demo-popover-${type}-${id}`}
         popover="auto"
-        className="fixed inset-0 m-auto w-full max-w-3xl h-[80vh] bg-white rounded-xl shadow-2xl p-0 overflow-hidden backdrop:bg-gray-900/50"
+        className="fixed inset-0 m-auto w-full h-full sm:h-[80vh] sm:max-w-3xl bg-white sm:rounded-xl shadow-2xl p-0 overflow-hidden flex flex-col backdrop:bg-gray-900/50"
       >
-        <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
-          <h3 className="font-bold text-lg">{label}</h3>
+        <div className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4 flex justify-between items-center gap-4 shrink-0">
+          <h3 className="font-bold text-lg truncate">{label}</h3>
+          <button
+            popoverTarget={`demo-popover-${type}-${id}`}
+            popoverTargetAction="hide"
+            aria-label="Schließen"
+            className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors text-xl leading-none cursor-pointer"
+          >
+            ✕
+          </button>
         </div>
-        <div className="p-8 overscroll-contain overflow-auto h-full pb-20 prose max-w-none">
+        <div className="p-4 sm:p-8 overscroll-contain overflow-auto flex-1 min-h-0 prose max-w-none">
           <Content />
         </div>
       </div>
@@ -319,20 +327,20 @@ function Demo() {
       </AnimatePresence>
 
       <div
-        className={`grid grid-cols-12 min-h-screen ${
+        className={`flex flex-col md:grid md:grid-cols-12 min-h-screen ${
           showIntro ? "overflow-hidden h-screen" : ""
         }`}
       >
-        <aside className="flex flex-col col-span-3 border-r border-gray-200 bg-white">
-          <h2 className="font-bold border-b border-gray-200 text-gray-500 text-xs uppercase tracking-wider p-4 pl-10 pb-2">
+        <aside className="flex flex-col md:col-span-3 border-b md:border-b-0 md:border-r border-gray-200 bg-white">
+          <h2 className="font-bold border-b border-gray-200 text-gray-500 text-xs uppercase tracking-wider p-4 pl-4 md:pl-10 pb-2">
             Themen
           </h2>
-          <div className="pl-6 flex flex-col">
+          <div className="px-2 md:pl-6 flex flex-row md:flex-col overflow-x-auto md:overflow-visible">
             {DEMO_CONTENT.map((item) => (
               <button
                 key={item.id}
                 className={
-                  "py-3 px-4 cursor-pointer text-left hover:bg-indigo-50 transition-colors border-l-4 " +
+                  "py-3 px-4 cursor-pointer text-left hover:bg-indigo-50 transition-colors shrink-0 whitespace-nowrap border-b-4 md:border-b-0 md:border-l-4 " +
                   (currentItem.id === item.id
                     ? "bg-indigo-50 border-indigo-600 text-indigo-700 font-medium"
                     : "border-transparent text-gray-600")
@@ -342,21 +350,21 @@ function Demo() {
                 {item.title}
               </button>
             ))}
-            <button className="mt-2 mx-4 py-2 px-4 border border-dashed border-gray-300 rounded text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-sm">
+            <button className="my-2 mx-4 py-2 px-4 border border-dashed border-gray-300 rounded text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors text-sm shrink-0 whitespace-nowrap self-center md:self-auto">
               + Neues Thema
             </button>
           </div>
         </aside>
 
-        <article className="col-span-9">
-          <header className="bg-white border-b border-gray-200 px-8 py-6 pr-6">
+        <article className="md:col-span-9">
+          <header className="bg-white border-b border-gray-200 px-4 sm:px-6 md:px-8 py-6">
             <h1 className="text-2xl font-bold text-gray-800">
               {currentItem.title}
             </h1>
             <p className="text-gray-500 text-sm mt-1">{currentItem.body}</p>
           </header>
 
-          <div className="px-8 py-8 space-y-8">
+          <div className="px-4 sm:px-6 md:px-8 py-8 space-y-8">
             <BaseKnowledge currentItem={currentItem} />
 
             <section>

@@ -12,3 +12,9 @@
 ::backdrop {
   backdrop-filter: blur(3px);
 }
+
+/* Guard against accidental horizontal overflow on small screens. */
+html,
+body {
+  overflow-x: hidden;
+}
