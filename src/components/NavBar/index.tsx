@@ -7,12 +7,27 @@ import Logo from "./Logo";
 function NavBar() {
   const [open, setOpen] = useState(false);
 
-  // Lock body scroll while the mobile menu is open.
+  // Lock body scroll while the mobile menu is open, restoring whatever
+  // value was there before so we don't clobber other scroll managers.
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previous;
     };
+  }, [open]);
+
+  // Auto-close the menu when the viewport grows to the desktop (md) layout,
+  // where the panel/backdrop are hidden and there is no visible close control.
+  useEffect(() => {
+    if (!open) return;
+    const mq = window.matchMedia("(min-width: 768px)");
+    const handleChange = () => {
+      if (mq.matches) setOpen(false);
+    };
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
   }, [open]);
 
   const close = () => setOpen(false);

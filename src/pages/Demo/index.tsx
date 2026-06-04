@@ -78,9 +78,9 @@ function MDXPopover({
       <div
         id={`demo-popover-${type}-${id}`}
         popover="auto"
-        className="fixed inset-0 m-auto w-full h-full sm:h-[80vh] sm:max-w-3xl bg-white sm:rounded-xl shadow-2xl p-0 overflow-hidden backdrop:bg-gray-900/50"
+        className="fixed inset-0 m-auto w-full h-full sm:h-[80vh] sm:max-w-3xl bg-white sm:rounded-xl shadow-2xl p-0 overflow-hidden flex flex-col backdrop:bg-gray-900/50"
       >
-        <div className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4 flex justify-between items-center gap-4 sticky top-0 z-10">
+        <div className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4 flex justify-between items-center gap-4 shrink-0">
           <h3 className="font-bold text-lg truncate">{label}</h3>
           <button
             popoverTarget={`demo-popover-${type}-${id}`}
@@ -91,7 +91,7 @@ function MDXPopover({
             ✕
           </button>
         </div>
-        <div className="p-4 sm:p-8 overscroll-contain overflow-auto h-full pb-20 prose max-w-none">
+        <div className="p-4 sm:p-8 overscroll-contain overflow-auto flex-1 min-h-0 prose max-w-none">
           <Content />
         </div>
       </div>

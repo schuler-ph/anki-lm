@@ -53,9 +53,9 @@ function IntermediatePopover({ file, lectureId }: { file: IntermediateFile; lect
         ref={popoverRef}
         id={`popover-${id}`}
         popover="auto"
-        className="fixed inset-0 m-auto w-full h-full sm:h-[80vh] sm:max-w-3xl bg-white sm:rounded-xl shadow-2xl p-0 overflow-hidden backdrop:bg-gray-900/50"
+        className="fixed inset-0 m-auto w-full h-full sm:h-[80vh] sm:max-w-3xl bg-white sm:rounded-xl shadow-2xl p-0 overflow-hidden flex flex-col backdrop:bg-gray-900/50"
       >
-        <div className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4 flex justify-between items-center gap-4 sticky top-0 z-10">
+        <div className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4 flex justify-between items-center gap-4 shrink-0">
           <h3 className="font-bold text-lg truncate">{label}</h3>
           <button
             popoverTarget={`popover-${id}`}
@@ -67,9 +67,9 @@ function IntermediatePopover({ file, lectureId }: { file: IntermediateFile; lect
           </button>
         </div>
         {isPdf
-          ? <iframe src={file.url} className="w-full h-full border-0" title={label} />
+          ? <iframe src={file.url} className="w-full flex-1 min-h-0 border-0" title={label} />
           : (
-            <div className="p-4 sm:p-8 overflow-auto h-full pb-20 font-mono text-sm whitespace-pre-wrap text-gray-700">
+            <div className="p-4 sm:p-8 overflow-auto flex-1 min-h-0 font-mono text-sm whitespace-pre-wrap text-gray-700">
               {text === "idle" || text === null
                 ? <p className="text-sm text-gray-400 font-sans">Wird geladen...</p>
                 : text}
