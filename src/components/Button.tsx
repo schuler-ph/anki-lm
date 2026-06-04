@@ -38,6 +38,7 @@ function Button({
     to ? <>
       <Link
         to={to}
+        onClick={onClick}
         className={style}
       >
         {name}
