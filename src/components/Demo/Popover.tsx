@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import { authHeaders } from "./api";
 
 function Popover({
@@ -74,7 +76,14 @@ function Popover({
         >
           {text === "idle" || text === null
             ? <p className="text-sm text-gray-400 not-prose">Wird geladen...</p>
-            : <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>}
+            : (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkMath]}
+                rehypePlugins={[rehypeKatex]}
+              >
+                {text}
+              </ReactMarkdown>
+            )}
         </div>
       </div>
     </>
