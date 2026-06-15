@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { authHeaders } from "./api";
+import { normalizeMathDelimiters } from "./markdown";
 
 function Popover({
   id,
@@ -27,7 +28,7 @@ function Popover({
       authHeaders()
         .then((headers) => fetch(contentUrl, { headers }))
         .then((r) => r.text())
-        .then((t) => setText(t))
+        .then((t) => setText(normalizeMathDelimiters(t)))
         .catch(() => setText("(Fehler beim Laden)"));
     };
     el.addEventListener("toggle", handleToggle);
