@@ -152,6 +152,37 @@ export async function updateTopicDisplayName(
   if (!res.ok) throw new Error(`updateTopicDisplayName failed: ${res.status}`);
 }
 
+export async function exportZip(type: string, scope: string): Promise<void> {
+  const url = `${API_BASE}/api/export?type=${encodeURIComponent(
+    type,
+  )}&scope=${encodeURIComponent(scope)}`;
+  const res = await fetch(url, { headers: await authHeaders() });
+  if (!res.ok) {
+    let detail = `${res.status}`;
+    try {
+      const body = (await res.json()) as { error?: string };
+      if (body.error) detail = body.error;
+    } catch {
+      // non-JSON error body — keep status code
+    }
+    throw new Error(detail);
+  }
+
+  const blob = await res.blob();
+  const dispo = res.headers.get("Content-Disposition") ?? "";
+  const fileName =
+    dispo.match(/filename="([^"]+)"/)?.[1] ?? "ankilm-export.zip";
+
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = objectUrl;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(objectUrl);
+}
+
 export async function fetchIntermediates(
   jobId: string,
 ): Promise<{ name: string; url: string }[]> {

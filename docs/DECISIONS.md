@@ -82,3 +82,23 @@ Supabase Auth's OAuth flow is fully hosted on `<project>.supabase.co`, so the ca
 Additionally, Supabase was already the planned Phase 8 technology per CLAUDE.md (Auth/DB: Supabase). The Firebase pivot was undocumented and contradicted the architecture plan.
 
 **Rejected:** Firebase Auth — requires Firebase Hosting or a fragile same-origin proxy; incompatible with Cloudflare Pages static hosting.
+
+---
+
+## ADR-010 — Server-side streaming ZIP export of outputs
+
+**Decision:** Add `GET /api/export?type=<type>&scope=<scope>` to the backend API. It collects the matching GCS objects across a user's lectures and streams them back as a single `application/zip` (via `jsr:@zip-js/zip-js`, `ZipWriter` over a `TransformStream`). The frontend exposes an "Export" dropdown in the topic header ("Alle Folien", "Alle Zusammenfassungen", "Alle Anki-Decks", … , "Alles"), scoped to the current `fach` or all topics.
+
+**Why:** The recurring need is bundling many lectures' artefacts ("all slides", "all summaries", "all Anki decks") into one download. A backend streaming ZIP keeps peak Cloud Run memory bounded by the largest single file (not the whole archive), handles arbitrarily large PDF bundles, produces clean `FACH/LectureName/...` paths inside the archive (consistent with ADR-008), and reuses the existing `requireAuth` middleware + GCS helpers. GCS→Cloud-Run egress is free within `europe-west3`, so the only added cost is the Cloud-Run→browser egress that any download incurs anyway.
+
+**Anki as CSV:** The `anki` output is converted to Anki-importable CSV instead of shipping the raw `.md`. The markdown groups cards under `## <NoteType>` section headers; rows are already semicolon-separated and end in a tags column. Because Anki cannot mix note types (differing field counts, differing tags-column index) in a single import file, **each note-type section becomes its own CSV** named `<base>_anki__<Section>.csv`, each with `#separator:Semicolon`, `#html:true`, and a per-section `#tags column:N` directive. `#notetype` is intentionally omitted so a locale/name mismatch never hard-fails the import — the user picks the note type once per file (Anki remembers the mapping).
+
+**Slides:** "slides" bundles the raw uploaded PDFs (`pdfGcsPaths` + `pdfOriginalNames`) — always available regardless of pipeline status and with predictable names. The page-numbered (stamped) PDFs remain reachable via `GET /api/jobs/:id/intermediates`.
+
+**Rejected:** Client-side ZIP (JSZip) — would download every file (incl. large PDFs) into the browser before zipping and reconstruct names from signed-URL paths; the backend approach is one clean click → one file with bounded server memory. Google-Drive one-way sync was considered alongside this (rclone-cron on the RPi vs. an in-app Drive-API push) but deferred — see TODO Phase 12.
+
+---
+
+## ADR-011 — (reserved) Google Drive one-way sync
+
+**Status:** Deferred. Evaluated alongside ADR-010. Leading option for the single-tenant phase is an `rclone copy gcs:ankilm-files/output gdrive:AnkiLM/output` cron on the existing Raspberry Pi (zero cost, no new code, `copy` not `sync` so nothing is ever deleted on Drive). An in-app Drive-API push (OAuth `drive.file` scope, refresh token per user in Firestore, push on the Dify webhook) is the SaaS-ready alternative but carries OAuth/token/maintenance overhead. To be recorded here when implemented. See TODO Phase 12.

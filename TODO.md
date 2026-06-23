@@ -221,6 +221,25 @@ updating the workflow YAML and re-importing. This phase reduces that friction.
 
 ---
 
+## Phase 12 — Export & Drive Sync (see ADR-010 / ADR-011)
+
+### Feature A — ZIP-Export im UI (~3–4h) ✅
+- [x] 🤖 `deno.json`: add `jsr:@zip-js/zip-js`
+- [x] 🤖 `src/backend/src/util/zip.ts`: streaming `createZipStream(entries)` via `ZipWriter` + `TransformStream`
+- [x] 🤖 `src/backend/src/util/ankiCsv.ts`: convert anki markdown → one Anki-importable CSV per note-type section
+- [x] 🤖 `storage.ts`: add `readBytesFromGcs()` for binary (PDF) files
+- [x] 🤖 `GET /api/export?type=&scope=` in `server.ts` (behind `requireAuth`)
+- [x] 🤖 Frontend `api.ts`: `exportZip(type, scope)` → fetch + blob download
+- [x] 🤖 Frontend `ExportMenu.tsx` + wire into topic header (`pages/App/index.tsx`)
+- [ ] 👤 Verify end-to-end against a deployed/real GCS bucket with a processed lecture
+
+### Feature B — Google Drive one-way sync (deferred, ADR-011)
+- [ ] 👤 Decide: rclone-cron on RPi (recommended for now) vs. in-app Drive-API push
+- [ ] (rclone path) 👤 `rclone config` on RPi: "gcs" remote (read SA) + "gdrive" remote (OAuth once)
+- [ ] (rclone path) 👤 cron: `rclone copy gcs:ankilm-files/output gdrive:AnkiLM/output --fast-list`
+
+---
+
 ## What I need from you before each phase
 
 | Phase | What you need to provide |

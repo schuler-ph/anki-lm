@@ -62,6 +62,13 @@ export async function readTextFromGcs(gcsPath: string): Promise<string> {
   return content.toString("utf-8");
 }
 
+// Downloads a GCS object into memory and returns it as raw bytes (for binary files).
+export async function readBytesFromGcs(gcsPath: string): Promise<Uint8Array> {
+  const storage = getStorage();
+  const [content] = await getBucket(storage).file(gcsPath).download();
+  return new Uint8Array(content);
+}
+
 // Downloads a GCS object to a local file path.
 export async function downloadFromGcs(
   gcsPath: string,

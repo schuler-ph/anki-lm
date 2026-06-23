@@ -18,6 +18,7 @@
     "jsr:@std/path@^1.1.1": "1.1.2",
     "jsr:@std/path@^1.1.2": "1.1.2",
     "jsr:@std/streams@^1.0.13": "1.0.13",
+    "jsr:@zip-js/zip-js@^2.7.0": "2.8.26",
     "npm:@google-cloud/firestore@7": "7.11.6",
     "npm:@google-cloud/storage@7": "7.19.0",
     "npm:@types/node@*": "24.2.0",
@@ -90,6 +91,9 @@
     },
     "@std/streams@1.0.13": {
       "integrity": "772d208cd0d3e5dac7c1d9e6cdb25842846d136eea4a41a62e44ed4ab0c8dd9e"
+    },
+    "@zip-js/zip-js@2.8.26": {
+      "integrity": "2b78bfa2c5d43766c9a487fc0274981d45732de41bb5b82433d29d235be67191"
     }
   },
   "npm": {
@@ -794,6 +798,7 @@
       "jsr:@std/fs@^1.0.19",
       "jsr:@std/http@^1.0.21",
       "jsr:@std/path@^1.1.2",
+      "jsr:@zip-js/zip-js@^2.7.0",
       "npm:@google-cloud/firestore@7",
       "npm:@google-cloud/storage@7",
       "npm:jose@5"

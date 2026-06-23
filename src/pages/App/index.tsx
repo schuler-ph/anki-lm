@@ -3,6 +3,7 @@ import { AnimatePresence } from "framer-motion";
 
 import BaseKnowledge from "../../components/Demo/BaseKnowledge";
 import Lectures from "../../components/Demo/Lectures";
+import ExportMenu from "../../components/Demo/ExportMenu";
 import { BrandingIntro } from "../../components/Demo/BrandingIntro";
 import { fetchJobs, updateTopicDisplayName } from "../../components/Demo/api";
 import type { Lecture, Topic } from "../../components/Demo/types";
@@ -198,7 +199,8 @@ function App() {
           {currentTopic
             ? (
               <>
-                <header className="bg-white border-b border-gray-200 px-4 sm:px-6 md:px-8 py-6">
+                <header className="bg-white border-b border-gray-200 px-4 sm:px-6 md:px-8 py-6 flex justify-between items-start gap-4 flex-wrap">
+                  <div className="min-w-0">
                   {editingDisplayName
                     ? (
                       <form onSubmit={handleSaveDisplayName} className="flex items-center gap-2 flex-wrap">
@@ -243,6 +245,8 @@ function App() {
                       </div>
                     )}
                   <p className="text-xs text-gray-400 mt-1">Kürzel: <code>{currentTopic.fach}</code></p>
+                  </div>
+                  <ExportMenu fach={currentTopic.fach} />
                 </header>
                 <div className="px-4 sm:px-6 md:px-8 py-8 space-y-8">
                   <BaseKnowledge currentItem={{ knowledge: [] }} />

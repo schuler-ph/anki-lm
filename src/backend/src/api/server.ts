@@ -10,10 +10,13 @@ import {
   getSignedUploadUrl,
   getSignedUrl,
   listGcsFiles,
+  readBytesFromGcs,
   readTextFromGcs,
   uploadFileToGcs,
   writeTextToGcs,
 } from "../util/storage.ts";
+import { createZipStream, TextReader, Uint8ArrayReader } from "../util/zip.ts";
+import type { ZipEntry } from "../util/zip.ts";
 import {
   getFilesInFolder,
   sendDifyWorkflow,
@@ -148,7 +151,10 @@ async function processUpload(job: Job): Promise<void> {
 
 const app = new Hono<{ Variables: { userId: string } }>();
 
-app.use("*", cors({ origin: "*" }));
+app.use(
+  "*",
+  cors({ origin: "*", exposeHeaders: ["Content-Disposition"] }),
+);
 
 app.get("/health", (c) => c.json({ ok: true }));
 
@@ -156,6 +162,7 @@ app.get("/health", (c) => c.json({ ok: true }));
 app.use("/api/jobs", requireAuth);
 app.use("/api/jobs/*", requireAuth);
 app.use("/api/topics/*", requireAuth);
+app.use("/api/export", requireAuth);
 
 // ── POST /api/jobs ──────────────────────────────────────────────────────────
 // Step 1: upload files to GCS, create job in "preparing" state.
@@ -299,6 +306,130 @@ app.get("/api/jobs/:id/intermediates", async (c) => {
     })),
   );
   return c.json(files);
+});
+
+// ── GET /api/export ─────────────────────────────────────────────────────────
+// Streams a ZIP bundle of output files across the user's lectures.
+//   type  = slides | summary | veredelt | tldr | konzepte | beispiele | anki | all
+//   scope = all | fach:<fach>
+// Markdown outputs are bundled as-is; "anki" is converted to Anki-importable CSV
+// (one file per note-type section). "slides" bundles the raw uploaded PDFs.
+// Logical export type names (URL param values). Actual keys in job.outputFiles
+// follow the pattern "<NN>-<name>" (e.g. "01-summary"), so we match by suffix.
+const OUTPUT_KEYS = [
+  "summary",
+  "veredelt",
+  "tldr",
+  "konzepte",
+  "beispiele",
+  "anki",
+] as const;
+
+type OutputKey = (typeof OUTPUT_KEYS)[number];
+
+// Returns the GCS path for the given logical key from a job's outputFiles map,
+// handling both bare keys ("anki") and prefixed keys ("06-anki").
+function findOutputGcsPath(
+  outputFiles: Record<string, string>,
+  key: OutputKey,
+): string | undefined {
+  if (outputFiles[key]) return outputFiles[key];
+  const prefixed = Object.keys(outputFiles).find(
+    (k) => k === key || k.endsWith(`-${key}`),
+  );
+  return prefixed ? outputFiles[prefixed] : undefined;
+}
+
+function sanitizeName(s: string): string {
+  return s
+    .replace(/[^\p{L}\p{N}\-_.]+/gu, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "");
+}
+
+app.get("/api/export", async (c) => {
+  const userId = c.get("userId");
+  const type = c.req.query("type") ?? "all";
+  const scope = c.req.query("scope") ?? "all";
+
+  let jobs = await listJobs(userId);
+  if (scope.startsWith("fach:")) {
+    const fach = scope.slice("fach:".length);
+    jobs = jobs.filter((j) => j.fach === fach);
+  }
+
+  const wantsSlides = type === "slides" || type === "all";
+  const outputKeys =
+    type === "all"
+      ? OUTPUT_KEYS
+      : (OUTPUT_KEYS as readonly string[]).includes(type)
+        ? [type]
+        : [];
+
+  if (!wantsSlides && outputKeys.length === 0) {
+    return c.json({ error: `Unknown export type: ${type}` }, 400);
+  }
+
+  const entries: ZipEntry[] = [];
+  const usedNames = new Set<string>();
+
+  function uniqueName(preferred: string): string {
+    if (!usedNames.has(preferred)) {
+      usedNames.add(preferred);
+      return preferred;
+    }
+    const dot = preferred.lastIndexOf(".");
+    const base = dot >= 0 ? preferred.slice(0, dot) : preferred;
+    const ext = dot >= 0 ? preferred.slice(dot) : "";
+    for (let i = 2; ; i++) {
+      const candidate = `${base}_${i}${ext}`;
+      if (!usedNames.has(candidate)) {
+        usedNames.add(candidate);
+        return candidate;
+      }
+    }
+  }
+
+  for (const job of jobs) {
+    const fachDir = sanitizeName(job.fach.toLowerCase());
+    const lectureName = sanitizeName(job.lectureName);
+
+    if (wantsSlides) {
+      job.pdfGcsPaths.forEach((gcsPath, i) => {
+        const original = job.pdfOriginalNames?.[i];
+        const fileName = original ? sanitizeName(original) : `${lectureName}_${i + 1}.pdf`;
+        entries.push({
+          name: uniqueName(`${fachDir}/slides/${fileName}`),
+          open: async () => new Uint8ArrayReader(await readBytesFromGcs(gcsPath)),
+        });
+      });
+    }
+
+    for (const key of outputKeys) {
+      const gcsPath = findOutputGcsPath(job.outputFiles, key as OutputKey);
+      if (!gcsPath) continue;
+      entries.push({
+        name: uniqueName(`${fachDir}/${key}/${lectureName}.md`),
+        open: () => readTextFromGcs(gcsPath).then((text) => new TextReader(text)),
+      });
+    }
+  }
+
+  if (entries.length === 0) {
+    return c.json({ error: "Keine passenden Dateien zum Export gefunden" }, 404);
+  }
+
+  const scopeLabel = scope.startsWith("fach:")
+    ? sanitizeName(scope.slice("fach:".length))
+    : "alle";
+  const fileName = `ankilm_${scopeLabel}_${type}.zip`;
+
+  return new Response(createZipStream(entries), {
+    headers: {
+      "Content-Type": "application/zip",
+      "Content-Disposition": `attachment; filename="${fileName}"`,
+    },
+  });
 });
 
 // ── PATCH /api/topics/:fach ─────────────────────────────────────────────────
