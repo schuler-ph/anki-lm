@@ -2023,7 +2023,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 142
+      height: 141
       id: '1762593529707'
       position:
         x: 2336
@@ -2066,7 +2066,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 142
+      height: 141
       id: '17625936193150'
       position:
         x: 2698
@@ -2109,7 +2109,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 142
+      height: 141
       id: '17625937012150'
       position:
         x: 3060
@@ -2152,7 +2152,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 142
+      height: 141
       id: '17625938088930'
       position:
         x: 6442
@@ -2195,7 +2195,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 142
+      height: 141
       id: '17625938553500'
       position:
         x: 6442
@@ -2238,7 +2238,7 @@ workflow:
         type: http-request
         url: '{{#env.FILE_ACCEPTOR_URL#}}'
         variables: []
-      height: 142
+      height: 141
       id: '17625938756350'
       position:
         x: 6442
@@ -2977,7 +2977,7 @@ workflow:
       type: custom
       width: 242
     viewport:
-      x: -3096.4434259905975
-      y: -90.21054849409813
-      zoom: 0.5633096142486393
+      x: -3360.2546388605188
+      y: 65.81558877961595
+      zoom: 0.5664419426478985
   rag_pipeline_variables: []
