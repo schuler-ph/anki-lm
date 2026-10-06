@@ -13,7 +13,6 @@
   "dependencies": {
     "@mdx-js/react": "^3.1.1",
     "@mdx-js/rollup": "^3.1.1",
-    "@supabase/supabase-js": "^2",
     "@tailwindcss/vite": "^4.1.18",
     "framer-motion": "^12.23.26",
     "katex": "^0.17.0",

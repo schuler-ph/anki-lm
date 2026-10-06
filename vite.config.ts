@@ -28,7 +28,5 @@ export default defineConfig(({ mode }) => ({
         ? "https://ankilm-backend-api-j2mn4yc65q-ey.a.run.app"
         : "http://localhost:8080"
     ),
-    "import.meta.env.VITE_SUPABASE_URL": JSON.stringify("https://xqnmnnhicbpjkaksagmg.supabase.co"),
-    "import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhxbm1ubmhpY2Jwamtha3NhZ21nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjM1MTAsImV4cCI6MjA5NTgzOTUxMH0.cREyrXpAb3uq1SOGPcxjdEQYzj-ApAj9CSkkTA5idrk"),
   },
 }));
