@@ -1,10 +1,15 @@
 <div align="center">
   <img src="public/ankilm-new.svg" height="120" alt="AnkiLM logo" />
   <h1 style="margin-top: 0;">AnkiLM</h1>
-  <a href="https://schuler-ph.github.io/anki-lm/#/">
+  <a href="https://ankilm.mkhg.org/">
     <img src="https://img.shields.io/badge/View_Live_Demo-3B82F6?style=for-the-badge&logo=github&logoColor=white" alt="View Live Demo" />
   </a>
 </div>
+
+> [!NOTE]
+> **Archived (October 2026).** The cloud backend has been shut down. The live site
+> is a static showcase (the demo page) — see ADR-012 in
+> `docs/DECISIONS.md`.
 
 > An automated "Import-to-Learn" pipeline that transforms raw lecture materials
 > into structured, exam-ready study artifacts.

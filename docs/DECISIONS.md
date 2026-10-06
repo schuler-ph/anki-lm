@@ -102,3 +102,13 @@ Additionally, Supabase was already the planned Phase 8 technology per CLAUDE.md 
 ## ADR-011 — (reserved) Google Drive one-way sync
 
 **Status:** Deferred. Evaluated alongside ADR-010. Leading option for the single-tenant phase is an `rclone copy gcs:ankilm-files/output gdrive:AnkiLM/output` cron on the existing Raspberry Pi (zero cost, no new code, `copy` not `sync` so nothing is ever deleted on Drive). An in-app Drive-API push (OAuth `drive.file` scope, refresh token per user in Firestore, push on the Dify webhook) is the SaaS-ready alternative but carries OAuth/token/maintenance overhead. To be recorded here when implemented. See TODO Phase 12.
+
+---
+
+## ADR-012 — Archive: static showcase on ankilm.mkhg.org, all cloud backends removed
+
+**Decision:** The project is archived (2026-10-06). The frontend stays on the Cloudflare Worker `anki-lm` (`ankilm.mkhg.org`) as a public, fully static site: the existing `/demo` page with the Artemis and AI Act demo data is the showcase. The Google login (Supabase Auth), the logged-in `/app` route and its backend calls were removed. The GCP project `anki-lm` (Cloud Run, Artifact Registry, GCS, Firestore) was deleted, and `.github/workflows/deploy-backend.yml` was removed and disabled.
+
+**Why:** The remaining GCP storage cost a few cents per month for a project no longer in use, and a login-gated app without a backend is useless as a portfolio piece. A static Worker costs nothing and needs no maintenance.
+
+**Backup:** Bucket contents, Firestore documents, the Cloud Run configuration and all three backend images were saved to `anki-lm-archiv-2026-10-06.zip` (kept outside the repo). The backend code in `src/backend/` is kept unchanged for reference.
