@@ -153,7 +153,14 @@ function DemoLectureCard({ lecture }: { lecture: DemoLecture }) {
                     className="flex items-center gap-2 p-2 rounded bg-gray-50 border border-gray-100"
                   >
                     <img src={mp3Icon} className="h-6 w-6" alt="MP3" />
-                    <span className="text-sm text-gray-700 truncate">{f}</span>
+                    <a
+                      href={"/" + f}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-indigo-600 underline truncate"
+                    >
+                      {f}
+                    </a>
                   </div>
                 ))
               )}
@@ -181,7 +188,14 @@ function DemoLectureCard({ lecture }: { lecture: DemoLecture }) {
                     className="flex items-center gap-2 p-2 rounded bg-gray-50 border border-gray-100"
                   >
                     <img src={pdfIcon} className="h-6 w-6" alt="PDF" />
-                    <span className="text-sm text-gray-700 truncate">{f}</span>
+                    <a
+                      href={"/" + f}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-indigo-600 underline truncate"
+                    >
+                      {f}
+                    </a>
                   </div>
                 ))
               )}

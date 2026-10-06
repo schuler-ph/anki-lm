@@ -40,7 +40,7 @@ function BaseKnowledge(
                     alt="Book icon"
                   />
                   <a
-                    href={"/anki-lm/" + file}
+                    href={"/" + file}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-indigo-600 underline"
